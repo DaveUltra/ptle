@@ -1,0 +1,22 @@
+8039AB40 - Breakables?
++ 0x2C    ->   Some flags (int32)
++ 0x1F0   ->   Health? (float)
+
+80396E00 - Harry
+
+8039DE10 - Howler
+size = 0x11C
++ 0x2C : some flags to mess with it
+
+8039C7B8 - Vines
+
+
+These ones could be something, but we don't know yet.
+
+8039A8D0 - ???
+
+8039C180 - ???
+
+8039FF60 - ???
+
+8039F048 - ???

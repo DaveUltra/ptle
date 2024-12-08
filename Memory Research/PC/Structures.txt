@@ -1,0 +1,12 @@
+Entity entry?
+- Size : 32 bytes
+- Fields :
+  + 0x10 : Next entry
+  + 0x?? : Prev entry
+  + 0x?? : Pointer to entity data structure
+
+Entity data
+- Size : depends, but over 100 bytes generally
+- Fields :
+  + 0x00 : virtual table ptr (4 bytes)
+  + 0x2C : various flags (4 bytes)

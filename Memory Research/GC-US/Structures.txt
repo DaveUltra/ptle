@@ -1,0 +1,14 @@
+Harry
+- Size : ??
+- Fields :
+  + 0xC0 : Skeletal animation pose pointer (4 bytes)
+  + 0xFC : Animation speed multiplier (float)
+  + 0x658 : Health max
+  + 0x65C : Health amount
+  + 0x970 : Item hotbar pointer (4 bytes)
+  + 0x195C : Idol count
+
+Item
+- Size : 28 bytes
+- Fields :
+  + 0x10 : Is Unlocked (4 bytes)

@@ -1,0 +1,28 @@
+This document contains entries of known virtual tables in Pitfall : The Lost Expedition (PC port).
+Each address is static, and can be looked up in Cheat Engine by anyone running the game.
+
+---
+
+
+00880390 - Boats in Flooded Courtyard
+
+0087FDC0 - Breakables
+  + 0x2C    ->   Some flags (int32)
+  + 0x1FC   ->   Health? (float)
+
+008779C0 - Green trail effect on Flooded Courtyard door (and possibly others)
+
+0087D300 - Harry
+  [0087D300+2C] = PTLE+B2CD0 seems to be an update function, early return freezes all controls (expect pause) and Harry's animation
+
+0089A2F8 - Idol(s)
+
+008A6098 - Particle effects
+
+008A5D08 - World?
+
+008AFF90 - Yellow trail effects on Monkey Temple entrance
+
+00883508 - ???
+
+0086E660 - ???

@@ -1,0 +1,48 @@
+PTLE+B2CD0
+- Harry's update function
+
+	+B2D2C : cmp dword [PTLE+4EA1D8], 0 : Skips the entire function if you swap the condition
+	  -> What is PTLE+4EA1D8
+	call PTLE+B1290 : Harry's keyboard movements (camera still anticipates)
+	call PTLE+BA820 : (unknown)
+	call PTLE+C2930 : Harry's pose (turn him into a fuggin ghost)
+	call PTLE+B3C40 : (unknown)
+	call PTLE+AFA80 : Apply root motion!?
+	call PTLE+B4150 : Teleport graphic character to physical character?
+	call PTLE+B5C30 : Position-related bullshit
+	call PTLE+B2EB0 : (unknown)
+
+---
+
+PTLE+227EB0
+- Related to game updates
+- On disable, everything stops moving, but rendering is still on
+- Pause menu still works too
+
+	call PTLE+2280B0 : Disabling it causes debris to remain static
+	call PTLE+2252A0 : DON'T TOUCH, IT CRASHES
+	call PTLE+2B48A0 : ???
+
+	+227F17 : for loop
+		+227F59 : call dword [edx+2C] : Polymorphic update function!?
+		For loop stops on [ebp-08] == 0, so null pointer
+		[ebp-08] seems to be a pointer to a 32-bits entry inside a double-linked list
+		Each entry contains a pointer to the entity (the actual vtable thing)
+		Next entry is at offset 0x10.
+
+---
+
+PTLE+B42B1   ->   call PTLE+21A970
+PTLE+21AAE7  ->   call dword ptr [eax+04]
+This function call is responsible for Harry's pose update.
+
+---
+
+PTLE+2253BD  ->   call PTLE+2279B0
+
+
+---
+
+PTLE+2252D0 : Crashes if you change its contents
+
+PTLE+226600 : That spawns Harry's punch hit particles (and others, like Sham magic)

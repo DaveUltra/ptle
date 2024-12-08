@@ -1,0 +1,13 @@
+8041BE4C : Pointer to active instance of Harry
+
+804CB694 : Can't open inventory flag (item swap mechanic)
+
+8041A238 : Sling structure
+8041A254 : Torch structure
+8041A270 : Pickaxes structure
+8041A28C : TNT structure
+8041A2A8 : Shield structure
+8041A2C4 : Raft structure
+8041A2E0 : Gas Mask structure
+8041A2FC : Canteen structure
+8041A318 : Stink Bomb structure

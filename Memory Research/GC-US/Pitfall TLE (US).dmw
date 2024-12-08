@@ -1,0 +1,65 @@
+{
+    "watchList": [
+        {
+            "groupEntries": [
+                {
+                    "address": "8039AB40",
+                    "baseIndex": 0,
+                    "label": "Breakable",
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "address": "80396E00",
+                    "baseIndex": 0,
+                    "label": "Harry",
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "address": "8039DE10",
+                    "baseIndex": 0,
+                    "label": "Howler",
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "address": "8039C7B8",
+                    "baseIndex": 0,
+                    "label": "Vines",
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "address": "8039A8D0",
+                    "baseIndex": 0,
+                    "label": "???",
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "address": "8039C180",
+                    "baseIndex": 0,
+                    "label": "???",
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "address": "8039FF60",
+                    "baseIndex": 0,
+                    "label": "???",
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "address": "8039F048",
+                    "baseIndex": 0,
+                    "label": "???",
+                    "typeIndex": 2,
+                    "unsigned": false
+                }
+            ],
+            "groupName": "Virtual Tables"
+        }
+    ]
+}
