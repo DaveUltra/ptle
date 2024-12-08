@@ -8,6 +8,13 @@ Harry
   + 0x970 : Item hotbar pointer (4 bytes)
   + 0x195C : Idol count
 
+Harry Skeleton
+- Size : 9744 bytes
+- Notes :
+  - Two poses, separated by 0x1310 bytes
+  - 76 matrices (76 * 64 bytes), followed by 16 bytes, followed by pose 2 (76 * 64 bytes)
+  - Matrices are row-major, last row is translation component
+
 Item
 - Size : 28 bytes
 - Fields :

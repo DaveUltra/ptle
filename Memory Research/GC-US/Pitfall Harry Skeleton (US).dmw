@@ -1,0 +1,741 @@
+{
+    "watchList": [
+        {
+            "groupEntries": [
+                {
+                    "address": "8041BE4C",
+                    "baseIndex": 1,
+                    "label": "Vtable",
+                    "pointerOffsets": [
+                        "0"
+                    ],
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "address": "8041BE4C",
+                    "baseIndex": 0,
+                    "label": "Alpha Mult 1",
+                    "pointerOffsets": [
+                        "20"
+                    ],
+                    "typeIndex": 3,
+                    "unsigned": false
+                },
+                {
+                    "address": "8041BE4C",
+                    "baseIndex": 0,
+                    "label": "Alpha Mult 2",
+                    "pointerOffsets": [
+                        "24"
+                    ],
+                    "typeIndex": 3,
+                    "unsigned": false
+                },
+                {
+                    "address": "8041BE4C",
+                    "baseIndex": 1,
+                    "label": "Skelly Ptr",
+                    "pointerOffsets": [
+                        "C0"
+                    ],
+                    "typeIndex": 2,
+                    "unsigned": false
+                },
+                {
+                    "groupEntries": [
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Pelvis",
+                            "pointerOffsets": [
+                                "C0",
+                                "B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Body Real Low",
+                            "pointerOffsets": [
+                                "C0",
+                                "F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Leg Upper L",
+                            "pointerOffsets": [
+                                "C0",
+                                "138"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Leg Lower L",
+                            "pointerOffsets": [
+                                "C0",
+                                "178"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Foot L",
+                            "pointerOffsets": [
+                                "C0",
+                                "1B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Toe L",
+                            "pointerOffsets": [
+                                "C0",
+                                "1F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Leg Upper R",
+                            "pointerOffsets": [
+                                "C0",
+                                "278"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Leg Lower R",
+                            "pointerOffsets": [
+                                "C0",
+                                "2B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Foot R",
+                            "pointerOffsets": [
+                                "C0",
+                                "2F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Toe R",
+                            "pointerOffsets": [
+                                "C0",
+                                "338"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Body Even Lower",
+                            "pointerOffsets": [
+                                "C0",
+                                "3B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Body Lower",
+                            "pointerOffsets": [
+                                "C0",
+                                "3F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Backpack",
+                            "pointerOffsets": [
+                                "C0",
+                                "438"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Backpack 1",
+                            "pointerOffsets": [
+                                "C0",
+                                "478"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Backpack 2",
+                            "pointerOffsets": [
+                                "C0",
+                                "4B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Body Middle",
+                            "pointerOffsets": [
+                                "C0",
+                                "4F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Body Upper",
+                            "pointerOffsets": [
+                                "C0",
+                                "538"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Shoulder L",
+                            "pointerOffsets": [
+                                "C0",
+                                "578"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Upper Arm L",
+                            "pointerOffsets": [
+                                "C0",
+                                "5B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Lower Arm L",
+                            "pointerOffsets": [
+                                "C0",
+                                "5F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Hand L",
+                            "pointerOffsets": [
+                                "C0",
+                                "638"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Thumb 1 L",
+                            "pointerOffsets": [
+                                "C0",
+                                "678"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Thumb 2 L",
+                            "pointerOffsets": [
+                                "C0",
+                                "6B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Index 1 L",
+                            "pointerOffsets": [
+                                "C0",
+                                "738"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Index 2 L",
+                            "pointerOffsets": [
+                                "C0",
+                                "778"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Middle 1 L",
+                            "pointerOffsets": [
+                                "C0",
+                                "7F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Middle 2 L",
+                            "pointerOffsets": [
+                                "C0",
+                                "838"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Pinky 1 L",
+                            "pointerOffsets": [
+                                "C0",
+                                "8B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Pinky 2 L",
+                            "pointerOffsets": [
+                                "C0",
+                                "8F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Neck",
+                            "pointerOffsets": [
+                                "C0",
+                                "978"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Head",
+                            "pointerOffsets": [
+                                "C0",
+                                "9B8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "-- Nothing",
+                            "pointerOffsets": [
+                                "C0",
+                                "9F8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eyelids",
+                            "pointerOffsets": [
+                                "C0",
+                                "A38"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Hair",
+                            "pointerOffsets": [
+                                "C0",
+                                "A78"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "-- Nothing",
+                            "pointerOffsets": [
+                                "C0",
+                                "AB8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Chin",
+                            "pointerOffsets": [
+                                "C0",
+                                "AF8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Bottom Lip",
+                            "pointerOffsets": [
+                                "C0",
+                                "B38"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eye L",
+                            "pointerOffsets": [
+                                "C0",
+                                "B78"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eyebrow L",
+                            "pointerOffsets": [
+                                "C0",
+                                "BB8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Hair",
+                            "pointerOffsets": [
+                                "C0",
+                                "BF8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Lip Corner L",
+                            "pointerOffsets": [
+                                "C0",
+                                "C38"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eye R",
+                            "pointerOffsets": [
+                                "C0",
+                                "C78"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eyebrow R",
+                            "pointerOffsets": [
+                                "C0",
+                                "CB8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Hair",
+                            "pointerOffsets": [
+                                "C0",
+                                "CF8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Lip Corner R",
+                            "pointerOffsets": [
+                                "C0",
+                                "D38"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "-- Nothing",
+                            "pointerOffsets": [
+                                "C0",
+                                "D78"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Top Lip",
+                            "pointerOffsets": [
+                                "C0",
+                                "DB8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Shoulder R",
+                            "pointerOffsets": [
+                                "C0",
+                                "DF8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Upper Arm R",
+                            "pointerOffsets": [
+                                "C0",
+                                "E38"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Lower Arm R",
+                            "pointerOffsets": [
+                                "C0",
+                                "E78"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Hand R",
+                            "pointerOffsets": [
+                                "C0",
+                                "EB8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        }
+                    ],
+                    "groupName": "Pose 1 (Z position)"
+                },
+                {
+                    "groupEntries": [
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Head",
+                            "pointerOffsets": [
+                                "C0",
+                                "1CC8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eyelids",
+                            "pointerOffsets": [
+                                "C0",
+                                "1D48"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Chin",
+                            "pointerOffsets": [
+                                "C0",
+                                "1E08"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Bottom Lip",
+                            "pointerOffsets": [
+                                "C0",
+                                "1E48"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eye L",
+                            "pointerOffsets": [
+                                "C0",
+                                "1E88"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eyebrow L",
+                            "pointerOffsets": [
+                                "C0",
+                                "1EC8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Lip Corner L",
+                            "pointerOffsets": [
+                                "C0",
+                                "1F48"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eye R",
+                            "pointerOffsets": [
+                                "C0",
+                                "1F88"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Eyebrow R",
+                            "pointerOffsets": [
+                                "C0",
+                                "1FC8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Lip Corner R",
+                            "pointerOffsets": [
+                                "C0",
+                                "2048"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        },
+                        {
+                            "address": "8041BE4C",
+                            "baseIndex": 0,
+                            "label": "Hand R",
+                            "pointerOffsets": [
+                                "C0",
+                                "21C8"
+                            ],
+                            "typeIndex": 3,
+                            "unsigned": false
+                        }
+                    ],
+                    "groupName": "Pose 2 (Z position)"
+                }
+            ],
+            "groupName": "Skeleton"
+        }
+    ]
+}
