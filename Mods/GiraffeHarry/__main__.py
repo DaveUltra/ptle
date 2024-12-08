@@ -19,6 +19,7 @@ sys.path.append(f"{real_scripts_path}/GiraffeHarry")
 await event.frameadvance()
 
 from lib.math import *
+from CONFIG import *
 
 
 class Harry(IntEnum):
@@ -85,11 +86,6 @@ def printMat(m):
 
 skeleton_addr = 0
 
-def set(bone, z):
-	global skeleton_addr
-	addr = bone * 64 + 0x38
-	memory.write_f32(skeleton_addr + addr, z)
-	memory.write_f32(skeleton_addr + addr + 0x1310, z)
 
 async def main_loop():
 	global skeleton_addr
@@ -97,19 +93,57 @@ async def main_loop():
 	await event.frameadvance()
 
 	player_addr = memory.read_u32(0x8041BE4C)
+	if player_addr == 0:
+		return
+
 	skeleton_addr = memory.read_u32(player_addr + 0xC0)
 
-	headTransform = Mat4()
+	headTransformA = Mat4()
+	headTransformB = Mat4()
 
-	headTransform.load(skeleton_addr + Harry.Head * 64)
-	headTransform.data[3][2] += 2.0
-	for i in HEAD_SET:
-		headTransform.store(skeleton_addr + i * 64)
+	headTransformA.load(skeleton_addr + Harry.Head * 64)
+	headTransformB.load(skeleton_addr + Harry.Head * 64 + 0x1310)
 
-	headTransform.load(skeleton_addr + Harry.Head * 64 + 0x1310)
-	headTransform.data[3][2] += 2.0
-	for i in HEAD_SET:
-		headTransform.store(skeleton_addr + i * 64 + 0x1310)
+	fwdA = headTransformA.getRow(1); fwdA.normalize()
+	fwdB = headTransformB.getRow(1); fwdB.normalize()
+	upA = headTransformA.getRow(2); upA.normalize()
+	upB = headTransformB.getRow(2); upB.normalize()
+
+	if modif == 1:
+		pos = Vec4()
+		pos.set(upA); pos.mul1(giraffe_amount); pos.add(headTransformA.getRow(3));
+		headTransformA.setRow(3, pos);
+		for i in HEAD_SET:
+			headTransformA.store(skeleton_addr + i * 64)
+
+		pos.set(upB); pos.mul1(giraffe_amount); pos.add(headTransformB.getRow(3));
+		headTransformB.setRow(3, pos);
+		for i in HEAD_SET:
+			headTransformB.store(skeleton_addr + i * 64 + 0x1310)
+
+	if modif == 2:
+		eyeT = Mat4()
+		eye = Vec4()
+
+		eyeT.load(skeleton_addr + Harry.EyeL * 64)
+		eye.set(fwdA); eye.mul1(-0.1); eye.add(eyeT.getRow(3))
+		eyeT.setRow(3, eye)
+		eyeT.store(skeleton_addr + Harry.EyeL * 64)
+
+		eyeT.load(skeleton_addr + Harry.EyeL * 64 + 0x1310)
+		eye.set(fwdB); eye.mul1(-0.1); eye.add(eyeT.getRow(3))
+		eyeT.setRow(3, eye)
+		eyeT.store(skeleton_addr + Harry.EyeL * 64 + 0x1310)
+
+		eyeT.load(skeleton_addr + Harry.EyeR * 64)
+		eye.set(fwdA); eye.mul1(-0.1); eye.add(eyeT.getRow(3))
+		eyeT.setRow(3, eye)
+		eyeT.store(skeleton_addr + Harry.EyeR * 64)
+
+		eyeT.load(skeleton_addr + Harry.EyeR * 64 + 0x1310)
+		eye.set(fwdB); eye.mul1(-0.1); eye.add(eyeT.getRow(3))
+		eyeT.setRow(3, eye)
+		eyeT.store(skeleton_addr + Harry.EyeR * 64 + 0x1310)
 
 
 while True:

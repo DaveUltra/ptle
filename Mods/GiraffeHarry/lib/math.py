@@ -9,6 +9,33 @@ class Vec4:
 	def __init__(self):
 		self.data = [0.0, 0.0, 0.0, 0.0]
 
+	def set(self, v):
+		self.data = v.data.copy()
+
+	def add(self, o):
+		self.data[0] += o.data[0]
+		self.data[1] += o.data[1]
+		self.data[2] += o.data[2]
+		self.data[3] += o.data[3]
+
+	def mul1(self, f):
+		self.data[0] *= f
+		self.data[1] *= f
+		self.data[2] *= f
+		self.data[3] *= f
+
+	def length(self):
+		return sqrt(self.data[0] * self.data[0] + self.data[1] * self.data[1] + self.data[2] * self.data[2])
+
+	def normalize(self):
+		l = self.length()
+		if l == 0:
+			return
+		l = 1 / l
+		self.data[0] *= l
+		self.data[1] *= l
+		self.data[2] *= l
+
 class Mat4:
 	data = []
 
@@ -59,6 +86,11 @@ class Mat4:
 		v.data[2] = self.data[i][2]
 		v.data[3] = self.data[i][3]
 		return v
+	def setRow(self, i, v):
+		self.data[i][0] = v.data[0]
+		self.data[i][1] = v.data[1]
+		self.data[i][2] = v.data[2]
+		self.data[i][3] = v.data[3]
 
 	def rotateX(a):
 		c = cos(a)
