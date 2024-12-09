@@ -8,7 +8,9 @@ Each address is static, and can be looked up in Cheat Engine by anyone running t
 
 0087FDC0 - Breakables
 
-008779C0 - Green trail effect on Flooded Courtyard door (and possibly others)
+008779C0 - Multiple stuff
+- Green trail effect on Flooded Courtyard door (and possibly others)
+- Sliding stuff, such as doors
 
 0087D300 - Harry
   [0087D300+2C] = PTLE+B2CD0 seems to be an update function, early return freezes all controls (expect pause) and Harry's animation
@@ -27,7 +29,19 @@ Each address is static, and can be looked up in Cheat Engine by anyone running t
 
 00891358 - Player-controlled Monkey
 
+008A6C28 - Physics objects (debris, breakables)
+
 008A5D08 - World?
+
+00880590 - Makes physics debris objects fade after destruction
+
+0087FED8 - More physics debris stuff
+
+00893210 - TNT
+
+008A6A48 - ???
+
+008AAE70 - ???
 
 00883508 - ???
 

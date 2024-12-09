@@ -3,7 +3,7 @@ PTLE+B2CD0
 
 	+B2D2C : cmp dword [PTLE+4EA1D8], 0 : Skips the entire function if you swap the condition
 	  -> What is PTLE+4EA1D8
-	call PTLE+B1290 : Harry's keyboard movements (camera still anticipates)
+	call PTLE+B1290 : Harry's keyboard movements (camera still anticipates), spawn stuff like TNT!!!
 	call PTLE+BA820 : (unknown)
 	call PTLE+C2930 : Harry's pose (turn him into a fuggin ghost)
 	call PTLE+B3C40 : (unknown)
@@ -11,6 +11,25 @@ PTLE+B2CD0
 	call PTLE+B4150 : Teleport graphic character to physical character?
 	call PTLE+B5C30 : Position-related bullshit
 	call PTLE+B2EB0 : (unknown)
+
+---
+
+PTLE+158150
+- TNT constructor
+
+	+158189 : mov [ecx], PTLE+493210 : Writes the vtable pointer into the TNT's memory
+
+---
+
+PTLE+1953C0
+- Harry's TNT Toss
+- Parameters :
+  - ECX : TNT Pointer (refer to PTLE+4EEBE8)
+
+---
+
+PTLE+2C7FA0 and PTLE+2F3CB0
+- Unknown
 
 ---
 

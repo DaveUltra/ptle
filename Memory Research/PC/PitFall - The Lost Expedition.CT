@@ -558,6 +558,30 @@
         </CheatEntry>
       </CheatEntries>
     </CheatEntry>
+    <CheatEntry>
+      <ID>260</ID>
+      <Description>"Item In Hand"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+517034</Address>
+      <Offsets>
+        <Offset>10</Offset>
+        <Offset>93c</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>261</ID>
+      <Description>"Item In Hand (Next)"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+517034</Address>
+      <Offsets>
+        <Offset>14</Offset>
+        <Offset>93c</Offset>
+      </Offsets>
+    </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>
   <Structures StructVersion="2">
@@ -1564,9 +1588,8 @@
             </Elements>
           </Structure>
         </Element>
-        <Element Offset="4" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000004" DisplayMethod="hexadecimal"/>
         <Element Offset="4" Vartype="Pointer" Bytesize="4" OffsetHex="00000004" Description="Canteen" DisplayMethod="unsigned integer"/>
-        <Element Offset="8" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000008" DisplayMethod="hexadecimal"/>
+        <Element Offset="4" Vartype="4 Bytes" Bytesize="4" RLECount="3" OffsetHex="00000004" DisplayMethod="hexadecimal"/>
         <Element Offset="16" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000010" DisplayMethod="unsigned integer"/>
         <Element Offset="20" Vartype="Pointer" Bytesize="4" OffsetHex="00000014" DisplayMethod="unsigned integer">
           <Structure Name="Autocreated from 0C829100" AutoFill="0" AutoCreate="1" DefaultHex="0" AutoDestroy="0" DoNotSaveLocal="0" RLECompression="1" AutoCreateStructsize="4096">
@@ -7174,8 +7197,9 @@
         <Element Offset="1524" Vartype="Float" Bytesize="4" RLECount="2" OffsetHex="000005F4" DisplayMethod="unsigned integer"/>
         <Element Offset="1532" Vartype="4 Bytes" Bytesize="4" OffsetHex="000005FC" DisplayMethod="unsigned integer"/>
         <Element Offset="1536" Vartype="Float" Bytesize="4" RLECount="13" OffsetHex="00000600" DisplayMethod="unsigned integer"/>
-        <Element Offset="1588" Vartype="4 Bytes" Bytesize="4" RLECount="5" OffsetHex="00000634" DisplayMethod="unsigned integer"/>
+        <Element Offset="1588" Vartype="4 Bytes" Bytesize="4" RLECount="4" OffsetHex="00000634" DisplayMethod="unsigned integer"/>
         <Element Offset="1604" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000644" Description="4 Bytes" DisplayMethod="unsigned integer"/>
+        <Element Offset="1604" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000644" DisplayMethod="unsigned integer"/>
         <Element Offset="1608" Vartype="Pointer" Bytesize="4" OffsetHex="00000648" DisplayMethod="unsigned integer"/>
         <Element Offset="1612" Vartype="4 Bytes" Bytesize="4" RLECount="4" OffsetHex="0000064C" DisplayMethod="unsigned integer"/>
         <Element Offset="1628" Vartype="4 Bytes" Bytesize="4" RLECount="3" OffsetHex="0000065C" DisplayMethod="hexadecimal"/>
@@ -8762,9 +8786,8 @@
             </Elements>
           </Structure>
         </Element>
-        <Element Offset="4" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000004" DisplayMethod="hexadecimal"/>
         <Element Offset="4" Vartype="Pointer" Bytesize="4" OffsetHex="00000004" Description="Canteen" DisplayMethod="unsigned integer"/>
-        <Element Offset="8" Vartype="4 Bytes" Bytesize="4" RLECount="2" OffsetHex="00000008" DisplayMethod="hexadecimal"/>
+        <Element Offset="4" Vartype="4 Bytes" Bytesize="4" RLECount="3" OffsetHex="00000004" DisplayMethod="hexadecimal"/>
         <Element Offset="16" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000010" DisplayMethod="unsigned integer"/>
         <Element Offset="20" Vartype="Pointer" Bytesize="4" OffsetHex="00000014" DisplayMethod="unsigned integer">
           <Structure Name="Autocreated from 0C829100" AutoFill="0" AutoCreate="1" DefaultHex="0" AutoDestroy="0" DoNotSaveLocal="0" RLECompression="1" AutoCreateStructsize="4096">
@@ -14372,8 +14395,9 @@
         <Element Offset="1524" Vartype="Float" Bytesize="4" RLECount="2" OffsetHex="000005F4" DisplayMethod="unsigned integer"/>
         <Element Offset="1532" Vartype="4 Bytes" Bytesize="4" OffsetHex="000005FC" DisplayMethod="unsigned integer"/>
         <Element Offset="1536" Vartype="Float" Bytesize="4" RLECount="13" OffsetHex="00000600" DisplayMethod="unsigned integer"/>
-        <Element Offset="1588" Vartype="4 Bytes" Bytesize="4" RLECount="5" OffsetHex="00000634" DisplayMethod="unsigned integer"/>
+        <Element Offset="1588" Vartype="4 Bytes" Bytesize="4" RLECount="4" OffsetHex="00000634" DisplayMethod="unsigned integer"/>
         <Element Offset="1604" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000644" Description="4 Bytes" DisplayMethod="unsigned integer"/>
+        <Element Offset="1604" Vartype="4 Bytes" Bytesize="4" OffsetHex="00000644" DisplayMethod="unsigned integer"/>
         <Element Offset="1608" Vartype="Pointer" Bytesize="4" OffsetHex="00000648" DisplayMethod="unsigned integer"/>
         <Element Offset="1612" Vartype="4 Bytes" Bytesize="4" RLECount="4" OffsetHex="0000064C" DisplayMethod="unsigned integer"/>
         <Element Offset="1628" Vartype="4 Bytes" Bytesize="4" RLECount="3" OffsetHex="0000065C" DisplayMethod="hexadecimal"/>
