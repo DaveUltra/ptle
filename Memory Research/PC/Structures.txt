@@ -3,10 +3,25 @@ Entity entry?
 - Fields :
   + 0x10 : Next entry
   + 0x?? : Prev entry
-  + 0x?? : Pointer to entity data structure
+  + 0x18 : Flags?
+  + 0x1C : Pointer to entity data structure
 
 Entity data
 - Size : depends, but over 100 bytes generally
 - Fields :
   + 0x00 : virtual table ptr (4 bytes)
   + 0x2C : various flags (4 bytes)
+
+Floating item
+- Size : 544 bytes
+- Vtable : 0089A2F8
+- Fields :
+  + 0x2C : Flags (4 bytes)
+  + 0xC0 : Rotation matrix (12 x 4 bytes)
+  + 0xF0 : Position (4 x 4 bytes)
+
+Breakable
+- Size : ???
+- Fields :
+  + 0x2C : Flags (4 bytes)
+  + 0x1FC : Health (float)

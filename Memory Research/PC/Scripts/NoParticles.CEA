@@ -1,0 +1,10 @@
+// Particles update function
+define(update, 0x632060)
+
+[ENABLE]
+update:
+    ret     // Just write a RETN (OP 0xC3)
+
+[DISABLE]
+update:
+    db 0x55 // The byte we nuked from PUSH EBP
