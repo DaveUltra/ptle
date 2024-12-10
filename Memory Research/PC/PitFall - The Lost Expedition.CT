@@ -454,6 +454,14 @@
       </Offsets>
     </CheatEntry>
     <CheatEntry>
+      <ID>266</ID>
+      <Description>"Class Info Root Element"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+50d000</Address>
+    </CheatEntry>
+    <CheatEntry>
       <ID>247</ID>
       <Description>"Harry Eye"</Description>
       <ShowAsSigned>0</ShowAsSigned>
@@ -465,7 +473,88 @@
       </Offsets>
     </CheatEntry>
     <CheatEntry>
+      <ID>264</ID>
+      <Description>"Harry"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+517034</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>263</ID>
+      <Description>"Harry's ??"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+517034</Address>
+      <Offsets>
+        <Offset>73c</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>262</ID>
+      <Description>"World loading step"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+51707C</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>265</ID>
+      <Description>"Current Level CRC"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+517088</Address>
+    </CheatEntry>
+    <CheatEntry>
       <ID>249</ID>
+      <Description>"Looped thing"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+51F87C</Address>
+      <Offsets>
+        <Offset>518</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>268</ID>
+      <Description>"Looped thing"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+51F87C</Address>
+      <Offsets>
+        <Offset>3c</Offset>
+        <Offset>518</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>269</ID>
+      <Description>"Looped thing"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+51F87C</Address>
+      <Offsets>
+        <Offset>0</Offset>
+        <Offset>3c</Offset>
+        <Offset>518</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>270</ID>
+      <Description>"No description"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+51F858</Address>
+      <Offsets>
+        <Offset>0</Offset>
+      </Offsets>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>267</ID>
       <Description>"First entity entry iterator"</Description>
       <ShowAsHex>1</ShowAsHex>
       <ShowAsSigned>0</ShowAsSigned>
@@ -15565,4 +15654,66 @@
       </Elements>
     </Structure>
   </Structures>
+  <DisassemblerComments>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+157FF5</Address>
+      <Comment>Get class????
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+158053</Address>
+      <Comment>new EIBomb()
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+158098</Address>
+      <Comment>More projectile init stuff?
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+15879A</Address>
+      <Comment>Setting some flags
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+1587B0</Address>
+      <Comment>Setting some more flags
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+15C522</Address>
+      <Comment>Allocate memory for projectile
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+15C53D</Address>
+      <Comment>Call projectile constructor
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+19540E</Address>
+      <Comment>Responsible for spawning TNT
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+1EBC3D</Address>
+      <Comment>I'm done loading the world
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+1EBDFB</Address>
+      <Comment>Does nothing lmao, probably a log function
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+1EC199</Address>
+      <Comment>Does nothing
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+21F967</Address>
+      <Comment>Identity matrix
+</Comment>
+    </DisassemblerComment>
+  </DisassemblerComments>
 </CheatTable>

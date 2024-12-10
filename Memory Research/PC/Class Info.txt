@@ -1,0 +1,13 @@
+First element is at PTLE+50D000
+
+
+20FBD33F -
+
+52C91BFC -
+  Ptr : 00917914
+
+EE3C082E - Base class for projectiles
+  Ptr : 0091156C
+
+F76B628F -
+  Ptr : 009410E4

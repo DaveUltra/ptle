@@ -15,9 +15,10 @@ PTLE+B2CD0
 ---
 
 PTLE+158150
-- TNT constructor
+- Projectile constructor
+- Called for TNTs, coconuts thrown by natives
 
-	+158189 : mov [ecx], PTLE+493210 : Writes the vtable pointer into the TNT's memory
+	+158189 : mov [ecx], PTLE+493210 : Writes the vtable pointer into the projectile's memory
 
 ---
 
@@ -26,10 +27,66 @@ PTLE+1953C0
 - Parameters :
   - ECX : TNT Pointer (refer to PTLE+4EEBE8)
 
+	+19540E : call PTLE+157840 : This creates the memory for a TNT.
+
+---
+
+PTLE+2F2FA0
+- Get class info
+- Parameters :
+  - Stack(0) : Class ID
+- Returns :
+  - EAX : Pointer to class info structure
+
 ---
 
 PTLE+2C7FA0 and PTLE+2F3CB0
 - Unknown
+
+---
+
+PTLE+ACC10
+- Harry constructor
+- Called by PTLE+1EBC00
+
+---
+
+PTLE+1EBBB0
+- Triggers a world load
+- This function gets the world to load by parameter
+
+---
+
+PTLE+1EBC00
+- Loading world
+- Async function using a jump table to separate its steps
+- Step 0 : Not loading
+- Step 1 : (unused)
+- Step 2 : 001EBC51 - 001EBE87
+  - Create Harry
+  - Create some more stuff
+- Step 3 : 001EBE8C - 001EBF86
+  - Loads in the bulk, presumably
+- Step 4 : 001EBF8B - 001EC024
+  - WEATHERMAN
+- Step 5 : 001EC029 - 001EC077
+  - Setup?
+- Step 6 : 001EC07C - 001EC199
+  - Finalizes level setup
+
+
+	+1EBD84 : push 0x10
+	          push 0x00001A20
+	          call PTLE+217D70
+	          -> Responsible for allocating Harry data (size 1A20 = 6688 bytes, align 16)
+
+---
+
+PTLE+213C80
+- Removes flags from entity (flags = flags & ~value)
+- Parameters
+  - ECX : Entity pointer
+  - Stack(0) : Flags to remove
 
 ---
 
@@ -59,6 +116,13 @@ This function call is responsible for Harry's pose update.
 
 PTLE+2253BD  ->   call PTLE+2279B0
 
+
+---
+
+PTLE+2EC7B0
+- Load identity 4x4 matrix
+- Parameters
+  - ECX : Pointer to matrix data
 
 ---
 

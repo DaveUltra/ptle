@@ -37,7 +37,9 @@ Each address is static, and can be looked up in Cheat Engine by anyone running t
 
 0087FED8 - More physics debris stuff
 
-00893210 - TNT
+00893210 - Projectiles (TNT, coconuts)
+
+008A52C0 - ???
 
 008A6A48 - ???
 

@@ -20,8 +20,21 @@ Floating item
   + 0xC0 : Rotation matrix (12 x 4 bytes)
   + 0xF0 : Position (4 x 4 bytes)
 
+Projectile :
+- Size : 640 bytes
+- Vtable : 00893210
+
 Breakable
 - Size : ???
 - Fields :
   + 0x2C : Flags (4 bytes)
   + 0x1FC : Health (float)
+
+Class info??
+- Size : ???
+- Notes : Seems to be arranged as a Binary Search Tree, function PTLE+2F2FA0 performs a search.
+- Fields :
+  + 0x00 : Factory function pointer (4 bytes)
+  + 0x10 : Hash id? (4 bytes)
+  + 0x1C : Left child
+  + 0x20 : Right child
