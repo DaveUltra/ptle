@@ -1,0 +1,21 @@
+// Will preserve your former Harry on death.
+// This will keep (within the same level) a dead Harry, not animated,
+// who doesn't have collision, and who doesn't respond to player controls.
+
+[ENABLE]
+
+"PITFALL The Lost Expedition.exe"+AD456:
+    nop
+    nop
+    nop
+    nop
+    nop
+
+"PITFALL The Lost Expedition.exe"+C1BCB:
+    nop
+    nop
+    nop
+    nop
+    nop
+
+[DISABLE]

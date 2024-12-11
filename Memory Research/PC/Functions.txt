@@ -22,6 +22,22 @@ PTLE+158150
 
 ---
 
+PTLE+213E80
+- Add projectile to collision world
+
+---
+
+PTLE+2265A0
+- Add entity to world (unsure)
+- Works on projectiles, particle effects, and probably everything because disabling it crashes level loads
+- Parameters :
+  - ECX : Entity pointer
+  - Stack(0) : Unknown (4 bytes)
+  - Stack(1) : Unknown (4 bytes)
+  - Stack(2) : Unknown (4 bytes)
+
+---
+
 PTLE+1953C0
 - Harry's TNT Toss
 - Parameters :
@@ -51,6 +67,21 @@ PTLE+ACC10
 
 ---
 
+PTLE+105B60
+- Create item objects
+- Items are generated in the following order :
+  - Sling       (PTLE+00106A50)
+  - Torch       (PTLE+00106AC0)
+  - Pickaxes    (PTLE+00106B30)
+  - TNT         (PTLE+00106BA0)
+  - Shield      (PTLE+00106C10)
+  - Raft        (PTLE+00106C80)
+  - Gas Mask    (PTLE+00106CF0)
+  - Canteen     (PTLE+00106D60)
+  - Stink Bomb  (PTLE+00106DD0)
+
+---
+
 PTLE+1EBBB0
 - Triggers a world load
 - This function gets the world to load by parameter
@@ -71,6 +102,7 @@ PTLE+1EBC00
   - WEATHERMAN
 - Step 5 : 001EC029 - 001EC077
   - Setup?
+  - Adds Harry to the world
 - Step 6 : 001EC07C - 001EC199
   - Finalizes level setup
 
