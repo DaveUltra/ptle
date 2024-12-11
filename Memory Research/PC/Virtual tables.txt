@@ -1,78 +1,85 @@
 This document contains entries of known virtual tables in Pitfall : The Lost Expedition (PC port).
 Each address is static, and can be looked up in Cheat Engine by anyone running the game.
 
+For example, to find your instance of Harry, run a memory scan with Harry's virtual table. Only
+one result should appear, that result being Harry's memory location.
+
 ---
 
 
-00880390 - Boats in Flooded Courtyard
+0086E660 - ???
 
-00876400
-0088A2C0
-0088AFE8 - (probably native)
-- All NPCs
+0086E8C8 - ???
 
-0087FDC0 - Breakables
+00870FAC - ???
+
+00876400 - An NPC
+- Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
 
 008779C0 - Multiple stuff
 - Green trail effect on Flooded Courtyard door (and possibly others)
 - Sliding stuff, such as doors
 
 0087D300 - Harry
-  [0087D300+2C] = PTLE+B2CD0 seems to be an update function, early return freezes all controls (expect pause) and Harry's animation
+- [0087D300+2C] = PTLE+B2CD0 seems to be an update function, early return freezes all controls (expect pause) and Harry's animation
+
+0087FDC0 - Breakables
+
+0087FED8 - More physics debris stuff
+
+00880390 - Boats in Flooded Courtyard
+
+00880590 - Makes physics debris objects fade after destruction
+
+008808A0 - ???
+This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
+
+008832D8 - ???
+
+00883508 - ???
+
+0088A2C0 - An NPC
+- Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
+
+0088AFE8 - An NPC (probably native)
+- Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
+
+00891358 - Player-controlled Monkey
+
+00893210 - Projectiles (TNT, coconuts)
+
+00893438 - ???
+
+00893708 - Level Totem
+
+008971D0 - ???
 
 0089A2F8 - Idols and Temple Artifacts
+
+0089CDD0 - ???
+
+008A06E0 - ???
+
+008A2148 - Water & Mud planes (except fountains)
+
+008A2580 - Fountain's healing trigger
+
+008A52C0 - ???
+
+008A5D08 - World?
 
 008A6098 - Particle effects
 - Fountain
 - Idol glowing
 - TNT explosion
 
+008A6A48 - ???
+
+008A6C28 - Physics objects (debris, breakables)
+
+008AAE70 - ???
+
 008AFF90 - Particle effects 2
 - Small fire
 - Yellow trail on Monkey Temple entrance
 - Blue particles during monkey transformation cutscene
-
-00891358 - Player-controlled Monkey
-
-008A6C28 - Physics objects (debris, breakables)
-
-008A5D08 - World?
-
-00880590 - Makes physics debris objects fade after destruction
-
-0087FED8 - More physics debris stuff
-
-00893210 - Projectiles (TNT, coconuts)
-
-00893708 - Level Totem
-
-008A2148 - Water & Mud planes (except fountains)
-
-008A2580 - Fountain's healing trigger
-
-008832D8 - ???
-
-00870FAC - ???
-
-0089CDD0 - ???
-
-00893438 - ???
-
-008971D0 - ???
-
-008A06E0 - ???
-
-0086E8C8 - ???
-
-008A52C0 - ???
-
-008A6A48 - ???
-
-008AAE70 - ???
-
-00883508 - ???
-
-0086E660 - ???
-
-008808A0 - ???
-This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
