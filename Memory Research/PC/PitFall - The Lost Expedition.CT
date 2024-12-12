@@ -763,101 +763,28 @@
   </CheatEntries>
   <CheatCodes>
     <CodeEntry>
-      <Description>Change of call dword ptr [edx+08]</Description>
-      <AddressString>PITFALL The Lost Expedition.exe+10695E</AddressString>
+      <Description>Change of call "PITFALL The Lost Expedition.exe"+2F3570</Description>
+      <AddressString>PITFALL The Lost Expedition.exe+159679</AddressString>
       <Before>
-        <Byte>8B</Byte>
-        <Byte>48</Byte>
-        <Byte>10</Byte>
-        <Byte>8B</Byte>
-        <Byte>12</Byte>
-      </Before>
-      <Actual>
-        <Byte>FF</Byte>
-        <Byte>52</Byte>
-        <Byte>08</Byte>
-      </Actual>
-      <After>
-        <Byte>8B</Byte>
-        <Byte>E5</Byte>
-        <Byte>5D</Byte>
-        <Byte>C3</Byte>
-        <Byte>CC</Byte>
-      </After>
-    </CodeEntry>
-    <CodeEntry>
-      <Description>Change of call "PITFALL The Lost Expedition.exe"+2F5110</Description>
-      <AddressString>PITFALL The Lost Expedition.exe+22561D</AddressString>
-      <Before>
-        <Byte>F0</Byte>
-        <Byte>6A</Byte>
-        <Byte>1C</Byte>
-        <Byte>6A</Byte>
-        <Byte>1C</Byte>
-      </Before>
-      <Actual>
-        <Byte>E8</Byte>
-        <Byte>EE</Byte>
-        <Byte>FA</Byte>
-        <Byte>0C</Byte>
-        <Byte>00</Byte>
-      </Actual>
-      <After>
-        <Byte>83</Byte>
-        <Byte>C4</Byte>
-        <Byte>08</Byte>
-        <Byte>89</Byte>
-        <Byte>45</Byte>
-      </After>
-    </CodeEntry>
-    <CodeEntry>
-      <Description>Change of call "PITFALL The Lost Expedition.exe"+2F35C0</Description>
-      <AddressString>PITFALL The Lost Expedition.exe+1022A1</AddressString>
-      <Before>
-        <Byte>85</Byte>
-        <Byte>C2</Byte>
-        <Byte>00</Byte>
-        <Byte>00</Byte>
-        <Byte>00</Byte>
-      </Before>
-      <Actual>
-        <Byte>E8</Byte>
-        <Byte>1A</Byte>
-        <Byte>13</Byte>
-        <Byte>1F</Byte>
-        <Byte>00</Byte>
-      </Actual>
-      <After>
-        <Byte>8B</Byte>
-        <Byte>8C</Byte>
         <Byte>24</Byte>
-        <Byte>CC</Byte>
-        <Byte>00</Byte>
-      </After>
-    </CodeEntry>
-    <CodeEntry>
-      <Description>Change of call "PITFALL The Lost Expedition.exe"+157840</Description>
-      <AddressString>PITFALL The Lost Expedition.exe+1021E5</AddressString>
-      <Before>
-        <Byte>F8</Byte>
-        <Byte>06</Byte>
+        <Byte>A8</Byte>
         <Byte>00</Byte>
         <Byte>00</Byte>
-        <Byte>51</Byte>
+        <Byte>00</Byte>
       </Before>
       <Actual>
         <Byte>E8</Byte>
-        <Byte>56</Byte>
-        <Byte>56</Byte>
-        <Byte>05</Byte>
+        <Byte>F2</Byte>
+        <Byte>9E</Byte>
+        <Byte>19</Byte>
         <Byte>00</Byte>
       </Actual>
       <After>
-        <Byte>83</Byte>
-        <Byte>C4</Byte>
-        <Byte>04</Byte>
-        <Byte>89</Byte>
-        <Byte>84</Byte>
+        <Byte>D8</Byte>
+        <Byte>5D</Byte>
+        <Byte>14</Byte>
+        <Byte>DF</Byte>
+        <Byte>E0</Byte>
       </After>
     </CodeEntry>
   </CheatCodes>
@@ -887,6 +814,16 @@
     </Structure>
   </Structures>
   <DisassemblerComments>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+BDA0</Address>
+      <Comment>3D dot product
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+BDDB</Address>
+      <Comment>sqrt?
+</Comment>
+    </DisassemblerComment>
     <DisassemblerComment>
       <Address>"PITFALL The Lost Expedition.exe"+DE00</Address>
       <Comment>Vector3f set
@@ -1028,6 +965,11 @@
 </Comment>
     </DisassemblerComment>
     <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+15968F</Address>
+      <Comment>dot product
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
       <Address>"PITFALL The Lost Expedition.exe"+1598A1</Address>
       <Comment>Get world
 </Comment>
@@ -1148,8 +1090,28 @@
 </Comment>
     </DisassemblerComment>
     <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+225CBE</Address>
+      <Comment>Get class info
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+225D4A</Address>
+      <Comment>Instantiate whatever
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+225D7F</Address>
+      <Comment>Constructor?
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
       <Address>"PITFALL The Lost Expedition.exe"+2EC1A0</Address>
       <Comment>Matrix copy
+</Comment>
+    </DisassemblerComment>
+    <DisassemblerComment>
+      <Address>"PITFALL The Lost Expedition.exe"+2F2FA0</Address>
+      <Comment>Get class info struct
 </Comment>
     </DisassemblerComment>
     <DisassemblerComment>

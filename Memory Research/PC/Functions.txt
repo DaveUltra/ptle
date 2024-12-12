@@ -51,6 +51,14 @@ PTLE+225610
 
 ---
 
+PTLE+226A20
+- Get available memory for entity instead of using malloc
+- Parameters :
+  - ECX : World
+  - Stack(0) : ???
+
+---
+
 PTLE+1953C0
 - Harry's TNT Toss
 - Parameters :
@@ -86,6 +94,13 @@ PTLE+102130
 	+102278 : je PTLE+102363          : Alternates between two merc throws
 	+102358 : call dword [edx+0x138]  : Merc throw 1
 	+1023E9 : call dword [edx+0x13C]  : Merc throw 2
+
+---
+
+PTLE+124A70
+- Coconut spawn mechanic for natives
+
+	+124AF5 : call PTLE+157840
 
 ---
 

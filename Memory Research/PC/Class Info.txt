@@ -1,13 +1,56 @@
 First element is at PTLE+50D000
 
+See class info struct in Structures.txt
+
+
+???????? - Idols
+  Ptr : PTLE+5124F0
 
 20FBD33F -
 
 52C91BFC -
-  Ptr : 00917914
+  Ptr : PTLE+517914
 
 EE3C082E - Base class for projectiles
-  Ptr : 0091156C
+  Ptr : PTLE+51156C
 
 F76B628F -
-  Ptr : 009410E4
+  Ptr : PTLE+5410E4
+
+
+---
+
+Projectile types
+- Give one of the codes below to function PTLE+157840 as the first stack parameter.
+
+1B6BFEE7 - Coconut (regular)
+
+2304CA96 - TNT number 3 for some reason
+
+2FBEB3BC - Stink bomb
+
+33CCCA9D - Large stink bomb with trail
+
+3496F0BE - Pusca ghost projectile
+
+53E3A6F3 - Pusca large explosive
+
+636F550B - (glitched?)
+
+660384B3 - Larger stink bombs?
+
+7DEE9568 - Merc TNT
+
+984B0C66 - Coconuts that destroy on first impact
+
+B28E9E3C - BLACK BALLS
+
+BBCAC492 - TNT
+
+DB9AE30C - Eyes of Doom projectiles?
+
+E49357F9 - Large stink bomb with trail that lasts longer
+
+F34A5DB2 - Coconut (poisonous)
+
+FAA603BB - (crashes the game)

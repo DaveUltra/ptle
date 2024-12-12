@@ -51,7 +51,7 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00893210 - Projectiles (TNT, coconuts)
 
-00893438 - ???
+00893438 - Howler
 
 00893708 - Level Totem
 
