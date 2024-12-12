@@ -31,10 +31,23 @@ PTLE+2265A0
 - Add entity to world (unsure)
 - Works on projectiles, particle effects, and probably everything because disabling it crashes level loads
 - Parameters :
-  - ECX : Entity pointer
-  - Stack(0) : Unknown (4 bytes)
-  - Stack(1) : Unknown (4 bytes)
-  - Stack(2) : Unknown (4 bytes)
+  - ECX : THE WORLD (vtable = 008A5D08)
+  - Stack(0) : Entity to be added
+  - Stack(1) : Origin / Parent entity (4 bytes)
+  - Stack(2) : ??? (value is 0, 4 bytes)
+
+	+2265C5 : call PTLE+225610 : Actually does the adding
+
+---
+
+PTLE+225610
+- Add entity to world (unsure)
+- Parameters :
+  - ECX : THE WORLD (vtable = 008A5D08)
+  - Stack(0) : ??? (value is 0)
+  - Stack(1) : Entity to be added (Stack(0) from caller)
+  - Stack(2) : Stack(1) from caller, but only the first byte
+  - Stack(3) : Stack(2) from caller
 
 ---
 
@@ -44,6 +57,52 @@ PTLE+1953C0
   - ECX : TNT Pointer (refer to PTLE+4EEBE8)
 
 	+19540E : call PTLE+157840 : This creates the memory for a TNT.
+	+195960 : call PTLE+159640 : This adds TNT to the world (presumably).
+
+---
+
+PTLE+2F35C0
+- Supposedly spawns visuals for entities
+
+---
+
+PTLE+1DBE0
+- Merc's TNT positioning
+- Called at PTLE+1022D6
+- Parameters
+  - ECX : Merc instance
+  - Stack(0) : Pointer to math results
+  - Stack(1) : ???
+  - Stack(2) : ???
+- Returns
+  - EAX : Pointer to math results (Stack(0))
+
+---
+
+PTLE+102130
+- Entire TNT spawn mechanic for mercs (adding to world, ticking, aiming)
+
+	+1021E5 : call PTLE+157840        : Creates the projectile entity
+	+102278 : je PTLE+102363          : Alternates between two merc throws
+	+102358 : call dword [edx+0x138]  : Merc throw 1
+	+1023E9 : call dword [edx+0x13C]  : Merc throw 2
+
+---
+
+PTLE+159640
+- Projectile init stuff
+- Parameters
+  - ECX : Projectile pointer (vtable = 00893210)
+  - Stack(0) : Position?
+  - Stack(1) : Direction 3D vector pointer (4 bytes pointer to 3 * 4 bytes)
+  - Stack(2) : Who threw the projectile
+  - Stack(3) : ??? (value is 1)
+
+---
+
+PTLE+1BDA0
+- Critical shit, don't disable
+- Linked to rendering, probably
 
 ---
 

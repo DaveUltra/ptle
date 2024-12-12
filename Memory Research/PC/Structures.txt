@@ -10,6 +10,7 @@ Entity data
 - Size : depends, but over 100 bytes generally
 - Fields :
   + 0x00 : virtual table ptr (4 bytes)
+  + 0x0C : Pointer to world (4 bytes)
   + 0x2C : various flags (4 bytes)
 
 Floating item
@@ -23,12 +24,20 @@ Floating item
 Projectile :
 - Size : 640 bytes
 - Vtable : 00893210
+- Fields :
+  + 0x250 : Who threw it (presumably)
 
 Breakable
 - Size : ???
+- Vtable : 00881BE8
 - Fields :
   + 0x2C : Flags (4 bytes)
   + 0x1FC : Health (float)
+
+Merc
+- Size : ???
+- Fields :
+  + 0x714 : Thrown TNT speed
 
 Class info??
 - Size : ???

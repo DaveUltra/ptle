@@ -7,7 +7,8 @@ one result should appear, that result being Harry's memory location.
 ---
 
 
-0086E660 - ???
+0086E660 - Cutscene entity
+- Note : it is possible to play with the cutscene skipping timer in the entity's update function (+2C).
 
 0086E8C8 - ???
 
@@ -34,6 +35,8 @@ one result should appear, that result being Harry's memory location.
 008808A0 - ???
 This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
+00881BE8 - Merc
+
 008832D8 - ???
 
 00883508 - ???
@@ -53,6 +56,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 00893708 - Level Totem
 
 008971D0 - ???
+
+0089A160 - Global item structure
 
 0089A2F8 - Idols and Temple Artifacts
 
