@@ -6,16 +6,124 @@ See class info struct in Structures.txt
 ???????? - Idols
   Ptr : PTLE+5124F0
 
-20FBD33F -
+07062117 - ???
+  Ptr : PTLE+50E404
+  Vtable : 00870B30
 
-52C91BFC -
+0E58ED3A - ???
+  Ptr : PTLE+50D92C
+
+1AFAC8D1 - ???
+  Ptr : PTLE+53ED30
+  Vtable : 008B0614
+
+20FBD33F - ???
+  Ptr : PTLE+53BAB4
+
+3131E195 - ???
+  Ptr : PTLE+51FFDC
+  Vtable : 008A8DFC
+
+3D002228 - ???
+  Ptr : PTLE+51FF2C
+  Vtable : 008A8CA8
+
+4BD04BA7 - ???
+  Ptr : PTLE+53BBD8
+
+2E3E???? - Fountain healing trigger
+  Ptr : PTLE+516E98
+
+52402503 - ???
+  Ptr : PTLE+50FD78
+  Vtable : 0086A010
+
+52C91BFC - ???
   Ptr : PTLE+517914
+
+56CF054E - ???
+  Ptr : PTLE+51FFB0
+  Vtable : 008A8DB0
+
+598DE3B1 - ???
+  Ptr : PTLE+53BC00
+
+689A6B2C - ???
+  Ptr : PTLE+90EE38
+  Vtable : 00872210
+
+6CF34A40 - ???
+  Ptr : PTLE+50F5D0
+  Vtable : 008779C0
+
+6F07ABBB - ???
+  Ptr : PTLE+5104B8
+  Vtable : 008832D8
+
+72F7814D - Dark Zone
+  Ptr : PTLE+523DCC
+  Vtable : 008AD138
+
+7F8756BD - Mama Monkey
+  Ptr : PTLE+510774
+  Vtable : 0088A2C0
+
+9283001F - Explorer
+  Ptr : PTLE+50F3E8
+  Vtable : 00876400
+
+991DCA00 - Baby Monkey
+  Ptr : PTLE+510700
+  Vtable : 00889700
+
+A2051904 - Movable models
+  Ptr : PTLE+50D0D0
+  Vtable : 0086A4E0
+
+A81AD9ED - ???
+  Ptr : PTLE+53BBB0
+
+A903BE15 - ???
+  Ptr : PTLE+50EFC0
+  Vtable : 00871220
+
+C5C7B1B7 - ???
+  Ptr : PTLE+50D8C0
+
+C9494FFB - ???
+  Ptr : PTLE+520F14
+  Vtable : 008A9868
+
+D4780632 - Cutscene entity
+  Ptr : PTLE+50DA34
+  Vtable : 0086E660
+
+DC785CA5 - Birds flying away
+  Ptr : PTLE+50D000
+  Vtable : 00869440
+
+E16DA721 - ???
+  Ptr : PTLE+523274
+  Vtable : 008AAE70
 
 EE3C082E - Base class for projectiles
   Ptr : PTLE+51156C
+  Vtable : 00893210
 
-F76B628F -
+EFEB3322 - ???
+  Ptr : PTLE+50F0D0
+  Vtable : 00873B68
+
+F49599F3 - ???
+  Ptr : PTLE+51041C
+  Vtable : 00882660
+
+F76B628F - ???
   Ptr : PTLE+5410E4
+
+FDCDECAD - ???
+  Ptr : PTLE+510544
+  Vtable : 00883508
 
 
 ---

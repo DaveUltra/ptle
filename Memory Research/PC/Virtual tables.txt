@@ -7,14 +7,32 @@ one result should appear, that result being Harry's memory location.
 ---
 
 
+00869440 - Birds flying away
+
+0086A010 - ???
+
+0086A4E0 - Movable models
+
+0086D1D8 - ???
+
+0086D7A0 - ???
+
 0086E660 - Cutscene entity
 - Note : it is possible to play with the cutscene skipping timer in the entity's update function (+2C).
 
 0086E8C8 - ???
 
+00870B30 - ???
+
 00870FAC - ???
 
-00876400 - An NPC
+00871220 - ???
+
+00872210 - ???
+
+00873B68 - ???
+
+00876400 - Explorer
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
 
 008779C0 - Multiple stuff
@@ -37,17 +55,27 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00881BE8 - Merc
 
+00882660 - ???
+
 008832D8 - ???
 
 00883508 - ???
 
-0088A2C0 - An NPC
+00888E80 - ???
+
+00889700 - Baby Monkey
+
+0088A2C0 - Mama Monkey
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
 
 0088AFE8 - An NPC (probably native)
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
 
+0088E8C8 - Penguin
+
 00891358 - Player-controlled Monkey
+
+008916D8 - Penguin Harry
 
 00893210 - Projectiles (TNT, coconuts)
 
@@ -82,9 +110,36 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A6C28 - Physics objects (debris, breakables)
 
+008A8CA8 - ???
+
+008A8DB0 - ???
+
+008A8DFC - ???
+
+008A9868 - ???
+
 008AAE70 - ???
+
+008AD138 - Dark zone
+
+008AEAF4 - EScriptContext
 
 008AFF90 - Particle effects 2
 - Small fire
 - Yellow trail on Monkey Temple entrance
 - Blue particles during monkey transformation cutscene
+
+008B0614 - ???
+
+
+---
+
+Entity vtables :
+Generally, entities will make use of a good number of virtual functions. Here are the known ones so far :
+
++2C : Update / Tick function
+
++6C : Used in initialization
+  ECX : Entity ptr
+  Stack(1) : 0 apparently (4 bytes)
+  Stack(0) : Input stream ptr

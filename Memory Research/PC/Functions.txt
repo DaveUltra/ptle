@@ -51,11 +51,34 @@ PTLE+225610
 
 ---
 
+PTLE+224AC0
+- Critical initialization function for entities loaded from a level file
+
+---
+
+PTLE+197400
+- Idol / Floating item initialization routine
+- Parameters :
+  - ECX : Idol instance
+  - Stack(0) : (unknown stack-allocated structure)
+  - Stack(1) : (unknown stack-allocated structure)
+  - Stack(2) : (unknown stack-allocated structure)
+  - Stack(3) : (unknown stack-allocated structure)
+  - Stack(4) : (unknown stack-allocated structure)
+
+---
+
 PTLE+226A20
 - Get available memory for entity instead of using malloc
 - Parameters :
   - ECX : World
   - Stack(0) : ???
+
+---
+
+PTLE+225C20
+- Loop to create entities on level load
+- Happens on world loading step 3, both at initial loads and respawns
 
 ---
 
@@ -211,6 +234,11 @@ PTLE+227EB0
 		[ebp-08] seems to be a pointer to a 32-bits entry inside a double-linked list
 		Each entry contains a pointer to the entity (the actual vtable thing)
 		Next entry is at offset 0x10.
+
+---
+
+PTLE+171490
+- Saves the game
 
 ---
 

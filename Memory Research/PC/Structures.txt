@@ -12,9 +12,10 @@ Entity data
   + 0x00 : virtual table ptr (4 bytes)
   + 0x0C : Pointer to world (4 bytes)
   + 0x2C : various flags (4 bytes)
+  + 0x34 : Entity tick entry pointer (4 bytes)
 
 Floating item
-- Size : 544 bytes
+- Size : 528 bytes
 - Vtable : 0089A2F8
 - Fields :
   + 0x2C : Flags (4 bytes)

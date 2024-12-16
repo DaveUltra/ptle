@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml>
+    <graph id="Graph" uidGraph="29" uidEdge="10022">
+        <node positionX="507.7100000000005" positionY="109.74550018310518" id="0" mainText="EInstance" upText="" size="30" ></node>
+        <node positionX="474.29999999999995" positionY="382.40000305175784" id="1" mainText="EICharacter" upText="" size="30" ></node>
+        <node positionX="406.3100000000004" positionY="528.3455001831052" id="2" mainText="EIPlayer" upText="" size="30" ></node>
+        <node positionX="568.8100000000005" positionY="-112.55449981689483" id="3" mainText="EStorable" upText="" size="30" ></node>
+        <node positionX="680.6100000000005" positionY="46.04550018310519" id="4" mainText="EScriptContext" upText="" size="30" ></node>
+        <node positionX="398" positionY="221.3000030517578" id="5" mainText="EIGameInstance" upText="" size="30" ></node>
+        <node positionX="261.4" positionY="667.5000030517577" id="6" mainText="EIPlayerBeast" upText="" size="30" ></node>
+        <node positionX="216.51000000000045" positionY="785.745500183105" id="7" mainText="EIPlayerPenguin" upText="" size="30" ></node>
+        <node positionX="966.6100000000008" positionY="498.4455001831051" id="8" mainText="EIBeast" upText="" size="30" ></node>
+        <node positionX="644.1999999999998" positionY="670.3000030517578" id="9" mainText="EIPenguins" upText="" size="30" ></node>
+        <node positionX="445.4" positionY="669.5000030517577" id="10" mainText="EIHarry" upText="" size="30" ></node>
+        <node positionX="922.4100000000005" positionY="3.1455001831051845" id="11" mainText="EBoundTreeNode" upText="" size="30" ></node>
+        <node positionX="682" positionY="235.3000030517578" id="12" mainText="EIStaticSubModel" upText="" size="30" ></node>
+        <node positionX="1466" positionY="421.6000030517578" id="13" mainText="EIAmbLight" upText="" size="30" ></node>
+        <node positionX="1573" positionY="423.6000030517578" id="14" mainText="EISpotLight" upText="" size="30" ></node>
+        <node positionX="1674" positionY="426.6000030517578" id="15" mainText="EIDirLight" upText="" size="30" ></node>
+        <node positionX="1782" positionY="423.6000030517578" id="16" mainText="EIPointLight" upText="" size="30" ></node>
+        <node positionX="301.01000000000045" positionY="287.84550018310506" id="17" mainText="EICamera" upText="" size="30" ></node>
+        <node positionX="773.1999999999998" positionY="667.3000030517578" id="18" mainText="EIAmbientBeast" upText="" size="30" ></node>
+        <node positionX="941.9100000000003" positionY="672.6455001831052" id="19" mainText="EIAmbientTucoTuco" upText="" size="30" ></node>
+        <node positionX="1086.2100000000005" positionY="671.3455001831052" id="20" mainText="EIBats" upText="" size="30" ></node>
+        <node positionX="130.7100000000005" positionY="534.8455001831051" id="21" mainText="EIBeastShield" upText="" size="30" ></node>
+        <node positionX="1212.3100000000004" positionY="675.2455001831052" id="22" mainText="EIBushNinja" upText="" size="30" ></node>
+        <node positionX="-237.18999999999951" positionY="320.3455001831052" id="23" mainText="EIDynamicModel" upText="" size="30" ></node>
+        <node positionX="-261.88999999999953" positionY="411.34550018310506" id="24" mainText="EIAnimLod" upText="" size="30" ></node>
+        <node positionX="-287.88999999999953" positionY="514.0455001831051" id="25" mainText="EIBreakable" upText="" size="30" ></node>
+        <node positionX="-165.6899999999995" positionY="169.54550018310502" id="26" mainText="EIStaticModel" upText="" size="30" ></node>
+        <node positionX="1355.3100000000004" positionY="675.245500183105" id="27" mainText="EIButterfly" upText="" size="30" ></node>
+        <node positionX="150.2100000000005" positionY="293.045500183105" id="28" mainText="EICinematic" upText="" size="30" ></node>
+        <edge source="3" target="4" directed="true" weight="1" useWeight="false" id="10001" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="0" target="5" directed="true" weight="1" useWeight="false" id="10002" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="5" target="1" directed="true" weight="1" useWeight="false" id="10003" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="1" target="2" directed="true" weight="1" useWeight="false" id="10004" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="8" target="9" directed="true" weight="1" useWeight="false" id="10005" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="1" target="8" directed="true" weight="1" useWeight="false" id="10006" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="2" target="6" directed="true" weight="1" useWeight="false" id="10007" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="6" target="7" directed="true" weight="1" useWeight="false" id="10008" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="2" target="10" directed="true" weight="1" useWeight="false" id="10009" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="3" target="11" directed="true" weight="1" useWeight="false" id="10010" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="0" target="12" directed="true" weight="1" useWeight="false" id="10011" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="5" target="17" directed="true" weight="1" useWeight="false" id="10012" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="8" target="18" directed="true" weight="1" useWeight="false" id="10013" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="8" target="19" directed="true" weight="1" useWeight="false" id="10014" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="1" target="21" directed="true" weight="1" useWeight="false" id="10015" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="8" target="22" directed="true" weight="1" useWeight="false" id="10016" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="23" target="24" directed="true" weight="1" useWeight="false" id="10017" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="24" target="25" directed="true" weight="1" useWeight="false" id="10018" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="26" target="23" directed="true" weight="1" useWeight="false" id="10019" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="5" target="28" directed="true" weight="1" useWeight="false" id="10020" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+        <edge source="8" target="27" directed="true" weight="1" useWeight="false" id="10021" text="" upText="" arrayStyleStart="" arrayStyleFinish="" model_width="4" model_type="0" model_curveValue="0.1" model_default="true" ></edge>
+    </graph>
+</graphml>
