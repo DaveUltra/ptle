@@ -7,13 +7,21 @@ one result should appear, that result being Harry's memory location.
 ---
 
 
-00869440 - Birds flying away
+0083D0B1 - Model resource ("ERModel")
+
+008403E1 - Ambient light ("EIAmbLight")
+
+00869440 - Birds flying away ("EIAmbientBeast")
+
+00869EE8 - Animated model ("EIAnimLod")
 
 0086A010 - ???
 
 0086A4E0 - Movable models
 
-0086D1D8 - ???
+0086CE50 - Breakable ("EIBreakable")
+
+0086D1D8 - Generic NPC / creature ("EIBeast")
 
 0086D7A0 - ???
 
@@ -21,6 +29,8 @@ one result should appear, that result being Harry's memory location.
 - Note : it is possible to play with the cutscene skipping timer in the entity's update function (+2C).
 
 0086E8C8 - ???
+
+0086FD18 - Crocodiles ("EICrocs")
 
 00870B30 - ???
 
@@ -30,7 +40,7 @@ one result should appear, that result being Harry's memory location.
 
 00872210 - ???
 
-00873B68 - ???
+00873B68 - Electric eel ("EIElectricEel")
 
 00876400 - Explorer
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
@@ -53,7 +63,13 @@ one result should appear, that result being Harry's memory location.
 008808A0 - ???
 This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
-00881BE8 - Merc
+00880AF8 - Vine ("EIHavokVine")
+
+00880C28 - Pusca's phase 2 projectiles ("EIHeatSeekProjectile")
+
+00881BE8 - Merc ("EIHenchman")
+
+008822D0 - Howler ("EIHowlerMonkey")
 
 00882660 - ???
 
@@ -63,31 +79,59 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00888E80 - ???
 
-00889700 - Baby Monkey
+00889700 - Baby Monkey ("EIMegaMonkeyChild")
 
-0088A2C0 - Mama Monkey
+0088A2C0 - Mama Monkey ("EIMegaMonkeyParent")
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
 
-0088AFE8 - An NPC (probably native)
+0088A668 - Mole, the character ("EIMole")
+
+0088AFE8 - Native ("EINative")
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
 
-0088E8C8 - Penguin
+0088B4F0 - Bush ninja ("EINinjaBush")
 
-00891358 - Player-controlled Monkey
+0088E8C8 - Penguin ("EIPenguins")
 
-008916D8 - Penguin Harry
+0088F078 - Piranhas ("EIPiranha")
 
-00893210 - Projectiles (TNT, coconuts)
+00890400 - Pits ("EIPitMonster")
 
-00893438 - Howler
+00890A40 - Stink plant ("EIPlantNox")
 
-00893708 - Level Totem
+00891358 - Player-controlled Monkey ("EIPlayerMonkey")
+
+008916D8 - Penguin Harry ("EIPlayerPenguin")
+
+008925A8 - Porcupine ("EIPorcupine")
+
+00893210 - Projectiles (TNT, coconuts) ("EIProjectile")
+
+00893438 - Projectile generator ("EIProjectileGen")
+
+00893708 - Level Totem ("EIProxAnimObj")
+
+00893EA8 - Pusca ("EIPusca")
+
+00894398 - Pusca ghost / minion ("EIPuscaMinion")
+
+00894A48 - Insta-kill plane ("EIResetPlane")
+
+00896C10 - Shaman ("EIShaman")
 
 008971D0 - ???
 
+00897ED0 - Snow bowler ("EISnowBowler")
+
+00898C20 - Spinja ("EISpinja")
+
+00899130 - St.Claire ("EIStClair")
+
+008999C8 - Supai ("EISupai")
+
 0089A160 - Global item structure
 
-0089A2F8 - Idols and Temple Artifacts
+0089A2F8 - Idols and Temple Artifacts ("EITreasureIdol")
 
 0089CDD0 - ???
 
@@ -95,11 +139,13 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A2148 - Water & Mud planes (except fountains)
 
-008A2580 - Fountain's healing trigger
+008A2580 - Fountain's healing trigger ("EIWell")
 
 008A52C0 - ???
 
-008A5D08 - World?
+008A58A0 - Static models ("EIStaticModel")
+
+008A5D08 - World ("ERLevel")
 
 008A6098 - Particle effects
 - Fountain
@@ -120,16 +166,22 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008AAE70 - ???
 
-008AD138 - Dark zone
+008AD138 - Dark zone ("EILightModifier")
 
-008AEAF4 - EScriptContext
+008AEAF4 - Script context ("EScriptContext")
+
+008AFD00 - Directional light ("EIDirLight")
 
 008AFF90 - Particle effects 2
 - Small fire
 - Yellow trail on Monkey Temple entrance
 - Blue particles during monkey transformation cutscene
 
-008B0614 - ???
+008B02C4 - Texture resource ("ERTexture")
+
+008B0614 - Script resource ("ERScript")
+
+008B0FD4 - Bound tree node ("EBoundTreeNode")
 
 
 ---
