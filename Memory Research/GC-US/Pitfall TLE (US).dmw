@@ -57,6 +57,13 @@
                     "label": "???",
                     "typeIndex": 2,
                     "unsigned": false
+                },
+                {
+                    "address": "803BFFA8",
+                    "baseIndex": 0,
+                    "label": "Idol",
+                    "typeIndex": 2,
+                    "unsigned": false
                 }
             ],
             "groupName": "Virtual Tables"

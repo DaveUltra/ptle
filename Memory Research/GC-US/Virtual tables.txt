@@ -10,9 +10,6 @@ size = 0x11C
 
 8039C7B8 - Vines
 
-
-These ones could be something, but we don't know yet.
-
 8039A8D0 - ???
 
 8039C180 - ???
@@ -20,3 +17,9 @@ These ones could be something, but we don't know yet.
 8039FF60 - ???
 
 8039F048 - ???
+
+803BFFA8 - Idol
+
+
+Entity vtables :
++ 0x64 : Tick function

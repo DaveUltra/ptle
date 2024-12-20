@@ -15,15 +15,17 @@ one result should appear, that result being Harry's memory location.
 
 00869EE8 - Animated model ("EIAnimLod")
 
-0086A010 - ???
+0086A010 - Dynamic model ("EIDynamicModel")
 
-0086A4E0 - Movable models
+0086A4E0 - Movable models ("EIAnimPlatform")
 
 0086CE50 - Breakable ("EIBreakable")
 
 0086D1D8 - Generic NPC / creature ("EIBeast")
 
 0086D7A0 - ???
+
+0086DB20 - Everything's base class ("EStorable")
 
 0086E660 - Cutscene entity
 - Note : it is possible to play with the cutscene skipping timer in the entity's update function (+2C).
@@ -32,33 +34,35 @@ one result should appear, that result being Harry's memory location.
 
 0086FD18 - Crocodiles ("EICrocs")
 
-00870B30 - ???
+00870B30 - ("EIDatasetHelper")
 
 00870FAC - ???
 
-00871220 - ???
+00871220 - ("EICameraPit")
 
-00872210 - ???
+00871DF0 - ("EICameraPath")
+
+00872210 - ("EICameraPathPlayback")
 
 00873B68 - Electric eel ("EIElectricEel")
 
-00876400 - Explorer
+00876400 - Explorer ("EIExplorer")
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
 
-008779C0 - Multiple stuff
+008779C0 - Multiple stuff ("EIGamePlatform")
 - Green trail effect on Flooded Courtyard door (and possibly others)
 - Sliding stuff, such as doors
 
-0087D300 - Harry
+0087D300 - Harry ("EIHarry")
 - [0087D300+2C] = PTLE+B2CD0 seems to be an update function, early return freezes all controls (expect pause) and Harry's animation
 
-0087FDC0 - Breakables
+0087FDC0 - Breakables ("EIHavokBreakable")
 
-0087FED8 - More physics debris stuff
+0087FED8 - More physics debris stuff ("EIBreakableRigidBody")
 
-00880390 - Boats in Flooded Courtyard
+00880390 - Boats in Flooded Courtyard ("EIHavokPlatform")
 
-00880590 - Makes physics debris objects fade after destruction
+00880590 - Makes physics debris objects fade after destruction ("EIPitfallRigidBody")
 
 008808A0 - ???
 This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
@@ -96,6 +100,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 0088F078 - Piranhas ("EIPiranha")
 
 00890400 - Pits ("EIPitMonster")
+
+00890840 - Foliage ("EIPlant")
 
 00890A40 - Stink plant ("EIPlantNox")
 
@@ -135,28 +141,34 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 0089CDD0 - ???
 
-008A06E0 - ???
+0089EEB8 - ("EUIHud")
 
-008A2148 - Water & Mud planes (except fountains)
+008A06E0 - ("EUIHudMain")
 
-008A2580 - Fountain's healing trigger ("EIWell")
+008A2148 - Water & Mud planes, except fountains ("EIWaterType")
 
-008A52C0 - ???
+008A2580 - Fountain ("EIWell")
+
+008A52C0 - Base entity type ("EInstance")
 
 008A58A0 - Static models ("EIStaticModel")
 
 008A5D08 - World ("ERLevel")
+
+008A5E18 - Platforms? ("EIPlatform")
 
 008A6098 - Particle effects
 - Fountain
 - Idol glowing
 - TNT explosion
 
-008A6A48 - ???
+008A6A48 - ("EIHavokRope")
 
-008A6C28 - Physics objects (debris, breakables)
+008A66C0 - ("EUIObjectNode")
 
-008A8CA8 - ???
+008A6C28 - Physics objects, debris, breakables ("EIHavokRigidBody")
+
+008A8CA8 - ("ESDResource")
 
 008A8DB0 - ???
 
@@ -164,15 +176,21 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A9868 - ???
 
+008AA7D8 - ("EICamera")
+
 008AAE70 - ???
 
 008AD138 - Dark zone ("EILightModifier")
 
 008AEAF4 - Script context ("EScriptContext")
 
+008AEE18 - Spline particle emitter ("EIParticleEmitSpline")
+
+008AF208 - Dataset resource ("ERDataset")
+
 008AFD00 - Directional light ("EIDirLight")
 
-008AFF90 - Particle effects 2
+008AFF90 - Particle effects ("EIParticleEmitSurface")
 - Small fire
 - Yellow trail on Monkey Temple entrance
 - Blue particles during monkey transformation cutscene
@@ -187,11 +205,11 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 ---
 
 Entity vtables :
-Generally, entities will make use of a good number of virtual functions. Here are the known ones so far :
 
-+2C : Update / Tick function
-
-+6C : Used in initialization
++ 0x2C : Update / Tick function
   ECX : Entity ptr
-  Stack(1) : 0 apparently (4 bytes)
+
++ 0x6C : Used in initialization
+  ECX : Entity ptr
   Stack(0) : Input stream ptr
+  Stack(1) : 0 apparently (4 bytes)
