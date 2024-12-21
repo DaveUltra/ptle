@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="ptle\check.cpp" />
+    <ClCompile Include="ptle\levels\level_info.cpp" />
+    <ClCompile Include="utils\log.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ptle\EICharacter.h" />
+    <ClInclude Include="ptle\EIDynamicModel.h" />
+    <ClInclude Include="ptle\EIGameInstance.h" />
+    <ClInclude Include="ptle\EIHarry.h" />
+    <ClInclude Include="ptle\EInstance.h" />
+    <ClInclude Include="ptle\EIPlayer.h" />
+    <ClInclude Include="ptle\EIProjectile.h" />
+    <ClInclude Include="ptle\EIStaticModel.h" />
+    <ClInclude Include="ptle\EStorable.h" />
+    <ClInclude Include="ptle\levels\level_info.h" />
+    <ClInclude Include="injector\gvm\gvm.hpp" />
+    <ClInclude Include="injector\gvm\translator.hpp" />
+    <ClInclude Include="injector\injector.hpp" />
+    <ClInclude Include="injector\utility.hpp" />
+    <ClInclude Include="ptle\math\Matrix4f.h" />
+    <ClInclude Include="ptle\math\Vector3f.h" />
+    <ClInclude Include="ptle\math\Vector4f.h" />
+    <ClInclude Include="utils\log.h" />
+  </ItemGroup>
+</Project>
