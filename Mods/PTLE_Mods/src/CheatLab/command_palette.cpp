@@ -5,8 +5,10 @@
 #include "ptle/EIHarry.h"
 #include "ptle/EIProjectile.h"
 #include "ptle/math/Vector3f.h"
+#include "ptle/math/Vector4f.h"
 
 #include "ptle/levels/level_info.h"
+#include "ptle/types/types.h"
 
 #include "utils/log.h"
 
@@ -142,6 +144,33 @@ static void _fast_native()
 	injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
 }
 
+#include "ptle/EITreasureIdol.h"
+#include "ptle/ERLevel.h"
+GET_METHOD( 0x626670, void, AddToWorld, ERLevel*, EInstance* );
+GET_METHOD( 0x6265A0, void, AddToWorldFancy, ERLevel*, EInstance*, EInstance*, bool );
+GET_METHOD( 0x597400, void, InitIdol, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );
+static void _idol_spawn()
+{
+	const type_info_t* type = get_type_by_vtable( 0x89A2F8 );
+	EITreasureIdol* idol = reinterpret_cast<EITreasureIdol*>( type->ptleType->m_factory() );
+
+	Vector3f pos = { 0, 0, 0 };
+	Vector4f rot = { 0, 0, 0, 1 };
+	InitIdol( idol, &pos, &rot, 0x816D97BF, 0x14F14DDC, 0x6061A9B3 );
+
+	EIHarry* harry = *((EIHarry**) 0x917034);
+
+	if ( !harry ) {
+		log_printf( "Harry was null (how tho?)\n" );
+	}
+	else if ( !harry->m_world ) {
+		log_printf( "World was null (wtf)\n" );
+	}
+
+	AddToWorld( harry->m_world, idol );
+	AddToWorldFancy( harry->m_world, idol->m_particleEmitter, idol, false );
+}
+
 
 
 //
@@ -158,6 +187,7 @@ const command_t commands[] =
 	{ "TNT Rain",     _tnt_rain },
 	{ "All TNT",      _all_tnt },
 	{ "Crack Native", _fast_native },
+	{ "Spawn Idol",   _idol_spawn },
 };
 
 const int NUM_COMMANDS = sizeof(commands) / sizeof(command_t);

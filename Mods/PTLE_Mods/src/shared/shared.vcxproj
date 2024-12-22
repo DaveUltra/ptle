@@ -53,6 +53,7 @@
       <SDLCheck>false</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <MinimalRebuild>false</MinimalRebuild>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -67,6 +68,7 @@
       <SDLCheck>false</SDLCheck>
       <DebugInformationFormat>None</DebugInformationFormat>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <AdditionalIncludeDirectories>$(ProjectDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -75,11 +77,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ptle\types\types.cpp" />
     <ClCompile Include="ptle\check.cpp" />
     <ClCompile Include="ptle\levels\level_info.cpp" />
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ptle\EIBeast.h" />
+    <ClInclude Include="ptle\EIExplorer.h" />
+    <ClInclude Include="ptle\EIShaman.h" />
+    <ClInclude Include="ptle\EITreasureIdol.h" />
+    <ClInclude Include="ptle\ERAnim.h" />
+    <ClInclude Include="ptle\ERCharacter.h" />
+    <ClInclude Include="ptle\ERDataset.h" />
+    <ClInclude Include="ptle\EResource.h" />
+    <ClInclude Include="ptle\ERFont.h" />
+    <ClInclude Include="ptle\ERLevel.h" />
+    <ClInclude Include="ptle\ERModel.h" />
+    <ClInclude Include="ptle\ERParticleType.h" />
+    <ClInclude Include="ptle\ERScript.h" />
+    <ClInclude Include="ptle\ERShader.h" />
+    <ClInclude Include="ptle\ERTexture.h" />
+    <ClInclude Include="ptle\types\types.h" />
     <ClInclude Include="injector\gvm\gvm.hpp" />
     <ClInclude Include="injector\gvm\translator.hpp" />
     <ClInclude Include="injector\injector.hpp" />

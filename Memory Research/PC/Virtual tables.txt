@@ -19,15 +19,19 @@ one result should appear, that result being Harry's memory location.
 
 0086A4E0 - Movable models ("EIAnimPlatform")
 
+0086B3C8 - Bats ("EIBats")
+
+0086C3D0 - Generic NPC / creature ("EIBeast")
+
 0086CE50 - Breakable ("EIBreakable")
 
-0086D1D8 - Generic NPC / creature ("EIBeast")
+0086D1D8 - Bush ninja ("EIBushNinja")
 
-0086D7A0 - ???
+0086D7A0 - Butterfly ("EIButterfly")
 
 0086DB20 - Everything's base class ("EStorable")
 
-0086E660 - Cutscene entity
+0086E660 - Cutscene entity ("EICinematic")
 - Note : it is possible to play with the cutscene skipping timer in the entity's update function (+2C).
 
 0086E8C8 - ???
@@ -35,6 +39,8 @@ one result should appear, that result being Harry's memory location.
 0086FD18 - Crocodiles ("EICrocs")
 
 00870B30 - ("EIDatasetHelper")
+
+00870E98 - ???
 
 00870FAC - ???
 
@@ -93,7 +99,9 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 0088AFE8 - Native ("EINative")
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
 
-0088B4F0 - Bush ninja ("EINinjaBush")
+0088B4F0 - Bush ("EINinjaBush")
+
+0088E518 - ("EIPenguinNest")
 
 0088E8C8 - Penguin ("EIPenguins")
 
@@ -109,6 +117,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008916D8 - Penguin Harry ("EIPlayerPenguin")
 
+00891A78 - Scorpion Harry ("EIPlayerScorpion")
+
 008925A8 - Porcupine ("EIPorcupine")
 
 00893210 - Projectiles (TNT, coconuts) ("EIProjectile")
@@ -122,6 +132,10 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 00894398 - Pusca ghost / minion ("EIPuscaMinion")
 
 00894A48 - Insta-kill plane ("EIResetPlane")
+
+00894DD0 - ("EISavePoint")
+
+00896438 - Scorpion ("EIScorps")
 
 00896C10 - Shaman ("EIShaman")
 
@@ -151,9 +165,15 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A52C0 - Base entity type ("EInstance")
 
+008A5710 - Base resource / asset type ("EResource")
+
 008A58A0 - Static models ("EIStaticModel")
 
+008A5B4C - Model resource ("ERModel")
+
 008A5D08 - World ("ERLevel")
+
+008A5D64 - ("ERShader")
 
 008A5E18 - Platforms? ("EIPlatform")
 
@@ -161,6 +181,12 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 - Fountain
 - Idol glowing
 - TNT explosion
+
+008A6258 - ("ERCharacter")
+
+008A6330 - ???
+
+008A65C0 - ("EUIIcon")
 
 008A6A48 - ("EIHavokRope")
 
@@ -174,15 +200,39 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A8DFC - ???
 
+008A9180 - ??? (related to game saves)
+
+008A9358 - Base type for save game variables ("ESaveGameVar")
+
+008A9398 - Integer save game variable ("ESGVInt")
+
+008A93DC - Float save game variable ("ESGVFloat")
+
+008A9674 - Font resource ("ERFont")
+
 008A9868 - ???
 
 008AA7D8 - ("EICamera")
 
 008AAE70 - ???
 
+008ACDD0 - ("EParticleSpriteRot")
+
+008ACED8 - ("EParticleSprite")
+
 008AD138 - Dark zone ("EILightModifier")
 
+008ADB10 - ???
+
+008ADD0C - ("ERParticleType")
+
+008ADD90 - ("ERHavokModel")
+
+008AE110 - ("ERAnim")
+
 008AEAF4 - Script context ("EScriptContext")
+
+008AEC00 - ("EParticle")
 
 008AEE18 - Spline particle emitter ("EIParticleEmitSpline")
 
@@ -196,6 +246,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 - Blue particles during monkey transformation cutscene
 
 008B02C4 - Texture resource ("ERTexture")
+
+008B03A8 - ("EParticleBubble")
 
 008B0614 - Script resource ("ERScript")
 

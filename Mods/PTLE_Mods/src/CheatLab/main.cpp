@@ -3,6 +3,8 @@
 #include "command_palette.h"
 #include "utils/log.h"
 
+#include "ptle/types/types.h"
+
 
 
 unsigned long __stdcall Thread( void* );
@@ -10,6 +12,8 @@ unsigned long __stdcall Thread( void* );
 void InitMod()
 {
 	AllocConsole();
+
+	register_types();
 
 	CreateThread( 0, 0, Thread, 0, 0, 0 );
 

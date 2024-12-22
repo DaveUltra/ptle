@@ -2,6 +2,8 @@
 
 #include "EStorable.h"
 
+class ERLevel;
+
 
 class EInstance : public EStorable
 {
@@ -9,7 +11,7 @@ public:
 
 	int unused0;
 	int unused1;
-	void* m_world;
+	ERLevel* m_world;
 	int unused2;
 
 	char padding0[0x18];

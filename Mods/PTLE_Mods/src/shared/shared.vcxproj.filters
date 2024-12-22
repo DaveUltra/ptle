@@ -4,6 +4,7 @@
     <ClCompile Include="ptle\check.cpp" />
     <ClCompile Include="ptle\levels\level_info.cpp" />
     <ClCompile Include="utils\log.cpp" />
+    <ClCompile Include="ptle\types\types.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -24,5 +25,21 @@
     <ClInclude Include="ptle\math\Vector3f.h" />
     <ClInclude Include="ptle\math\Vector4f.h" />
     <ClInclude Include="utils\log.h" />
+    <ClInclude Include="ptle\EResource.h" />
+    <ClInclude Include="ptle\ERModel.h" />
+    <ClInclude Include="ptle\ERLevel.h" />
+    <ClInclude Include="ptle\ERFont.h" />
+    <ClInclude Include="ptle\ERDataset.h" />
+    <ClInclude Include="ptle\ERShader.h" />
+    <ClInclude Include="ptle\ERCharacter.h" />
+    <ClInclude Include="ptle\ERParticleType.h" />
+    <ClInclude Include="ptle\ERAnim.h" />
+    <ClInclude Include="ptle\ERScript.h" />
+    <ClInclude Include="ptle\EIBeast.h" />
+    <ClInclude Include="ptle\EIShaman.h" />
+    <ClInclude Include="ptle\EIExplorer.h" />
+    <ClInclude Include="ptle\types\types.h" />
+    <ClInclude Include="ptle\ERTexture.h" />
+    <ClInclude Include="ptle\EITreasureIdol.h" />
   </ItemGroup>
 </Project>
