@@ -83,6 +83,12 @@
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ptle\containers\TreeMap\TreeMap.h" />
+    <ClInclude Include="ptle\EILight.h" />
+    <ClInclude Include="ptle\EINative.h" />
+    <ClInclude Include="ptle\EINPCBeast.h" />
+    <ClInclude Include="ptle\EIPointLight.h" />
+    <ClInclude Include="ptle\EIUpdateRegion.h" />
     <ClInclude Include="ptle\EIBeast.h" />
     <ClInclude Include="ptle\EIExplorer.h" />
     <ClInclude Include="ptle\EIShaman.h" />

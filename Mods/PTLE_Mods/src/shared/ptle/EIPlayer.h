@@ -9,7 +9,9 @@ class EIPlayer : public EICharacter
 {
 public:
 
-	char padding4[0x344];
+	Vector4f m_mat[3];
+	Vector4f m_position;
+	char padding4[0x304];
 
 	int m_healthMax;
 	int m_healthValue;

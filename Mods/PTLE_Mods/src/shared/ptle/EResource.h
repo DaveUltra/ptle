@@ -7,5 +7,8 @@ class EResource : public EStorable
 {
 public:
 
-	char padding[0x10];
+	char* m_name;
+	void* m_archive;
+	uint32_t m_crc;
+	int m_refCount;
 };

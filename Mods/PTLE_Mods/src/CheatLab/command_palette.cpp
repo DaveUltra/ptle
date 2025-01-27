@@ -10,6 +10,8 @@
 #include "ptle/levels/level_info.h"
 #include "ptle/types/types.h"
 
+#include "ptle/containers/TreeMap/TreeMap.h"
+
 #include "utils/log.h"
 
 
@@ -44,6 +46,10 @@ static void _empty()
 
 }
 
+
+// --------------------------------------------------------------------------------
+// Give useful items, abilities, and max HP.
+// --------------------------------------------------------------------------------
 static void _give_stuff()
 {
 	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
@@ -75,6 +81,10 @@ static void _give_stuff()
 	}
 }
 
+
+// --------------------------------------------------------------------------------
+// Max out Harry's HP (and set it to game maximum, 10).
+// --------------------------------------------------------------------------------
 static void _heal()
 {
 	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
@@ -87,6 +97,10 @@ static void _heal()
 	harry->m_healthValue = 10;
 }
 
+
+// --------------------------------------------------------------------------------
+// Kill Harry.
+// --------------------------------------------------------------------------------
 static void _die()
 {
 	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
@@ -95,6 +109,10 @@ static void _die()
 	harry->m_healthValue = 0;
 }
 
+
+// --------------------------------------------------------------------------------
+// TNT rain.
+// --------------------------------------------------------------------------------
 static EIProjectile* _do_tnt_rain( uint32_t code )
 {
 	Vector3f pos, dir;
@@ -121,6 +139,10 @@ static void _tnt_rain()
 	injector::MakeCALL( 0x59540E, _do_tnt_rain );
 }
 
+
+// --------------------------------------------------------------------------------
+// Every projectile is a TNT.
+// --------------------------------------------------------------------------------
 static void _all_tnt()
 {
 	// mov ecx, BBCAC492
@@ -128,6 +150,10 @@ static void _all_tnt()
 	injector::WriteMemoryRaw( 0x55784E, bytes, sizeof(bytes), true );
 }
 
+
+// --------------------------------------------------------------------------------
+// Natives tick faster.
+// --------------------------------------------------------------------------------
 GET_METHOD( 0x414F80, void, EINative_Tick, EInstance* );
 
 void _native_tick_loop( EInstance* inst )
@@ -144,31 +170,199 @@ static void _fast_native()
 	injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
 }
 
+
+// --------------------------------------------------------------------------------
+// Idol spawner (will crash on leaving the current area).
+// --------------------------------------------------------------------------------
 #include "ptle/EITreasureIdol.h"
 #include "ptle/ERLevel.h"
 GET_METHOD( 0x626670, void, AddToWorld, ERLevel*, EInstance* );
 GET_METHOD( 0x6265A0, void, AddToWorldFancy, ERLevel*, EInstance*, EInstance*, bool );
 GET_METHOD( 0x597400, void, InitIdol, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );
+GET_METHOD( 0x547160, void, SetSomethingForHarry, EIHarry*, void* );
+GET_METHOD( 0x4AD5E0, void, HarryInit, EIHarry*, Vector3f*, float );
 static void _idol_spawn()
 {
 	const type_info_t* type = get_type_by_vtable( 0x89A2F8 );
-	EITreasureIdol* idol = reinterpret_cast<EITreasureIdol*>( type->ptleType->m_factory() );
-
-	Vector3f pos = { 0, 0, 0 };
-	Vector4f rot = { 0, 0, 0, 1 };
-	InitIdol( idol, &pos, &rot, 0x816D97BF, 0x14F14DDC, 0x6061A9B3 );
+	EITreasureIdol* idol = instantiate_object<EITreasureIdol>( type );
 
 	EIHarry* harry = *((EIHarry**) 0x917034);
 
-	if ( !harry ) {
-		log_printf( "Harry was null (how tho?)\n" );
-	}
-	else if ( !harry->m_world ) {
-		log_printf( "World was null (wtf)\n" );
-	}
+	Vector3f pos = { 0, 0, 0 };
+	Vector4f rot = { 0, 0, 0, 1 };
+
+	memcpy( &pos, &harry->m_position, sizeof(Vector3f) );
+
+	InitIdol( idol, &pos, &rot, 0x816D97BF, 0x14F14DDC, 0x6061A9B3 );
 
 	AddToWorld( harry->m_world, idol );
 	AddToWorldFancy( harry->m_world, idol->m_particleEmitter, idol, false );
+}
+
+static EIProjectile* _harry_spawn( uint32_t code )
+{
+	EIHarry** harryPtr = ((EIHarry**) 0x917034);
+	EIHarry* harry = *harryPtr;
+
+	// Disable HUD updates (maybe?)
+	injector::MakeRET( 0x4B0950 );
+
+	// Don't create global items again.
+	injector::WriteMemory<uint8_t>( 0x4AEA29, 0xEB );
+
+	// No item hotbar.
+	char bytes[10] = { 0xC7, 0x81, 0x3C, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+	injector::MakeRangedNOP( 0x4AEA67, 0x4AEA7E );
+	injector::WriteMemoryRaw( 0x4AEA67, bytes, 10, true );
+
+	// Instantiate a new Harry.
+	const type_info_t* type = get_type_by_vtable( 0x87D300 );
+	EIHarry* newHarry = instantiate_object<EIHarry>( type );
+
+	// Init.
+	{
+		//void* ptr = *((void**) 0x9170A4);
+		//SetSomethingForHarry( newHarry, ptr );
+
+		// /!\ This duplicates items (CRASH)
+		Vector3f pos = { 0, 0, 0 };
+		HarryInit( newHarry, &pos, 0.0F );
+
+		newHarry->m_world = 0;
+		AddToWorld( harry->m_world, newHarry );
+		newHarry->m_world = harry->m_world;
+
+		newHarry->m_itemHotbar = harry->m_itemHotbar;
+		//*(((uint8_t*) newHarry) + 0x3e3) = false;
+	}
+
+	return EIProjectile_Create( code );
+}
+
+#include "ptle/EINative.h"
+GET_FUNC( 0x6F8EC0, uint32_t, HashPath, char* );
+GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
+/*static EIProjectile* _netiv_spawn( uint32_t code )
+{
+	EIHarry** harryPtr = ((EIHarry**) 0x917034);
+	EIHarry* harry = *harryPtr;
+
+	const type_info_t* type = get_type_by_vtable( 0x88AFE8 );
+	EINative* native = instantiate_object<EINative>( type );
+
+	native->m_position.x = 0.0F;
+	native->m_position.y = 0.0F;
+	native->m_position.z = 0.0F;
+
+	native->m_rotation.x = 0.0F;
+	native->m_rotation.y = 0.0F;
+	native->m_rotation.z = 0.0F;
+	native->m_rotation.w = 1.0F;
+
+	uint32_t hash = HashPath( "BNative" );
+	native->m_beastTypeCRC = hash;
+	EIBeast_LoadBeastAsset( native );
+
+	if ( native->m_beastType ) {
+		log_printf( "Beast type asset load failed.\n" );
+	}
+
+	AddToWorld( harry->m_world, native );
+
+	return EIProjectile_Create( code );
+}*/
+
+#include "ptle/EINPCBeast.h"
+
+static EIProjectile* _micay_spawn( uint32_t code )
+{
+	EIHarry** harryPtr = ((EIHarry**) 0x917034);
+	EIHarry* harry = *harryPtr;
+
+	const type_info_t* type = get_type_by_vtable( 0x88B868 );
+	EINPCBeast* native = instantiate_object<EINPCBeast>( type );
+
+	native->m_position.x = 0.0F;
+	native->m_position.y = 0.0F;
+	native->m_position.z = 0.0F;
+
+	native->m_rotation.x = 0.0F;
+	native->m_rotation.y = 0.0F;
+	native->m_rotation.z = 0.0F;
+	native->m_rotation.w = 1.0F;
+
+	//0x8252A12E
+
+	uint32_t hash = HashPath( "EBeastType/micay" );
+	native->m_beastTypeCRC = 0x8252A12E;
+	EIBeast_LoadBeastAsset( native );
+
+	if ( native->m_beastType ) {
+		log_printf( "Beast type asset load failed.\n" );
+	}
+
+	AddToWorld( harry->m_world, native );
+
+	return EIProjectile_Create( code );
+}
+
+static void _hh()
+{
+	injector::MakeCALL( 0x59540E, _micay_spawn );
+}
+
+
+// --------------------------------------------------------------------------------
+// List all loaded models.
+// --------------------------------------------------------------------------------
+
+static void _list_asset( TreeMapNode* e )
+{
+	if ( e->m_ptr ) {
+		EResource* res = (EResource*) e->m_ptr;
+		log_printf( "- 0x%X : %s\n", res, res->m_name );
+	}
+
+	if ( e->m_left ) _list_asset( e->m_left );
+	if ( e->m_right ) _list_asset( e->m_right );
+}
+
+static void _list_model_assets()
+{
+	TreeMapNode* first = (*(TreeMap**)(0x91A9B8 + 0x14))->m_rootNode;
+
+	_list_asset( first );
+}
+
+
+// List entities in second update list.
+
+static void _list_updates_2()
+{
+	EIHarry* harry = *((EIHarry**) 0x917034);
+	ERLevel* level = harry->m_world;
+
+	TreeMapNode* node = level->m_updateRegion.m_treeMap.m_iterateFirst;
+
+	while ( node ) {
+		if ( node->m_ptr ) {
+			EInstance* inst = (EInstance*) node->m_ptr;
+			EIBeast* beast = type_cast<EIBeast>( (EStorable*) node->m_ptr, get_type_by_vtable(0x86C3D0) );
+
+			const type_info_t* type = get_object_type( inst );
+
+			if ( beast && beast->m_name ) {
+				log_printf( "- 0x%X : %s (%s)\n", beast, type ? type->get_name() : "UnknownType", beast->m_name );
+			}
+			else {
+				log_printf( "- 0x%X : %s\n", inst, type ? type->get_name() : "UnknownType" );
+			}
+		}
+		else {
+			log_printf( "- 0x??????? : unknown\n" );
+		}
+		node = node->m_iterateNext;
+	}
 }
 
 
@@ -188,6 +382,9 @@ const command_t commands[] =
 	{ "All TNT",      _all_tnt },
 	{ "Crack Native", _fast_native },
 	{ "Spawn Idol",   _idol_spawn },
+	{ "Spawn Harry",  _hh },
+	{ "List models",  _list_model_assets },
+	{ "List updates", _list_updates_2 },
 };
 
 const int NUM_COMMANDS = sizeof(commands) / sizeof(command_t);

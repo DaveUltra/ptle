@@ -41,5 +41,11 @@
     <ClInclude Include="ptle\types\types.h" />
     <ClInclude Include="ptle\ERTexture.h" />
     <ClInclude Include="ptle\EITreasureIdol.h" />
+    <ClInclude Include="ptle\EINative.h" />
+    <ClInclude Include="ptle\EINPCBeast.h" />
+    <ClInclude Include="ptle\EILight.h" />
+    <ClInclude Include="ptle\EIPointLight.h" />
+    <ClInclude Include="ptle\containers\TreeMap\TreeMap.h" />
+    <ClInclude Include="ptle\EIUpdateRegion.h" />
   </ItemGroup>
 </Project>

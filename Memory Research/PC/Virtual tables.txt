@@ -7,11 +7,11 @@ one result should appear, that result being Harry's memory location.
 ---
 
 
-0083D0B1 - Model resource ("ERModel")
-
 008403E1 - Ambient light ("EIAmbLight")
 
 00869440 - Birds flying away ("EIAmbientBeast")
+
+00869AD0 - ("EIAmbientTucoTuco")
 
 00869EE8 - Animated model ("EIAnimLod")
 
@@ -31,12 +31,16 @@ one result should appear, that result being Harry's memory location.
 
 0086DB20 - Everything's base class ("EStorable")
 
+0086DCB0 - Item structure (canteen)
+
 0086E660 - Cutscene entity ("EICinematic")
 - Note : it is possible to play with the cutscene skipping timer in the entity's update function (+2C).
 
 0086E8C8 - ???
 
 0086FD18 - Crocodiles ("EICrocs")
+
+00870828 - ("EIParticleEmitDanger")
 
 00870B30 - ("EIDatasetHelper")
 
@@ -50,17 +54,51 @@ one result should appear, that result being Harry's memory location.
 
 00872210 - ("EICameraPathPlayback")
 
+00872E98 - ("EICameraWatch")
+
 00873B68 - Electric eel ("EIElectricEel")
+
+00874688 - ("EIEvilHarryMM")
+
+00875240 - ("EIEvilHarryP")
+
+00875B30 - ("EIEvilHarryS")
 
 00876400 - Explorer ("EIExplorer")
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
+
+00876800 - Eyes of Doom eye ("EIEyeballs")
+
+00876D28 - ("EIFlockBeast")
 
 008779C0 - Multiple stuff ("EIGamePlatform")
 - Green trail effect on Flooded Courtyard door (and possibly others)
 - Sliding stuff, such as doors
 
+00877E78 - ("EIGamesNativeDummyTarget")
+
+00878310 - ("EIGamesNativeIcePick")
+
+00878810 - ("EIGamesNativePorcupineTarget")
+
+00878C00 - ("EIGamesNativeTarget")
+
+008792D0 - ("EIGamesNativeTuco")
+
+00879770 - ("EIGamesNativeTucoTarget")
+
+00879B90 - ("EIGamesTucoTarget")
+
+0087ADB8 - ("EGamesUIBomb")
+
+0087B320 - ("EGamesUIBowling")
+
+0087CAD8 - Item structure (gasmask)
+
 0087D300 - Harry ("EIHarry")
 - [0087D300+2C] = PTLE+B2CD0 seems to be an update function, early return freezes all controls (expect pause) and Harry's animation
+
+0087D618 - Base player ("EIPlayer")
 
 0087FDC0 - Breakables ("EIHavokBreakable")
 
@@ -70,7 +108,7 @@ one result should appear, that result being Harry's memory location.
 
 00880590 - Makes physics debris objects fade after destruction ("EIPitfallRigidBody")
 
-008808A0 - ???
+008808A0 - ("EIHavokShieldPhantom")
 This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00880AF8 - Vine ("EIHavokVine")
@@ -81,11 +119,17 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008822D0 - Howler ("EIHowlerMonkey")
 
-00882660 - ???
+00882660 - ("EIHWPitPointLight")
 
-008832D8 - ???
+00882AB8 - ??? (base class of 008971D0)
 
-00883508 - ???
+00882B50 - ("EILadder")
+
+00882FA8 - ("EILever")
+
+008832D8 - ("EILightbeam")
+
+00883508 - ("EILookatPoint")
 
 00888E80 - ???
 
@@ -101,9 +145,15 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 0088B4F0 - Bush ("EINinjaBush")
 
+0088B868 - ("EINPCBeast")
+
+0088BE78 - ("EIOlympicBomberman")
+
 0088E518 - ("EIPenguinNest")
 
 0088E8C8 - Penguin ("EIPenguins")
+
+0088ED70 - Item structure (pickaxes)
 
 0088F078 - Piranhas ("EIPiranha")
 
@@ -125,33 +175,55 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00893438 - Projectile generator ("EIProjectileGen")
 
+00893568 - ("EIBombFlash")
+
 00893708 - Level Totem ("EIProxAnimObj")
 
 00893EA8 - Pusca ("EIPusca")
 
 00894398 - Pusca ghost / minion ("EIPuscaMinion")
 
+008949B0 - Item structure (raft)
+
 00894A48 - Insta-kill plane ("EIResetPlane")
+
+00894BD8 - ("EIRigidBodyEmitter")
 
 00894DD0 - ("EISavePoint")
 
 00896438 - Scorpion ("EIScorps")
 
+00896830 - ("EIScriptAnim")
+
 00896C10 - Shaman ("EIShaman")
 
-008971D0 - ???
+00896F90 - Item structure (shield)
+
+008971D0 - Item structure (sling)
+
+008974E0 - ("EISnowball")
 
 00897ED0 - Snow bowler ("EISnowBowler")
+
+00898660 - ("EISnowScarab")
 
 00898C20 - Spinja ("EISpinja")
 
 00899130 - St.Claire ("EIStClair")
 
+008994B8 - Item structure (stink bomb)
+
 008999C8 - Supai ("EISupai")
 
-0089A160 - Global item structure
+00899DE0 - ("EISwingMonkey")
+
+0089A160 - Item structure (TNT)
+
+0089A200 - Item structure (torch)
 
 0089A2F8 - Idols and Temple Artifacts ("EITreasureIdol")
+
+0089A6D8 - ("EITucoTuco")
 
 0089CDD0 - ???
 
@@ -159,15 +231,27 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A06E0 - ("EUIHudMain")
 
+008A18A0 - ("EIWackATuco")
+
+008A1CF0 - ("EIWallTucoTuco")
+
 008A2148 - Water & Mud planes, except fountains ("EIWaterType")
 
 008A2580 - Fountain ("EIWell")
+
+008A2C70 - ("EIYoYoMonkey")
+
+008A5000 - ("EICharacter")
+
+008A5198 - ("EIGameInstance")
 
 008A52C0 - Base entity type ("EInstance")
 
 008A5710 - Base resource / asset type ("EResource")
 
 008A58A0 - Static models ("EIStaticModel")
+
+008A5B18 - Models asset archive
 
 008A5B4C - Model resource ("ERModel")
 
@@ -182,17 +266,25 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 - Idol glowing
 - TNT explosion
 
+008A6240 - Character asset archive
+
 008A6258 - ("ERCharacter")
+
+008A6298 - Animations (ERAnim) asset archive
 
 008A6330 - ???
 
 008A65C0 - ("EUIIcon")
 
-008A6A48 - ("EIHavokRope")
-
 008A66C0 - ("EUIObjectNode")
 
+008A68D0 - ("EIHavokCloth")
+
+008A6A48 - ("EIHavokRope")
+
 008A6C28 - Physics objects, debris, breakables ("EIHavokRigidBody")
+
+008A6FD0 - ("EIBezierSpline")
 
 008A8CA8 - ("ESDResource")
 
@@ -210,11 +302,23 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A9674 - Font resource ("ERFont")
 
-008A9868 - ???
+008A9868 - ("EIEffector")
+
+008A999C - ("ERSfx")
+
+008A9F68 - ("EIParticleEmitLimpet")
+
+008AA0B8 - Particle type asset archive
 
 008AA7D8 - ("EICamera")
 
-008AAE70 - ???
+008AAD70 - ("EIHWPointLight")
+
+008AAE70 - ("EIMarker")
+
+008AB788 - ("EIHavokPhantom")
+
+008AB8D8 - ("EIPointLight")
 
 008ACDD0 - ("EParticleSpriteRot")
 
@@ -227,6 +331,12 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 008ADD0C - ("ERParticleType")
 
 008ADD90 - ("ERHavokModel")
+
+008ADDD4 - ("EColOctree")
+
+008ADE08 - ("EILevel")
+
+008ADEB8 - ("EIUpdateRegion")
 
 008AE110 - ("ERAnim")
 
@@ -265,3 +375,10 @@ Entity vtables :
   ECX : Entity ptr
   Stack(0) : Input stream ptr
   Stack(1) : 0 apparently (4 bytes)
+
+
++ 0x150 : Get a pointer to the state machine (for EIBeast)
+
++ 0x154 : Increment state machine ref count (for EIBeast)
+
++ 0x158 : Decrement (and destroy) state machine ref count (for EIBeast)

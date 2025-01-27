@@ -2,9 +2,12 @@
 
 #include "EIExplorer.h"
 #include "EIHarry.h"
+#include "EINative.h"
+#include "EINPCBeast.h"
+#include "EIPointLight.h"
 #include "EIProjectile.h"
-#include "EITreasureIdol.h"
 #include "EIShaman.h"
+#include "EITreasureIdol.h"
 #include "ERAnim.h"
 #include "ERCharacter.h"
 #include "ERFont.h"
@@ -16,7 +19,7 @@
 
 
 // Use static_assert() in C++11 and above.
-#if __cplusplus >= 201103L
+#if __cplusplus <= 201103L
 
 
 #define CHECK_TYPE_SIZE( type, size ) \
@@ -45,6 +48,8 @@ template<>     struct static_assertion<true> { };
 
 CHECK_TYPE_SIZE( EStorable,      0x04 );
 CHECK_TYPE_SIZE( EInstance,      0x64 );
+CHECK_TYPE_SIZE( EILight,        0x7C );
+CHECK_TYPE_SIZE( EIPointLight,   0x94 );
 CHECK_TYPE_SIZE( EIGameInstance, 0xB4 );
 CHECK_TYPE_SIZE( EICharacter,    0x2F0 );
 CHECK_TYPE_SIZE( EIPlayer,       0xB30 );
@@ -55,6 +60,8 @@ CHECK_TYPE_SIZE( EITreasureIdol, 0x210 );
 CHECK_TYPE_SIZE( EIProjectile,   0x280 );
 CHECK_TYPE_SIZE( EIBeast,        0x6F0 );
 CHECK_TYPE_SIZE( EIShaman,       0x700 );
+CHECK_TYPE_SIZE( EINPCBeast,     0x730 );
+CHECK_TYPE_SIZE( EINative,       0x740 );
 CHECK_TYPE_SIZE( EIExplorer,     0x770 );
 CHECK_TYPE_SIZE( EResource,      0x14 );
 CHECK_TYPE_SIZE( ERShader,       0x20 );
@@ -66,5 +73,10 @@ CHECK_TYPE_SIZE( ERModel,        0x98 );
 CHECK_TYPE_SIZE( ERParticleType, 0x168 );
 CHECK_TYPE_SIZE( ERLevel,        0x644 );
 
-CHECK_FIELD_OFFSET( EIHarry,       m_breakdance,     0x1914 );
-CHECK_FIELD_OFFSET( EIStaticModel, m_worldTransform, 0xC0 );
+CHECK_FIELD_OFFSET( EIHarry,       m_breakdance,      0x1914 );
+CHECK_FIELD_OFFSET( EIBeast,       m_beastType,       0x54C );
+CHECK_FIELD_OFFSET( EIStaticModel, m_worldTransform,  0xC0 );
+
+CHECK_FIELD_OFFSET( EICharacter,   m_transformMatrix, 0x160 );
+
+CHECK_FIELD_OFFSET( ERLevel,       m_updateRegion,    0x440 );

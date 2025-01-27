@@ -32,6 +32,29 @@ struct type_info_t
 };
 
 
+
+template<typename T>
+T* instantiate_object( const type_info_t* t )
+{
+	return reinterpret_cast<T*>( t->ptleType->m_factory() );
+}
+
+const type_info_t* get_object_type( EStorable* obj );
+
 const type_info_t* get_type_by_vtable( uint32_t vtableAddr );
+
+bool is_type_derived_from( const type_info_t* type, const type_info_t* base );
+
+template<typename T>
+T* type_cast( EStorable* obj, const type_info_t* t )
+{
+	const type_info_t* objType = get_object_type( obj );
+	if ( !objType || !is_type_derived_from(objType, t) ) {
+		return 0;
+	}
+
+	return reinterpret_cast<T*>(obj);
+};
+
 
 void register_types();
