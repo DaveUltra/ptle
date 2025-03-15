@@ -185,6 +185,13 @@
               <VariableType>4 Bytes</VariableType>
               <Address>"PITFALL The Lost Expedition.exe"+4EEBF8</Address>
             </CheatEntry>
+            <CheatEntry>
+              <ID>398</ID>
+              <Description>"Item Swap"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <VariableType>Byte</VariableType>
+              <Address>"PITFALL The Lost Expedition.exe"+5106A2</Address>
+            </CheatEntry>
           </CheatEntries>
         </CheatEntry>
         <CheatEntry>
@@ -583,6 +590,18 @@
           </Offsets>
         </CheatEntry>
         <CheatEntry>
+          <ID>386</ID>
+          <Description>"Harry ???"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Array of byte</VariableType>
+          <ByteLength>4</ByteLength>
+          <Address>"PITFALL The Lost Expedition.exe"+517034</Address>
+          <Offsets>
+            <Offset>6ec</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
           <ID>328</ID>
           <Description>"Body Angles"</Description>
           <Options moManualExpandCollapse="1"/>
@@ -812,7 +831,6 @@
               <Address>"PITFALL The Lost Expedition.exe"+51702C</Address>
               <Offsets>
                 <Offset>0</Offset>
-                <Offset>0</Offset>
               </Offsets>
             </CheatEntry>
             <CheatEntry>
@@ -841,30 +859,6 @@
               </Offsets>
             </CheatEntry>
             <CheatEntry>
-              <ID>349</ID>
-              <Description>"World field 0x5E4"</Description>
-              <ShowAsHex>1</ShowAsHex>
-              <ShowAsSigned>0</ShowAsSigned>
-              <VariableType>4 Bytes</VariableType>
-              <Address>"PITFALL The Lost Expedition.exe"+51702C</Address>
-              <Offsets>
-                <Offset>5e4</Offset>
-                <Offset>0</Offset>
-              </Offsets>
-            </CheatEntry>
-            <CheatEntry>
-              <ID>348</ID>
-              <Description>"World field 0x5E8"</Description>
-              <ShowAsHex>1</ShowAsHex>
-              <ShowAsSigned>0</ShowAsSigned>
-              <VariableType>4 Bytes</VariableType>
-              <Address>"PITFALL The Lost Expedition.exe"+51702C</Address>
-              <Offsets>
-                <Offset>5e8</Offset>
-                <Offset>0</Offset>
-              </Offsets>
-            </CheatEntry>
-            <CheatEntry>
               <ID>334</ID>
               <Description>"Unused"</Description>
               <ShowAsHex>1</ShowAsHex>
@@ -882,7 +876,7 @@
             </CheatEntry>
             <CheatEntry>
               <ID>325</ID>
-              <Description>"World field (?)"</Description>
+              <Description>"World field 0x59C"</Description>
               <ShowAsHex>1</ShowAsHex>
               <ShowAsSigned>0</ShowAsSigned>
               <VariableType>4 Bytes</VariableType>
@@ -893,7 +887,7 @@
             </CheatEntry>
             <CheatEntry>
               <ID>331</ID>
-              <Description>"World field (?)"</Description>
+              <Description>"World field 0x5B0"</Description>
               <ShowAsHex>1</ShowAsHex>
               <ShowAsSigned>0</ShowAsSigned>
               <VariableType>4 Bytes</VariableType>
@@ -935,6 +929,42 @@
               <Address>"PITFALL The Lost Expedition.exe"+51702C</Address>
               <Offsets>
                 <Offset>5dc</Offset>
+                <Offset>0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>349</ID>
+              <Description>"World field 0x5E4"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>"PITFALL The Lost Expedition.exe"+51702C</Address>
+              <Offsets>
+                <Offset>5e4</Offset>
+                <Offset>0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>348</ID>
+              <Description>"World field 0x5E8"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>"PITFALL The Lost Expedition.exe"+51702C</Address>
+              <Offsets>
+                <Offset>5e8</Offset>
+                <Offset>0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>393</ID>
+              <Description>"Havok World"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>"PITFALL The Lost Expedition.exe"+51702C</Address>
+              <Offsets>
+                <Offset>638</Offset>
                 <Offset>0</Offset>
               </Offsets>
             </CheatEntry>
@@ -1000,6 +1030,58 @@
           </CheatEntries>
         </CheatEntry>
         <CheatEntry>
+          <ID>383</ID>
+          <Description>"Weather Man"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>"PITFALL The Lost Expedition.exe"+517050</Address>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>385</ID>
+              <Description>"Snow Fluffiness"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>Float</VariableType>
+              <Address>"PITFALL The Lost Expedition.exe"+4ff5c4</Address>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>387</ID>
+          <Description>"Sham Price"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>"PITFALL The Lost Expedition.exe"+510A70</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>397</ID>
+          <Description>"Screen"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>"PITFALL The Lost Expedition.exe"+510584</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>395</ID>
+          <Description>"???"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>"PITFALL The Lost Expedition.exe"+51700C</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>394</ID>
+          <Description>"Motion Blur Target"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>"PITFALL The Lost Expedition.exe"+517060</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>388</ID>
+          <Description>"Motion Blur Current"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>"PITFALL The Lost Expedition.exe"+517064</Address>
+        </CheatEntry>
+        <CheatEntry>
           <ID>262</ID>
           <Description>"World loading step"</Description>
           <ShowAsSigned>0</ShowAsSigned>
@@ -1015,6 +1097,14 @@
           <Address>"PITFALL The Lost Expedition.exe"+517088</Address>
         </CheatEntry>
         <CheatEntry>
+          <ID>396</ID>
+          <Description>"Next Level CRC"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>"PITFALL The Lost Expedition.exe"+5170CC</Address>
+        </CheatEntry>
+        <CheatEntry>
           <ID>277</ID>
           <Description>"Needed for Harry"</Description>
           <ShowAsHex>1</ShowAsHex>
@@ -1025,23 +1115,51 @@
       </CheatEntries>
     </CheatEntry>
     <CheatEntry>
-      <ID>329</ID>
-      <Description>"Asset loader?"</Description>
-      <ShowAsHex>1</ShowAsHex>
-      <ShowAsSigned>0</ShowAsSigned>
-      <VariableType>4 Bytes</VariableType>
-      <Address>91EC48</Address>
-    </CheatEntry>
-    <CheatEntry>
-      <ID>330</ID>
-      <Description>"Asset loader?"</Description>
-      <ShowAsHex>1</ShowAsHex>
-      <ShowAsSigned>0</ShowAsSigned>
-      <VariableType>4 Bytes</VariableType>
-      <Address>91EC4C</Address>
-    </CheatEntry>
-    <CheatEntry>
       <ID>335</ID>
+      <Description>"Fog enabled"</Description>
+      <Options moManualExpandCollapse="1"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>90f0ac</Address>
+      <Offsets>
+        <Offset>5e0c</Offset>
+      </Offsets>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>390</ID>
+          <Description>"Fog color R"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>90f0ac</Address>
+          <Offsets>
+            <Offset>5e00</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>392</ID>
+          <Description>"Fog color G"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>90f0ac</Address>
+          <Offsets>
+            <Offset>5e04</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>391</ID>
+          <Description>"Fog color B"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>90f0ac</Address>
+          <Offsets>
+            <Offset>5e08</Offset>
+          </Offsets>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>389</ID>
       <Description>"Global font pointer"</Description>
       <ShowAsHex>1</ShowAsHex>
       <ShowAsSigned>0</ShowAsSigned>
@@ -1642,6 +1760,175 @@
       <ShowAsSigned>0</ShowAsSigned>
       <VariableType>4 Bytes</VariableType>
       <Address>0841BCE4</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>399</ID>
+      <Description>"Script Int Variable (ESDResource)"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>069506B0</Address>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>401</ID>
+          <Description>"Previous Level"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>069506B8</Address>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>402</ID>
+      <Description>"Previous Level CRC (static)"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+51708C</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>403</ID>
+      <Description>"Previous Level CRC (static)"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <VariableType>4 Bytes</VariableType>
+      <Address>"PITFALL The Lost Expedition.exe"+52373C</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>414</ID>
+      <Description>"Previous Area Research"</Description>
+      <Options moManualExpandCollapse="1"/>
+      <GroupHeader>1</GroupHeader>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>415</ID>
+          <Description>"Prev Area Hash in Tree Maps (174CD628)"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Array of byte</VariableType>
+          <ByteLength>0</ByteLength>
+          <Address>174CD628</Address>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>406</ID>
+          <Description>"Global Thing Again"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>91f918</Address>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>407</ID>
+              <Description>"TreeMap0"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>91fe2c</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>413</ID>
+              <Description>"TreeMap1"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>91fe38</Address>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>405</ID>
+          <Description>"Tree Node 0"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>0C4B76e0</Address>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>409</ID>
+              <Description>"Node Hash (+0x18)"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>0C4B76F8</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>404</ID>
+              <Description>"Node Ptr (+0x1C)"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>0C4B76FC</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>416</ID>
+              <Description>"Script Int Var"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>0C4B76FC</Address>
+              <Offsets>
+                <Offset>0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>417</ID>
+              <Description>"Script Int Var Value"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>0C4B76FC</Address>
+              <Offsets>
+                <Offset>8</Offset>
+              </Offsets>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>411</ID>
+          <Description>"Tree Node 1"</Description>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>0C4A3140</Address>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>412</ID>
+              <Description>"Node Hash (+0x18)"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <VariableType>4 Bytes</VariableType>
+              <Address>0C4A3158</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>410</ID>
+              <Description>"Node Ptr (+0x1C)"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>0C4A315C</Address>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>418</ID>
+              <Description>"Script Int Var"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>0C4A315C</Address>
+              <Offsets>
+                <Offset>0</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>419</ID>
+              <Description>"Script Int Var Value"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>0C4A315C</Address>
+              <Offsets>
+                <Offset>8</Offset>
+              </Offsets>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+      </CheatEntries>
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>

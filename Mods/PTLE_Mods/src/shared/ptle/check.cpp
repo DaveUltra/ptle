@@ -1,5 +1,6 @@
 #include <stdint.h>
 
+#include "EIEffector.h"
 #include "EIExplorer.h"
 #include "EIHarry.h"
 #include "EINative.h"
@@ -16,10 +17,12 @@
 #include "ERParticleType.h"
 #include "ERScript.h"
 #include "ERShader.h"
+#include "EScriptContext.h"
+
 
 
 // Use static_assert() in C++11 and above.
-#if __cplusplus <= 201103L
+#if __cplusplus >= 201103L || _MSC_VER >= 1700
 
 
 #define CHECK_TYPE_SIZE( type, size ) \
@@ -57,6 +60,7 @@ CHECK_TYPE_SIZE( EIHarry,        0x1A20 );
 CHECK_TYPE_SIZE( EIStaticModel,  0x1E0 );
 CHECK_TYPE_SIZE( EIDynamicModel, 0x1E0 );
 CHECK_TYPE_SIZE( EITreasureIdol, 0x210 );
+CHECK_TYPE_SIZE( EIEffector,     0x240 );
 CHECK_TYPE_SIZE( EIProjectile,   0x280 );
 CHECK_TYPE_SIZE( EIBeast,        0x6F0 );
 CHECK_TYPE_SIZE( EIShaman,       0x700 );
@@ -72,11 +76,18 @@ CHECK_TYPE_SIZE( ERAnim,         0x7C );
 CHECK_TYPE_SIZE( ERModel,        0x98 );
 CHECK_TYPE_SIZE( ERParticleType, 0x168 );
 CHECK_TYPE_SIZE( ERLevel,        0x644 );
+CHECK_TYPE_SIZE( EScriptContext, 0x890 );
 
-CHECK_FIELD_OFFSET( EIHarry,       m_breakdance,      0x1914 );
-CHECK_FIELD_OFFSET( EIBeast,       m_beastType,       0x54C );
-CHECK_FIELD_OFFSET( EIStaticModel, m_worldTransform,  0xC0 );
 
-CHECK_FIELD_OFFSET( EICharacter,   m_transformMatrix, 0x160 );
+CHECK_FIELD_OFFSET( EIHarry,        m_breakdance,        0x1914 );
+CHECK_FIELD_OFFSET( EIBeast,        m_beastType,         0x54C );
+CHECK_FIELD_OFFSET( EIStaticModel,  m_worldTransform,    0xC0 );
 
-CHECK_FIELD_OFFSET( ERLevel,       m_updateRegion,    0x440 );
+CHECK_FIELD_OFFSET( EICharacter,    m_transformMatrix,   0x160 );
+
+CHECK_FIELD_OFFSET( EIEffector,     m_scriptCRC0,        0x200 );
+
+CHECK_FIELD_OFFSET( ERLevel,        m_updateRegion,      0x440 );
+
+CHECK_FIELD_OFFSET( EScriptContext, m_scriptStack,       0x24 );
+CHECK_FIELD_OFFSET( EScriptContext, m_currentFunction,   0x884 );

@@ -131,7 +131,7 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00883508 - ("EILookatPoint")
 
-00888E80 - ???
+00888E80 - Master game manager
 
 00889700 - Baby Monkey ("EIMegaMonkeyChild")
 
@@ -229,6 +229,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 0089EEB8 - ("EUIHud")
 
+0089F4B8 - ("EUIHudButt")
+
 008A06E0 - ("EUIHudMain")
 
 008A18A0 - ("EIWackATuco")
@@ -272,7 +274,7 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A6298 - Animations (ERAnim) asset archive
 
-008A6330 - ???
+008A6330 - Base resource class ("EResource")
 
 008A65C0 - ("EUIIcon")
 
@@ -286,11 +288,17 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A6FD0 - ("EIBezierSpline")
 
+008A8AC0 - ???
+
 008A8CA8 - ("ESDResource")
 
-008A8DB0 - ???
+008A8D00 - ("ESDFloat")
 
-008A8DFC - ???
+008A8D5C - ("ESDVector")
+
+008A8DB0 - ("ESDInt")
+
+008A8DFC - ("ESDString")
 
 008A9180 - ??? (related to game saves)
 
@@ -316,9 +324,15 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008AAE70 - ("EIMarker")
 
+008AB1A8 - ("EHavokWorld")
+
+008AB218 - ("EIProxy")
+
 008AB788 - ("EIHavokPhantom")
 
 008AB8D8 - ("EIPointLight")
+
+008AB9B8 - Levels asset archive
 
 008ACDD0 - ("EParticleSpriteRot")
 
@@ -338,9 +352,17 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008ADEB8 - ("EIUpdateRegion")
 
+008AE018 - ("ELightOctree")
+
+008AE044 - ("ELightOctreeSmall")
+
 008AE110 - ("ERAnim")
 
+008AE860 - ("ESDMatrix")
+
 008AEAF4 - Script context ("EScriptContext")
+
+008AEB4C - Base class of ESDInt, ESDString, etc... ("EScriptData")
 
 008AEC00 - ("EParticle")
 

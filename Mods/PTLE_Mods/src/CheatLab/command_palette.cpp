@@ -13,24 +13,7 @@
 #include "ptle/containers/TreeMap/TreeMap.h"
 
 #include "utils/log.h"
-
-
-// Create a function pointer to a known non-member function.
-#define GET_FUNC( addr, rettype, name, ... ) \
-	static rettype (*name)(__VA_ARGS__) = reinterpret_cast<rettype(*)(__VA_ARGS__)>(addr)
-
-// Create a function pointer to a known method (member function).
-#define GET_METHOD( addr, rettype, name, ... ) \
-	static rettype (__thiscall *name)(__VA_ARGS__) = reinterpret_cast<rettype(__thiscall *)(__VA_ARGS__)>(addr)
-
-// Make a custom function compatible with the __thiscall convention.
-#define MAKE_THISCALL_WRAPPER( funcName, funcPtr ) \
-	static __declspec(naked) void funcName() { \
-		__asm pop edi \
-		__asm push ecx \
-		__asm push edi \
-		__asm jmp dword ptr funcPtr \
-	}
+#include "utils/func.h"
 
 
 
@@ -79,6 +62,10 @@ static void _give_stuff()
 	for ( int i = 0; i < 8; i++ ) {
 		items[i].m_unlocked = 1;
 	}
+
+	// Item swap (true = no swap, false = swap enabled).
+	bool* itemSwapPtr = (bool*) 0x9106A2;
+	*itemSwapPtr = false;
 }
 
 
@@ -211,7 +198,7 @@ static EIProjectile* _harry_spawn( uint32_t code )
 	injector::WriteMemory<uint8_t>( 0x4AEA29, 0xEB );
 
 	// No item hotbar.
-	char bytes[10] = { 0xC7, 0x81, 0x3C, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
+	uint8_t bytes[10] = { 0xC7, 0x81, 0x3C, 0x09, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };
 	injector::MakeRangedNOP( 0x4AEA67, 0x4AEA7E );
 	injector::WriteMemoryRaw( 0x4AEA67, bytes, 10, true );
 
@@ -274,6 +261,9 @@ GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
 
 #include "ptle/EINPCBeast.h"
 
+GET_METHOD( 0x527ED0, void, EINPCBeast_Init, EINPCBeast* );
+GET_METHOD( 0x527E50, int,  EIBeast_Deserialize2, EIBeast* );
+
 static EIProjectile* _micay_spawn( uint32_t code )
 {
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
@@ -291,15 +281,18 @@ static EIProjectile* _micay_spawn( uint32_t code )
 	native->m_rotation.z = 0.0F;
 	native->m_rotation.w = 1.0F;
 
-	//0x8252A12E
-
-	uint32_t hash = HashPath( "EBeastType/micay" );
+	//uint32_t hash = HashPath( "EBeastType/micay" );
+	native->m_name = "micay";
 	native->m_beastTypeCRC = 0x8252A12E;
 	EIBeast_LoadBeastAsset( native );
+
+	EIBeast_Deserialize2( native );
 
 	if ( native->m_beastType ) {
 		log_printf( "Beast type asset load failed.\n" );
 	}
+
+	EINPCBeast_Init( native );
 
 	AddToWorld( harry->m_world, native );
 
@@ -315,25 +308,47 @@ static void _hh()
 // --------------------------------------------------------------------------------
 // List all loaded models.
 // --------------------------------------------------------------------------------
-
-static void _list_asset( TreeMapNode* e )
-{
-	if ( e->m_ptr ) {
-		EResource* res = (EResource*) e->m_ptr;
-		log_printf( "- 0x%X : %s\n", res, res->m_name );
-	}
-
-	if ( e->m_left ) _list_asset( e->m_left );
-	if ( e->m_right ) _list_asset( e->m_right );
-}
-
 static void _list_model_assets()
 {
-	TreeMapNode* first = (*(TreeMap**)(0x91A9B8 + 0x14))->m_rootNode;
+	TreeMapNode* node = ((TreeMap*)(0x91A9B8 + 0x14))->m_iterateFirst;
+	while ( node ) {
+		if ( node->m_ptr ) {
+			EResource* res = (EResource*) node->m_ptr;
+			log_printf( "- 0x%X : %s\n", res, res->m_name );
+		}
 
-	_list_asset( first );
+		node = node->m_iterateNext;
+	}
 }
 
+
+static void _list_updates_1()
+{
+	EIHarry* harry = *((EIHarry**) 0x917034);
+	ERLevel* level = harry->m_world;
+
+	TreeMapNode* node = ((TreeMap*)((uint32_t) level) + 0x5B0)->m_iterateFirst;
+
+	while ( node ) {
+		if ( node->m_ptr ) {
+			EInstance* inst = (EInstance*) node->m_ptr;
+			EIBeast* beast = type_cast<EIBeast>( (EStorable*) node->m_ptr, get_type_by_vtable(0x86C3D0) );
+
+			const type_info_t* type = get_object_type( inst );
+
+			if ( beast && beast->m_name ) {
+				log_printf( "- 0x%X : %s (%s)\n", beast, type ? type->get_name() : "UnknownType", beast->m_name );
+			}
+			else {
+				log_printf( "- 0x%X : %s\n", inst, type ? type->get_name() : "UnknownType" );
+			}
+		}
+		else {
+			log_printf( "- 0x??????? : unknown\n" );
+		}
+		node = node->m_iterateNext;
+	}
+}
 
 // List entities in second update list.
 
@@ -382,9 +397,10 @@ const command_t commands[] =
 	{ "All TNT",      _all_tnt },
 	{ "Crack Native", _fast_native },
 	{ "Spawn Idol",   _idol_spawn },
-	{ "Spawn Harry",  _hh },
+	{ "Spawn Micay",  _hh },
 	{ "List models",  _list_model_assets },
-	{ "List updates", _list_updates_2 },
+	{ "List updates 1", _list_updates_1 },
+	{ "List updates 2", _list_updates_2 },
 };
 
 const int NUM_COMMANDS = sizeof(commands) / sizeof(command_t);

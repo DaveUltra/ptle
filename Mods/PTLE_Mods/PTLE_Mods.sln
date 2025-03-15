@@ -13,6 +13,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WindowedMode", "src\Windowe
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "shared", "src\shared\shared.vcxproj", "{A4AB7382-2627-4C92-9F52-44ECD723880B}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Randomizer", "src\Randomizer\Randomizer.vcxproj", "{A0282E39-682D-462D-9CD2-44F0A400E673}"
+	ProjectSection(ProjectDependencies) = postProject
+		{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355} = {3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}
+		{A4AB7382-2627-4C92-9F52-44ECD723880B} = {A4AB7382-2627-4C92-9F52-44ECD723880B}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "json", "src\json\json.vcxproj", "{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -31,6 +39,14 @@ Global
 		{A4AB7382-2627-4C92-9F52-44ECD723880B}.Debug|Win32.Build.0 = Debug|Win32
 		{A4AB7382-2627-4C92-9F52-44ECD723880B}.Release|Win32.ActiveCfg = Release|Win32
 		{A4AB7382-2627-4C92-9F52-44ECD723880B}.Release|Win32.Build.0 = Release|Win32
+		{A0282E39-682D-462D-9CD2-44F0A400E673}.Debug|Win32.ActiveCfg = Debug|Win32
+		{A0282E39-682D-462D-9CD2-44F0A400E673}.Debug|Win32.Build.0 = Debug|Win32
+		{A0282E39-682D-462D-9CD2-44F0A400E673}.Release|Win32.ActiveCfg = Release|Win32
+		{A0282E39-682D-462D-9CD2-44F0A400E673}.Release|Win32.Build.0 = Release|Win32
+		{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}.Debug|Win32.Build.0 = Debug|Win32
+		{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}.Release|Win32.ActiveCfg = Release|Win32
+		{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

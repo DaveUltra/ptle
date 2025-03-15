@@ -1,0 +1,5 @@
+008C3590 - Rigid body, possibly
++ 0x2C : User data / pointer to source entity (EIBreakableRigidBody, EIHavokShieldPhantom)
+
+008C3678 - Vines, possibly
++ 0x2C : User data / pointer to source entity (EIHavokVine)

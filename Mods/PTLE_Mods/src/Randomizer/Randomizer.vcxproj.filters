@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="rando\shaman_shop.cpp" />
+    <ClCompile Include="rando\transition_infos.cpp" />
+    <ClCompile Include="rando\graphml.cpp" />
+    <ClCompile Include="rando\rando.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="rando\rando.h" />
+  </ItemGroup>
+</Project>

@@ -2,10 +2,15 @@
 
 #include "EResource.h"
 
+#include "ptle/containers/TreeMap/TreeMap.h"
+
 
 class ERScript : public EResource
 {
 public:
 
-	char padding1[0x30];
+	TreeMap m_aliveContexts;
+	char padding1[0x20];
+
+	int m_count;
 };

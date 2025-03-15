@@ -83,6 +83,9 @@
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ptle\EIEffector.h" />
+    <ClInclude Include="ptle\EScriptContext.h" />
+    <ClInclude Include="utils\func.h" />
     <ClInclude Include="ptle\containers\TreeMap\TreeMap.h" />
     <ClInclude Include="ptle\EILight.h" />
     <ClInclude Include="ptle\EINative.h" />
