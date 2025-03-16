@@ -111,6 +111,8 @@ void generate_randomized_map();
 void randomize_shaman_shop();
 void patch_shaman_shop();
 
+void prevent_transition_softlock();
+
 void write_graphml();
 
 bool spoof_transition( Transition& t );

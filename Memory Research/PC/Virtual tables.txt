@@ -56,6 +56,8 @@ one result should appear, that result being Harry's memory location.
 
 00872E98 - ("EICameraWatch")
 
+008732C8 - ("EIPlayerStart")
+
 00873B68 - Electric eel ("EIElectricEel")
 
 00874688 - ("EIEvilHarryMM")

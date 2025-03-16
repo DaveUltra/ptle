@@ -23,6 +23,12 @@
  *   that ability after completing Monkey Temple, for example.
  *   Right now, item swap is enforced at every level load, except the first one.
  *
+ * Softlock Prevention :
+ * - There are cases where an entrance will lead Harry to run against a wall indefinitely,
+ *   such as St.Claire -> Flooded Courtyard, Twin Outposts -> Flooded Courtyard...
+ *   To prevent this, we force the game to give control of Harry back to the player.
+ *   Apparently, setting Harry high enough into the air causes exactly that to happen.
+ *
  * Graph Generation :
  * - On mod init, a .graphml file is generated showing the randomized map, with some
  *   additional information. The file can be viewed on graphonline.ru/en, which is
@@ -83,6 +89,9 @@ void hijack_transition( void* globalStruct, uint32_t levelCRC, bool p2 )
 		log_printf( "Transition is ignored. We let the game proceed like normal.\n" );
 	}
 
+	extern Transition rando_redirect_transition;
+	rando_redirect_transition = redirect;
+
 	// Set previous area for correct transition.
 	uint32_t* prevAreaPtr = find_previous_area_memory();
 	if ( prevAreaPtr ) {
@@ -133,6 +142,11 @@ void InitMod()
 	// Hijack new game starting area.
 	uint32_t startCRC = level_get_crc( rando_config.startingArea );
 	injector::WriteMemory( 0x5EB9E6, startCRC );
+
+	// End of level load routine, we clear an otherwise unused debug log function call
+	// and place our Harry up-teleport function on top of it.
+	injector::MakeNOP( 0x5EC167, 13 );
+	injector::MakeCALL( 0x5EC167, prevent_transition_softlock );
 
 	log_printf( "PTLE Randomizer : Mod started.\n" );
 }

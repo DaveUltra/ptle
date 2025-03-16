@@ -3,6 +3,8 @@
 #include "ptle/levels/level_info.h"
 #include "ptle/containers/TreeMap/TreeMap.h"
 
+#include "ptle/EIHarry.h"
+
 #include "utils/log.h"
 
 #include <set>
@@ -35,6 +37,7 @@ std::map<Transition, Transition> rando_transitions_map;
 
 std::set<Transition> disabledTransitions;
 
+// These transitions can only be traversed in one direction.
 static const Transition ONE_WAY_TRANSITIONS[] = {
 	// White Valley geyser.
 	Transition( levels_t::WHITE_VALLEY, levels_t::MOUNTAIN_SLED_RUN ),
@@ -43,7 +46,20 @@ static const Transition ONE_WAY_TRANSITIONS[] = {
 	// Apu Illapu Shrine one-way door.
 	Transition( levels_t::MOUNTAIN_SLED_RUN, levels_t::APU_ILLAPU_SHRINE ),
 	// Jungle Canyon waterfall.
-	Transition( levels_t::CAVERN_LAKE, levels_t::JUNGLE_CANYON )
+	Transition( levels_t::CAVERN_LAKE, levels_t::JUNGLE_CANYON ),
+	// After Altar of Ages cutscene.
+	Transition( levels_t::ALTAR_OF_AGES, levels_t::BITTENBINDER_CAMP ),
+};
+
+// These transitions can lead to softlocks due to closed doors / obstacles.
+// Harry will run indefinitely against them and the game will never give us control back.
+static const Transition SOFTLOCKABLE_TRANSITIONS[] = {
+	Transition( levels_t::ST_CLAIRE_EXCAVATION_CAMP_DAY, levels_t::FLOODED_COURTYARD ),   // St.Claire wall (requires TNT).
+	Transition( levels_t::TWIN_OUTPOSTS,                 levels_t::FLOODED_COURTYARD ),   // Monkey door.
+	Transition( levels_t::SCORPION_TEMPLE,               levels_t::EYES_OF_DOOM ),        // Scorpion door.
+	Transition( levels_t::EKKEKO_ICE_CAVERN,             levels_t::VALLEY_OF_SPIRITS ),   // Ice wall (requires TNT).
+	Transition( levels_t::MOUNTAIN_SLED_RUN,             levels_t::COPACANTI_LAKE ),      // Three crystals door.
+	Transition( levels_t::COPACANTI_LAKE,                levels_t::VALLEY_OF_SPIRITS ),   // Spirit door.
 };
 
 // Putting levels in this list will make the randomizer ignore them as starting areas
@@ -449,6 +465,22 @@ void generate_randomized_map()
 	write_graphml();
 }
 
+
+Transition rando_redirect_transition;
+
+void prevent_transition_softlock()
+{
+	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
+	Transition t( rando_redirect_transition.areaFromID, level_get_by_crc(currentAreaCRC) );
+	const std::set<Transition> softlockableTransitions( SOFTLOCKABLE_TRANSITIONS, SOFTLOCKABLE_TRANSITIONS+_countof(SOFTLOCKABLE_TRANSITIONS) );
+
+	if ( softlockableTransitions.find(t) != softlockableTransitions.end() ) {
+		log_printf( "Detected softlockable transition!\n" );
+
+		EIHarry* harry = *((EIHarry**) 0x917034);
+		harry->m_position.z += 12.0F;
+	}
+}
 
 uint32_t* find_previous_area_memory()
 {
