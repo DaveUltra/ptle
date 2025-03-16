@@ -8,12 +8,12 @@
 // Level exit, used to build transitions.
 struct Exit
 {
-	uint32_t areaID;
+	uint32_t areaCRC;
 	std::string areaName;
 	std::vector<std::vector<std::string>> requires;
 
-	Exit( uint32_t areaID, const std::string& areaName )
-		: areaID( areaID ), areaName( areaName )
+	Exit( uint32_t areaCRC, const std::string& areaName )
+		: areaCRC( areaCRC ), areaName( areaName )
 	{
 	}
 };
@@ -21,13 +21,13 @@ struct Exit
 // Single level.
 struct Area
 {
-	uint32_t areaID;
+	uint32_t areaCRC;
 	std::string name;
 	uint32_t defaultEntrance;
 	std::vector<Exit> exits;
 
-	Area( uint32_t id, const std::string& name, uint32_t defaultEntrance )
-		: areaID( id ), name( name ), defaultEntrance( defaultEntrance )
+	Area( uint32_t crc, const std::string& name, uint32_t defaultEntrance )
+		: areaCRC( crc ), name( name ), defaultEntrance( defaultEntrance )
 	{
 	}
 };

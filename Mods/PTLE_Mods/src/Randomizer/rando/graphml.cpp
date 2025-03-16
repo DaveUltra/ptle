@@ -129,11 +129,11 @@ void write_graphml()
 
 	for ( auto& p : transition_infos ) {
 		for ( const Area& area : p.second ) {
-			uint32_t fromID = level_get_by_crc(area.areaID);
+			uint32_t fromID = level_get_by_crc(area.areaCRC);
 			if ( dontShow.find(fromID) != dontShow.end() ) continue;
 
 			for ( const Exit& exit : area.exits ) {
-				uint32_t toID = level_get_by_crc(exit.areaID);
+				uint32_t toID = level_get_by_crc(exit.areaCRC);
 				if ( dontShow.find(toID) != dontShow.end() ) continue;
 
 				Transition original( fromID, toID );

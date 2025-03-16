@@ -278,7 +278,7 @@ static void generate_linked_transitions()
 	// We leave one-way transitions (geysers, cavern lake to jungle canyon, etc...) unrandomized for now.
 	for ( auto& p : transition_infos ) {
 		for ( const Area& area : p.second ) {
-			uint32_t levelFrom = level_get_by_crc( area.areaID );
+			uint32_t levelFrom = level_get_by_crc( area.areaCRC );
 			if ( is_area_excluded(levelFrom) ) continue;
 
 			if ( knownAreas.find(levelFrom) == knownAreas.end() ) {
@@ -287,7 +287,7 @@ static void generate_linked_transitions()
 			}
 
 			for ( const Exit& exit : area.exits ) {
-				uint32_t levelTo = level_get_by_crc( exit.areaID );
+				uint32_t levelTo = level_get_by_crc( exit.areaCRC );
 				Transition actual( levelFrom, levelTo );
 				Transition reverse = actual.mirror();
 
@@ -400,11 +400,11 @@ static void generate_legacy()
 
 	for ( auto& p : transition_infos ) {
 		for ( const Area& area : p.second ) {
-			uint32_t levelFrom = level_get_by_crc( area.areaID );
+			uint32_t levelFrom = level_get_by_crc( area.areaCRC );
 			if ( is_area_excluded(levelFrom) ) continue;
 
 			for ( const Exit& exit : area.exits ) {
-				uint32_t levelTo = level_get_by_crc( exit.areaID );
+				uint32_t levelTo = level_get_by_crc( exit.areaCRC );
 				if ( is_area_excluded(levelTo) ) continue;
 
 				Transition t( levelFrom, levelTo );
@@ -415,11 +415,11 @@ static void generate_legacy()
 
 	for ( auto& p : transition_infos ) {
 		for ( const Area& area : p.second ) {
-			uint32_t levelFrom = level_get_by_crc( area.areaID );
+			uint32_t levelFrom = level_get_by_crc( area.areaCRC );
 			if ( is_area_excluded(levelFrom) ) continue;
 
 			for ( const Exit& exit : area.exits ) {
-				uint32_t levelTo = level_get_by_crc( exit.areaID );
+				uint32_t levelTo = level_get_by_crc( exit.areaCRC );
 				if ( is_area_excluded(levelTo) ) continue;
 
 				Transition original( levelFrom, levelTo );

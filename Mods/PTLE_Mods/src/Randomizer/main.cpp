@@ -128,6 +128,8 @@ void InitMod()
 	// Load world call (level transition).
 	injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
 
+	// TODO : What happens when you die????
+
 	// Hijack new game starting area.
 	uint32_t startCRC = level_get_crc( rando_config.startingArea );
 	injector::WriteMemory( 0x5EB9E6, startCRC );
