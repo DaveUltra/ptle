@@ -1,32 +1,48 @@
+#include "utils/log.h"
+#include "utils/func.h"
+
 #include <vector>
+#include <stdint.h>
+
 
 #define NUM_PRICES 18
 
-static const int MAX_IDOLS = 138;
-static const int DEFAULT_SHOP_PRICES[NUM_PRICES] = { 2, 4, 8, 16, 32, 1, 2, 3, 4, 5, 10, 10, 10, 9, 7, 7, 8, 0 };
+static const int      MAX_IDOLS = 138;
+static const int      DEFAULT_SHOP_PRICES[NUM_PRICES] = { 2, 4, 8, 16, 32, 1, 2, 3, 4, 5, 10, 10, 10, 9, 7, 7, 8, 0 };
+static const uint32_t PRICES_OFFSET[NUM_PRICES] = { 1, 2, 3, 4, 5, 23, 24, 25, 26, 27, 9, 11, 7, 15, 17, 13, 19, 21 };
 
 
+// Our generated prices.
 int shaman_shop_prices[NUM_PRICES];
 
-int prices_health_buffer[] = {
-	5, 2, 4, 8, 16, 32
-};
-int prices_canteen_buffer[] = {
-	5, 1, 2, 3, 4, 5
-};
-int prices_skills_buffer[] = {
-	1, 10,
-	1, 10,
-	1, 10
-};
-int prices_maps_buffer[] = {
-	1, 9,
-	1, 7,
-	1, 7,
-	1, 8
-};
-int prices_mystery_buffer[] = {
-	1, 0
+
+enum shaman_price_offset_t
+{
+	PRICE_HEALTH1 = 1,
+	PRICE_HEALTH2 = 2,
+	PRICE_HEALTH3 = 3,
+	PRICE_HEALTH4 = 4,
+	PRICE_HEALTH5 = 5,
+
+	PRICE_CANTEEN1 = 23,
+	PRICE_CANTEEN2 = 24,
+	PRICE_CANTEEN3 = 25,
+	PRICE_CANTEEN4 = 26,
+	PRICE_CANTEEN5 = 27,
+
+	PRICE_HEALTH = PRICE_HEALTH1,
+	PRICE_CANTEEN = PRICE_CANTEEN1,
+
+	PRICE_SMASH_STRIKE = 9,    //
+	PRICE_SUPER_SLING = 11,    // Heroic abilities.
+	PRICE_BREAKDANCE = 7,      //
+
+	PRICE_MAP_JUNGLE = 15,     //
+	PRICE_MAP_NATIVE = 17,     // Area
+	PRICE_MAP_CAVERNS = 13,    // notes.
+	PRICE_MAP_MOUNTAINS = 19,  //
+
+	PRICE_MYSTERY = 21,        // Mystery item (Pitfall! game in Punchau Shrine).
 };
 
 
@@ -41,7 +57,7 @@ static void shuffle_prices()
 {
 	memcpy( shaman_shop_prices, DEFAULT_SHOP_PRICES, NUM_PRICES * sizeof(int) );
 
-	for ( int n = NUM_PRICES; n >= 1; n-- ) {
+	for ( int n = NUM_PRICES - 1; n >= 1; n-- ) {
 		int i = rand() % (n + 1);
 
 		int tmp = shaman_shop_prices[i];
@@ -49,17 +65,6 @@ static void shuffle_prices()
 		shaman_shop_prices[n] = tmp;
 	}
 }
-
-void randomize_shaman_shop()
-{
-	shuffle_prices();
-
-	// Sort health and canteen prices.
-	std::qsort( shaman_shop_prices,     5, sizeof(int), sort_compare );
-	std::qsort( shaman_shop_prices + 5, 5, sizeof(int), sort_compare );
-}
-
-
 
 /*"health";
 "water";
@@ -72,10 +77,54 @@ void randomize_shaman_shop()
 "map_snow";
 "pitfall_cart";*/
 
-#include "injector/injector.hpp"
-void iiii()
+GET_METHOD( 0x63A720, void*, FindChunkByName, void*, char* );
+GET_METHOD( 0x63A8D0, void*, FindInChunk, void*, void*, char* );
+static int* get_prices_buffer()
 {
-	// Patch instruction that sets the pointer to the prices table.
-	injector::MakeNOP( 0x5BD642, 6 );
-	//injector::MakeJMP( 0x5BD642, patch_shaman_shop );
+	// Shaman prices are contained in a quickdatas resource, which is loaded at the start of the game.
+	// This resource can be accessed through 3 globals. We're using the one that comes first (0x910638).
+	// Then, in the prices chunk, we get the health prices. Prices area actually contiguous in memory,
+	// and health is the one that comes first. So we retrieve its address, and access other prices relative
+	// to it. Refer to shaman_price_offset_t for more details.
+
+	void* uiQuickdatas = *((void**) 0x910638);
+	void* storeChunk = FindChunkByName( uiQuickdatas, "UIDDStoreItemDef" );
+	int** storeResourcePtr = (int**) FindInChunk( uiQuickdatas, storeChunk, "health" );
+
+	int* prices = storeResourcePtr[10] - 1;
+	return prices;
+}
+
+
+// Generates random prices, but does not actually apply it to the game's data.
+void randomize_shaman_shop()
+{
+	shuffle_prices();
+
+	// Sort health and canteen prices.
+	std::qsort( shaman_shop_prices,     5, sizeof(int), sort_compare );
+	std::qsort( shaman_shop_prices + 5, 5, sizeof(int), sort_compare );
+
+	log_printf( "Shaman prices :\n" );
+	log_printf( "- Health          : %d, %d, %d, %d, %d\n", shaman_shop_prices[0], shaman_shop_prices[1], shaman_shop_prices[2], shaman_shop_prices[3], shaman_shop_prices[4] );
+	log_printf( "- Canteen         : %d, %d, %d, %d, %d\n", shaman_shop_prices[5], shaman_shop_prices[6], shaman_shop_prices[7], shaman_shop_prices[8], shaman_shop_prices[9] );
+	log_printf( "- Smash Strike    : %d\n", shaman_shop_prices[10] );
+	log_printf( "- Super Sling     : %d\n", shaman_shop_prices[11] );
+	log_printf( "- Breakdance      : %d\n", shaman_shop_prices[12] );
+	log_printf( "- Jungle Notes    : %d\n", shaman_shop_prices[13] );
+	log_printf( "- Native Notes    : %d\n", shaman_shop_prices[14] );
+	log_printf( "- Caverns Notes   : %d\n", shaman_shop_prices[15] );
+	log_printf( "- Mountains Notes : %d\n", shaman_shop_prices[16] );
+	log_printf( "- Mystery Item    : %d\n", shaman_shop_prices[17] );
+}
+
+// Applies the custom prices to the actual in-memory shaman shop.
+// This is only required once.
+void patch_shaman_shop()
+{
+	int* pricesBuffer = get_prices_buffer();
+
+	for ( int i = 0; i < NUM_PRICES; i++ ) {
+		pricesBuffer[PRICES_OFFSET[i]] = shaman_shop_prices[i];
+	}
 }

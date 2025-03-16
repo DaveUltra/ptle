@@ -90,6 +90,10 @@ uint32_t level_get_crc( uint32_t id )
 
 const char* level_get_name( uint32_t id )
 {
+	if ( id >= levels_t::NUM_LEVELS ) {
+		return "INVALID_LEVEL";
+	}
+
 	return level_info[id].name;
 }
 

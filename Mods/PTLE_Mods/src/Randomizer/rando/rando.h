@@ -40,6 +40,20 @@ struct Transition
 {
 	uint32_t areaFromID;
 	uint32_t areaToID;
+
+	Transition()
+	{
+	}
+
+	Transition( uint32_t from, uint32_t to )
+		: areaFromID( from ), areaToID( to )
+	{
+	}
+
+	inline Transition mirror() const
+	{
+		return Transition( areaToID, areaFromID );
+	}
 };
 
 template<>
@@ -63,6 +77,23 @@ inline bool operator==( const Transition& t0, const Transition& t1 )
 }
 
 
+// Config.
+struct RandoConfig
+{
+	uint32_t seed;
+	uint32_t startingArea;
+	bool legacy;
+	bool randomizeShamanShop;
+	bool skipJaguar2;
+	bool skipWaterLevels;
+	bool immediateSpiritFights;
+
+	RandoConfig();
+};
+
+extern RandoConfig rando_config;
+
+
 
 // Levels & transitions, loaded from "transition_infos.json".
 extern MajorAreas transition_infos;
@@ -78,5 +109,10 @@ void rando_init();
 void generate_randomized_map();
 
 void randomize_shaman_shop();
+void patch_shaman_shop();
 
 void write_graphml();
+
+bool spoof_transition( Transition& t );
+
+uint32_t* find_previous_area_memory();

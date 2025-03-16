@@ -69,6 +69,8 @@ struct levels_t
 		VIRACOCHA_MONOLITHS_CUTSCENE,
 		WHACK_A_TUCO,
 		WHITE_VALLEY,
+
+		NUM_LEVELS
 	};
 };
 

@@ -328,6 +328,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008AB218 - ("EIProxy")
 
+008AB378 - ("EParticleRibbon")
+
 008AB788 - ("EIHavokPhantom")
 
 008AB8D8 - ("EIPointLight")
