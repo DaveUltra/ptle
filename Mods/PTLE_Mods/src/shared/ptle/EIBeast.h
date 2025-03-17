@@ -17,7 +17,7 @@ public:
 
 	Vector3f m_position;
 	float m_orientationAngle;
-	char* m_name;
+	char* m_beastTypeName;
 	Vector4f m_rotation;
 
 	char padding5[0x22C];

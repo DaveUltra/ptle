@@ -282,7 +282,7 @@ static EIProjectile* _micay_spawn( uint32_t code )
 	native->m_rotation.w = 1.0F;
 
 	//uint32_t hash = HashPath( "EBeastType/micay" );
-	native->m_name = "micay";
+	native->m_beastTypeName = "micay";
 	native->m_beastTypeCRC = 0x8252A12E;
 	EIBeast_LoadBeastAsset( native );
 
@@ -336,8 +336,8 @@ static void _list_updates_1()
 
 			const type_info_t* type = get_object_type( inst );
 
-			if ( beast && beast->m_name ) {
-				log_printf( "- 0x%X : %s (%s)\n", beast, type ? type->get_name() : "UnknownType", beast->m_name );
+			if ( beast && beast->m_beastTypeName ) {
+				log_printf( "- 0x%X : %s (%s)\n", beast, type ? type->get_name() : "UnknownType", beast->m_beastTypeName );
 			}
 			else {
 				log_printf( "- 0x%X : %s\n", inst, type ? type->get_name() : "UnknownType" );
@@ -366,8 +366,8 @@ static void _list_updates_2()
 
 			const type_info_t* type = get_object_type( inst );
 
-			if ( beast && beast->m_name ) {
-				log_printf( "- 0x%X : %s (%s)\n", beast, type ? type->get_name() : "UnknownType", beast->m_name );
+			if ( beast && beast->m_beastTypeName ) {
+				log_printf( "- 0x%X : %s (%s)\n", beast, type ? type->get_name() : "UnknownType", beast->m_beastTypeName );
 			}
 			else {
 				log_printf( "- 0x%X : %s\n", inst, type ? type->get_name() : "UnknownType" );

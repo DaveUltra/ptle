@@ -23,6 +23,8 @@ one result should appear, that result being Harry's memory location.
 
 0086C3D0 - Generic NPC / creature ("EIBeast")
 
+0086C920 - ("EIBeastShield")
+
 0086CE50 - Breakable ("EIBreakable")
 
 0086D1D8 - Bush ninja ("EIBushNinja")
@@ -39,6 +41,8 @@ one result should appear, that result being Harry's memory location.
 0086E8C8 - ???
 
 0086FD18 - Crocodiles ("EICrocs")
+
+00870100 - ("EICrowd")
 
 00870828 - ("EIParticleEmitDanger")
 
@@ -123,7 +127,7 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00882660 - ("EIHWPitPointLight")
 
-00882AB8 - ??? (base class of 008971D0)
+00882AB8 - Base item class
 
 00882B50 - ("EILadder")
 
@@ -185,6 +189,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00894398 - Pusca ghost / minion ("EIPuscaMinion")
 
+00894820 - ("EIPuscaRigidBody")
+
 008949B0 - Item structure (raft)
 
 00894A48 - Insta-kill plane ("EIResetPlane")
@@ -196,6 +202,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 00896438 - Scorpion ("EIScorps")
 
 00896830 - ("EIScriptAnim")
+
+00896990 - ("EIShadowSpot")
 
 00896C10 - Shaman ("EIShaman")
 
@@ -253,6 +261,9 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A5710 - Base resource / asset type ("EResource")
 
+008A5884 - ("EAnimController")
+- An instance can be found in every object inheriting EICharacter at offset 0xB4.
+
 008A58A0 - Static models ("EIStaticModel")
 
 008A5B18 - Models asset archive
@@ -265,7 +276,7 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A5E18 - Platforms? ("EIPlatform")
 
-008A6098 - Particle effects
+008A6098 - Particle effects ("EIParticleEmit")
 - Fountain
 - Idol glowing
 - TNT explosion
@@ -344,7 +355,7 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008AD138 - Dark zone ("EILightModifier")
 
-008ADB10 - ???
+008ADB10 - ("EParticleSnowNoRot")
 
 008ADD0C - ("ERParticleType")
 

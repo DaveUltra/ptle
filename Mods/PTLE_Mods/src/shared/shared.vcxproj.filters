@@ -50,5 +50,16 @@
     <ClInclude Include="utils\func.h" />
     <ClInclude Include="ptle\EIEffector.h" />
     <ClInclude Include="ptle\EScriptContext.h" />
+    <ClInclude Include="ptle\EAnimController.h" />
+    <ClInclude Include="ptle\EISnowBowler.h" />
+    <ClInclude Include="ptle\EISnowScarab.h" />
+    <ClInclude Include="ptle\EIMegaMonkeyChild.h" />
+    <ClInclude Include="ptle\EIMegaMonkeyParent.h" />
+    <ClInclude Include="ptle\EIBushNinja.h" />
+    <ClInclude Include="ptle\EIPusca.h" />
+    <ClInclude Include="ptle\EIPuscaMinion.h" />
+    <ClInclude Include="ptle\EIHenchman.h" />
+    <ClInclude Include="ptle\EIHowlerMonkey.h" />
+    <ClInclude Include="ptle\EISupai.h" />
   </ItemGroup>
 </Project>

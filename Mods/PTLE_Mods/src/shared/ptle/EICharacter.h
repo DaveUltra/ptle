@@ -2,6 +2,8 @@
 
 #include "EIGameInstance.h"
 
+#include "EAnimController.h"
+
 #include "math/Matrix4f.h"
 #include "math/Vector4f.h"
 #include "math/Vector3f.h"
@@ -13,15 +15,9 @@ class EICharacter : public EIGameInstance
 {
 public:
 
-	/*-----*/ char padding3[0x10];
+	EAnimController m_animController;
 
-	// This is a matrix array.
-	Matrix4f* m_pose;
-
-	int unused3;
-	ERCharacter* m_characterResource;
-
-	/*-----*/ char padding4[0x48];
+	/*-----*/ char padding4[0x4];
 
 	bool m_onGround;
 	Vector4f unused4;
