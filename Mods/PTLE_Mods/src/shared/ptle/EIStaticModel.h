@@ -4,6 +4,8 @@
 
 #include "math/Matrix4f.h"
 
+class ERModel;
+
 
 class EIStaticModel : public EIGameInstance
 {
@@ -21,5 +23,9 @@ public:
 
 	uint32_t m_modelCRC;
 
-	char padding4[0x98];
+	char padding4[0x14];
+
+	ERModel* m_modelResource;
+
+	char padding5[0x80];
 };

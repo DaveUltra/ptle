@@ -83,6 +83,7 @@
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ptle\containers\Array\Array.h" />
     <ClInclude Include="ptle\EAnimController.h" />
     <ClInclude Include="ptle\EIBushNinja.h" />
     <ClInclude Include="ptle\EIEffector.h" />
@@ -96,6 +97,7 @@
     <ClInclude Include="ptle\EISnowScarab.h" />
     <ClInclude Include="ptle\EISupai.h" />
     <ClInclude Include="ptle\EScriptContext.h" />
+    <ClInclude Include="ptle\math\AABB.h" />
     <ClInclude Include="utils\func.h" />
     <ClInclude Include="ptle\containers\TreeMap\TreeMap.h" />
     <ClInclude Include="ptle\EILight.h" />

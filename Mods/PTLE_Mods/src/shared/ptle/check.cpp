@@ -102,6 +102,7 @@ CHECK_TYPE_SIZE( EScriptContext,     0x890 );
 CHECK_FIELD_OFFSET( EIHarry,        m_breakdance,        0x1914 );
 CHECK_FIELD_OFFSET( EIBeast,        m_beastType,         0x54C );
 CHECK_FIELD_OFFSET( EIStaticModel,  m_worldTransform,    0xC0 );
+CHECK_FIELD_OFFSET( EIStaticModel,  m_modelResource,     0x15C );
 
 CHECK_FIELD_OFFSET( EICharacter,    m_transformMatrix,   0x160 );
 

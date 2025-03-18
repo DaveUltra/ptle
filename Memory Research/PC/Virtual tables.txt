@@ -46,6 +46,8 @@ one result should appear, that result being Harry's memory location.
 
 00870828 - ("EIParticleEmitDanger")
 
+008709D0 - ("EIDangerZone")
+
 00870B30 - ("EIDatasetHelper")
 
 00870E98 - ???
@@ -102,7 +104,6 @@ one result should appear, that result being Harry's memory location.
 0087CAD8 - Item structure (gasmask)
 
 0087D300 - Harry ("EIHarry")
-- [0087D300+2C] = PTLE+B2CD0 seems to be an update function, early return freezes all controls (expect pause) and Harry's animation
 
 0087D618 - Base player ("EIPlayer")
 
@@ -228,6 +229,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 00899DE0 - ("EISwingMonkey")
 
 0089A160 - Item structure (TNT)
+
+0089A1E4 - Input stream type (probably "EMemoryReadStream")
 
 0089A200 - Item structure (torch)
 
@@ -367,6 +370,14 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008ADEB8 - ("EIUpdateRegion")
 
+008ADF74 - ("ELONode")
+
+008ADF9C - ("ELOLeaf")
+
+008ADFC4 - ("ELOSplit")
+
+008ADFEC - ("ELightOctreeBig")
+
 008AE018 - ("ELightOctree")
 
 008AE044 - ("ELightOctreeSmall")
@@ -387,6 +398,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008AFD00 - Directional light ("EIDirLight")
 
+008AFDE0 - Spot light ("EISpotLight")
+
 008AFF90 - Particle effects ("EIParticleEmitSurface")
 - Small fire
 - Yellow trail on Monkey Temple entrance
@@ -397,6 +410,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 008B03A8 - ("EParticleBubble")
 
 008B0614 - Script resource ("ERScript")
+
+008B0D54 - Input stream type (probably "EStream")
 
 008B0FD4 - Bound tree node ("EBoundTreeNode")
 

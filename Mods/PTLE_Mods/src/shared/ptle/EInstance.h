@@ -2,6 +2,8 @@
 
 #include "EStorable.h"
 
+#include "math/AABB.h"
+
 class ERLevel;
 
 
@@ -9,7 +11,8 @@ class EInstance : public EStorable
 {
 public:
 
-	int unused0;
+	uint32_t m_uniqueID;
+
 	int unused1;
 	ERLevel* m_world;
 	int unused2;
@@ -18,5 +21,11 @@ public:
 
 	uint32_t m_flags;
 
-	char padding1[0x34];
+	char padding1[0xC];
+
+	AABB m_bounds;
+
+	char padding2[0xC];
+
+	uint32_t m_frameCount;
 };

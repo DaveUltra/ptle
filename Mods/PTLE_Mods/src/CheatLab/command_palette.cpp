@@ -159,12 +159,13 @@ static void _fast_native()
 
 
 // --------------------------------------------------------------------------------
-// Idol spawner (will crash on leaving the current area).
+// Idol spawner.
 // --------------------------------------------------------------------------------
 #include "ptle/EITreasureIdol.h"
 #include "ptle/ERLevel.h"
 GET_METHOD( 0x626670, void, AddToWorld, ERLevel*, EInstance* );
 GET_METHOD( 0x6265A0, void, AddToWorldFancy, ERLevel*, EInstance*, EInstance*, bool );
+GET_METHOD( 0x6268D0, void, ERLevel_SetupEntity, ERLevel*, EInstance*, EInstance* );
 GET_METHOD( 0x597400, void, InitIdol, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );
 GET_METHOD( 0x547160, void, SetSomethingForHarry, EIHarry*, void* );
 GET_METHOD( 0x4AD5E0, void, HarryInit, EIHarry*, Vector3f*, float );
@@ -184,8 +185,13 @@ static void _idol_spawn()
 
 	AddToWorld( harry->m_world, idol );
 	AddToWorldFancy( harry->m_world, idol->m_particleEmitter, idol, false );
+	ERLevel_SetupEntity( harry->m_world, idol, 0 );
 }
 
+
+// --------------------------------------------------------------------------------
+// Harry spawner (unstable).
+// --------------------------------------------------------------------------------
 static EIProjectile* _harry_spawn( uint32_t code )
 {
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
@@ -228,8 +234,11 @@ static EIProjectile* _harry_spawn( uint32_t code )
 
 #include "ptle/EINative.h"
 GET_FUNC( 0x6F8EC0, uint32_t, HashPath, char* );
+
+GET_METHOD( 0x5242A0, void, EINative_Init, EINative* );
 GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
-/*static EIProjectile* _netiv_spawn( uint32_t code )
+GET_METHOD( 0x527E50, int,  EIBeast_Deserialize2, EIBeast* );
+static void _netiv_spawn()
 {
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
 	EIHarry* harry = *harryPtr;
@@ -237,9 +246,9 @@ GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
 	const type_info_t* type = get_type_by_vtable( 0x88AFE8 );
 	EINative* native = instantiate_object<EINative>( type );
 
-	native->m_position.x = 0.0F;
-	native->m_position.y = 0.0F;
-	native->m_position.z = 0.0F;
+	native->m_position.x = harry->m_position.x;
+	native->m_position.y = harry->m_position.y;
+	native->m_position.z = harry->m_position.z;
 
 	native->m_rotation.x = 0.0F;
 	native->m_rotation.y = 0.0F;
@@ -248,23 +257,26 @@ GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
 
 	uint32_t hash = HashPath( "BNative" );
 	native->m_beastTypeCRC = hash;
+	native->m_beastTypeName = "native";
 	EIBeast_LoadBeastAsset( native );
+
+	EIBeast_Deserialize2( native );
 
 	if ( native->m_beastType ) {
 		log_printf( "Beast type asset load failed.\n" );
 	}
 
-	AddToWorld( harry->m_world, native );
+	ERLevel_SetupEntity( harry->m_world, native, 0 );
+	EINative_Init( native );
 
-	return EIProjectile_Create( code );
-}*/
+	AddToWorld( harry->m_world, native );
+}
 
 #include "ptle/EINPCBeast.h"
 
 GET_METHOD( 0x527ED0, void, EINPCBeast_Init, EINPCBeast* );
-GET_METHOD( 0x527E50, int,  EIBeast_Deserialize2, EIBeast* );
 
-static EIProjectile* _micay_spawn( uint32_t code )
+static void _micay_spawn()
 {
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
 	EIHarry* harry = *harryPtr;
@@ -272,16 +284,16 @@ static EIProjectile* _micay_spawn( uint32_t code )
 	const type_info_t* type = get_type_by_vtable( 0x88B868 );
 	EINPCBeast* native = instantiate_object<EINPCBeast>( type );
 
-	native->m_position.x = 0.0F;
-	native->m_position.y = 0.0F;
-	native->m_position.z = 0.0F;
+	native->m_position.x = harry->m_position.x;
+	native->m_position.y = harry->m_position.y;
+	native->m_position.z = harry->m_position.z;
 
 	native->m_rotation.x = 0.0F;
 	native->m_rotation.y = 0.0F;
 	native->m_rotation.z = 0.0F;
 	native->m_rotation.w = 1.0F;
 
-	//uint32_t hash = HashPath( "EBeastType/micay" );
+	//"micay", "bernard", "chief", "leech", "nicoleWchute", "nicole"
 	native->m_beastTypeName = "micay";
 	native->m_beastTypeCRC = 0x8252A12E;
 	EIBeast_LoadBeastAsset( native );
@@ -292,16 +304,10 @@ static EIProjectile* _micay_spawn( uint32_t code )
 		log_printf( "Beast type asset load failed.\n" );
 	}
 
+	ERLevel_SetupEntity( harry->m_world, native, 0 );
 	EINPCBeast_Init( native );
 
 	AddToWorld( harry->m_world, native );
-
-	return EIProjectile_Create( code );
-}
-
-static void _hh()
-{
-	injector::MakeCALL( 0x59540E, _micay_spawn );
 }
 
 
@@ -397,7 +403,9 @@ const command_t commands[] =
 	{ "All TNT",      _all_tnt },
 	{ "Crack Native", _fast_native },
 	{ "Spawn Idol",   _idol_spawn },
-	{ "Spawn Micay",  _hh },
+	{ "Spawn Micay",  _micay_spawn },
+	{ "Spawn Native", _netiv_spawn },
+	{ "",             _empty },
 	{ "List models",  _list_model_assets },
 	{ "List updates 1", _list_updates_1 },
 	{ "List updates 2", _list_updates_2 },

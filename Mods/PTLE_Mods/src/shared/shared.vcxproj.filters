@@ -61,5 +61,7 @@
     <ClInclude Include="ptle\EIHenchman.h" />
     <ClInclude Include="ptle\EIHowlerMonkey.h" />
     <ClInclude Include="ptle\EISupai.h" />
+    <ClInclude Include="ptle\containers\Array\Array.h" />
+    <ClInclude Include="ptle\math\AABB.h" />
   </ItemGroup>
 </Project>
