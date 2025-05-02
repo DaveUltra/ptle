@@ -1,0 +1,13 @@
+Rando Todo :
+- Randomize one-ways
+- Give torch in scorp temple
+- Implement configs
+
+Bugs :
+- Prevent easy softlocks
+  - Zone requiring upgrade behind softlock entrance.
+  - Make sure at least an upgrade is reachable from starting point?
+- Address MoI entrances
+- Address Jungle trail <-> Flooded courtyard
+- Address Jungle canyon -> Crash site
+- Address Twin outposts

@@ -1,6 +1,8 @@
 #include <stdint.h>
 
 #include "EIBushNinja.h"
+#include "EICameraBossPusca.h"
+#include "EICameraLook.h"
 #include "EIEffector.h"
 #include "EIExplorer.h"
 #include "EIHarry.h"
@@ -10,6 +12,7 @@
 #include "EIMegaMonkeyParent.h"
 #include "EINative.h"
 #include "EINPCBeast.h"
+#include "EIPlayerStart.h"
 #include "EIPointLight.h"
 #include "EIProjectile.h"
 #include "EIPusca.h"
@@ -17,6 +20,7 @@
 #include "EIShaman.h"
 #include "EISnowBowler.h"
 #include "EISnowScarab.h"
+#include "EIStClair.h"
 #include "EISupai.h"
 #include "EITreasureIdol.h"
 #include "ERAnim.h"
@@ -64,6 +68,11 @@ CHECK_TYPE_SIZE( EInstance,          0x64 );
 CHECK_TYPE_SIZE( EILight,            0x7C );
 CHECK_TYPE_SIZE( EIPointLight,       0x94 );
 CHECK_TYPE_SIZE( EIGameInstance,     0xB4 );
+CHECK_TYPE_SIZE( EICamera,           0x130 );
+CHECK_TYPE_SIZE( EICameraPit,        0x140 );
+CHECK_TYPE_SIZE( EICameraLook,       0x1A0 );
+CHECK_TYPE_SIZE( EICameraFollow,     0x7D0 );
+CHECK_TYPE_SIZE( EICameraBossPusca,  0x800 );
 CHECK_TYPE_SIZE( EICharacter,        0x2F0 );
 CHECK_TYPE_SIZE( EIPlayer,           0xB30 );
 CHECK_TYPE_SIZE( EIHarry,            0x1A20 );
@@ -71,6 +80,7 @@ CHECK_TYPE_SIZE( EIStaticModel,      0x1E0 );
 CHECK_TYPE_SIZE( EIDynamicModel,     0x1E0 );
 CHECK_TYPE_SIZE( EITreasureIdol,     0x210 );
 CHECK_TYPE_SIZE( EIEffector,         0x240 );
+CHECK_TYPE_SIZE( EIPlayerStart,      0x240 );
 CHECK_TYPE_SIZE( EIProjectile,       0x280 );
 CHECK_TYPE_SIZE( EIBeast,            0x6F0 );
 CHECK_TYPE_SIZE( EIShaman,           0x700 );
@@ -85,6 +95,7 @@ CHECK_TYPE_SIZE( EIMegaMonkeyParent, 0x7C0 );
 CHECK_TYPE_SIZE( EISnowScarab,       0x7D0 );
 CHECK_TYPE_SIZE( EIHenchman,         0x7E0 );
 CHECK_TYPE_SIZE( EIPusca,            0x7E0 );
+CHECK_TYPE_SIZE( EIStClair,          0x7F0 );
 CHECK_TYPE_SIZE( EIBushNinja,        0x850 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );
 CHECK_TYPE_SIZE( EResource,          0x14 );
@@ -105,6 +116,8 @@ CHECK_FIELD_OFFSET( EIStaticModel,  m_worldTransform,    0xC0 );
 CHECK_FIELD_OFFSET( EIStaticModel,  m_modelResource,     0x15C );
 
 CHECK_FIELD_OFFSET( EICharacter,    m_transformMatrix,   0x160 );
+
+CHECK_FIELD_OFFSET( EIPlayer,       m_rigidBodyMatrix,   0x840 );
 
 CHECK_FIELD_OFFSET( EISupai,        m_isTutorialSupai,   0x991 );
 

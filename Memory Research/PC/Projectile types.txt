@@ -1,0 +1,34 @@
+Projectile types
+- Give one of the codes below to function PTLE+157840 as the first stack parameter.
+
+1B6BFEE7 - Coconut (regular)
+
+2304CA96 - TNT number 3 for some reason
+
+2FBEB3BC - Stink bomb
+
+33CCCA9D - Large stink bomb with trail
+
+3496F0BE - Pusca ghost projectile
+
+53E3A6F3 - Pusca large explosive
+
+636F550B - (glitched?)
+
+660384B3 - Larger stink bombs?
+
+7DEE9568 - Merc TNT
+
+984B0C66 - Coconuts that destroy on first impact
+
+B28E9E3C - BLACK BALLS
+
+BBCAC492 - TNT
+
+DB9AE30C - Eyes of Doom projectiles?
+
+E49357F9 - Large stink bomb with trail that lasts longer
+
+F34A5DB2 - Coconut (poisonous)
+
+FAA603BB - (crashes the game)

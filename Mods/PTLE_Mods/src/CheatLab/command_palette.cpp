@@ -260,16 +260,17 @@ static void _netiv_spawn()
 	native->m_beastTypeName = "native";
 	EIBeast_LoadBeastAsset( native );
 
+	native->m_projectileType = 0x1B6BFEE7;
 	EIBeast_Deserialize2( native );
 
-	if ( native->m_beastType ) {
+	if ( !native->m_beastType ) {
 		log_printf( "Beast type asset load failed.\n" );
 	}
 
+	AddToWorld( harry->m_world, native );
+
 	ERLevel_SetupEntity( harry->m_world, native, 0 );
 	EINative_Init( native );
-
-	AddToWorld( harry->m_world, native );
 }
 
 #include "ptle/EINPCBeast.h"
@@ -388,9 +389,59 @@ static void _list_updates_2()
 
 
 
+#include "ptle/EScriptContext.h"
+GET_FUNC( 0x422910, void, Script_SetCurrentState_Original, EScriptContext* );
+void Script_SetCurrentState_Custom( EScriptContext* context )
+{
+	int* var = (int*) context->m_scriptStack[context->m_stackPointer - 2];
+	char** stateName = (char**) var+2;
+
+	log_printf( "Set State \"%s\"\n", *stateName );
+
+	bool cool = strncmp( *stateName, "native.", 7 ) == 0;
+	char* oldState = *stateName;
+	if ( cool ) {
+		*stateName = "native.fatal hit";
+	}
+
+	Script_SetCurrentState_Original( context );
+
+	if ( cool ) {
+		*stateName = oldState;
+	}
+}
+
+static void _auto_skip_cutscenes( bool enable )
+{
+	static char orig_42FE93[5];
+	static float custom_skip_time = 0.1F;   // We need our own memory because the "two" used is referenced by other stuff, so changing it breaks everything.
+
+	if ( enable ) {
+		// Save original bytes.
+		for (int i = 0; i < 5; i++) orig_42FE93[i] = ((char*) 0x42FE93)[i];
+
+		injector::MakeJMP( 0x42FE93, 0x42FF45 );                // Jump straight to cutscene skip call when skip time is elapsed.
+		injector::WriteMemory( 0x42FE84, &custom_skip_time );   // Make the code load OUR float.
+		custom_skip_time = 0.1F;                                // Make cutscene skip time shorter (default = 2.0F = 0x40000000).
+
+		injector::WriteMemory( 0x8F099C, &Script_SetCurrentState_Custom );
+	}
+	else {
+		injector::WriteMemoryRaw( 0x42FE93, orig_42FE93, sizeof(orig_42FE93), true );
+		custom_skip_time = 2.0F;
+	}
+}
+
+
+
 //
 // List of available commands / cheats.
 //
+
+const cheat_t cheats[] =
+{
+	{ "Auto Skip Cutscene", _auto_skip_cutscenes },
+};
 
 const command_t commands[] =
 {
@@ -411,7 +462,38 @@ const command_t commands[] =
 	{ "List updates 2", _list_updates_2 },
 };
 
+const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);
 const int NUM_COMMANDS = sizeof(commands) / sizeof(command_t);
+
+static bool cheat_states[NUM_CHEATS] = { false, };
+
+
+
+savepoint_t save_slots[10] = { {-1, }, };
+
+GET_METHOD( 0x60FEA0, void, EICharacter_SetPos, EICharacter*, Vector3f*, bool );
+GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
+
+bool load_saveslot( int i )
+{
+	/*if ( save_slots[i].levelID == -1 ) {
+		return false;
+	}*/
+
+	//ScheduleWorldLoad( (void*) 0x917028, levels_game.levels[id - 400].crc, false );
+	EIHarry* harry = *((EIHarry**) 0x917034);
+
+	EIHarry_Teleport( harry, &save_slots[i].playerTransform, false, 1.0F );
+
+	return true;
+}
+
+void save_saveslot( int i )
+{
+	EIHarry* harry = *((EIHarry**) 0x917034);
+
+	save_slots[i].playerTransform = harry->m_rigidBodyMatrix;
+}
 
 
 
@@ -424,18 +506,39 @@ const int NUM_COMMANDS = sizeof(commands) / sizeof(command_t);
 static HWND hwndPalette;
 static char className[] = "PaletteWindow";
 
+#define ID_CHEATS   100
+#define ID_COMMANDS 200
+
+#define ID_ITEMS    600
+#define ID_SKILLS   609
+
+#define ID_SAVESLOT_LOAD 620
+#define ID_SAVESLOT_SAVE 630
+
 static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-	int i = 0;
+	int i = 0, y = 0;
 
 	switch ( msg )
 	{
 	case WM_CREATE:
+		y = 10;
+		for ( const cheat_t* cheat = cheats; cheat != cheats + NUM_CHEATS; cheat++ ) {
+			CreateWindow( "BUTTON", cheat->name,
+				WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
+				10, y,
+				230, 20, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
+			y += 30;
+		}
+		y += 10;
 		for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
 			CreateWindow( "BUTTON", cmd->name,
-				WS_CHILD | WS_VISIBLE | BS_DEFPUSHBUTTON,
-				10 + (i & 1) * 120, 10 + (i / 2) * 30,
-				110, 20, hwnd, (HMENU) (i + 100), 0, 0 );
+				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+				10 + (i & 1) * 120, y,
+				110, 20, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
+			if ( i & 1 ) {
+				y += 30;
+			}
 		}
 		break;
 
@@ -450,8 +553,14 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 		{
 			int id = wparam;
 
-			if ( id >= 100 && id < 100 + NUM_COMMANDS ) {
-				const command_t* cmd = &commands[id - 100];
+			if ( id >= ID_CHEATS && id < ID_CHEATS + NUM_CHEATS ) {
+				i = id - ID_CHEATS;
+				const cheat_t* cmd = &cheats[i];
+				cheat_states[i] = !cheat_states[i];
+				cmd->func( cheat_states[i] );
+			}
+			else if ( id >= ID_COMMANDS && id < ID_COMMANDS + NUM_COMMANDS ) {
+				const command_t* cmd = &commands[id - ID_COMMANDS];
 				cmd->func();
 			}
 			else if ( id >= 400 && id < 400 + levels_game.count ) {
@@ -460,22 +569,34 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 			else if ( id >= 500 && id < 500 + levels_beta.count ) {
 				ScheduleWorldLoad( (void*) 0x917028, levels_beta.levels[id - 500].crc, false );
 			}
-			else if ( id >= 600 && id < 608 ) {
+			else if ( id >= ID_ITEMS && id < ID_ITEMS+9 ) {
 				ItemStruct* items = (ItemStruct*) 0x8EEB90;
-				items[id - 600].m_unlocked = !items[id - 600].m_unlocked;
+				items[id - ID_ITEMS].m_unlocked = !items[id - ID_ITEMS].m_unlocked;
 			}
-			else if ( id >= 608 && id < 614 ) {
+			else if ( id >= ID_SKILLS && id < ID_SKILLS+6 ) {
 				EIHarry* harry = *((EIHarry**) 0x917034);
 				if ( harry ) {
 					switch ( id ) {
-					case 608: harry->m_risingStrike = !harry->m_risingStrike; break;
-					case 609: harry->m_smashStrike  = !harry->m_smashStrike;  break;
-					case 610: harry->m_heroicDash   = !harry->m_heroicDash;   break;
-					case 611: harry->m_heroicDive   = !harry->m_heroicDive;   break;
-					case 612: harry->m_superSling   = !harry->m_superSling;   break;
-					case 613: harry->m_breakdance   = !harry->m_breakdance;   break;
+					case ID_SKILLS:   harry->m_risingStrike = !harry->m_risingStrike; break;
+					case ID_SKILLS+1: harry->m_smashStrike  = !harry->m_smashStrike;  break;
+					case ID_SKILLS+2: harry->m_heroicDash   = !harry->m_heroicDash;   break;
+					case ID_SKILLS+3: harry->m_heroicDive   = !harry->m_heroicDive;   break;
+					case ID_SKILLS+4: harry->m_superSling   = !harry->m_superSling;   break;
+					case ID_SKILLS+5: harry->m_breakdance   = !harry->m_breakdance;   break;
 					}
 				}
+			}
+			else if ( id >= ID_SAVESLOT_LOAD && id < ID_SAVESLOT_LOAD+10 ) {
+				if ( load_saveslot(id-ID_SAVESLOT_LOAD) ) {
+					log_printf( "Loaded save state.\n" );
+				}
+				else {
+					log_printf( "Failed to load state (slot might be unused).\n" );
+				}
+			}
+			else if ( id >= ID_SAVESLOT_SAVE && id < ID_SAVESLOT_SAVE+10 ) {
+				save_saveslot( id-ID_SAVESLOT_SAVE );
+				log_printf( "Saved state.\n" );
 			}
 		}
 		break;
@@ -489,20 +610,20 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 				switch ( LOWORD( wparam ) ) {
 				case 1:
-					for ( int i = 0; i < 8; i++ ) {
-						CheckMenuItem( subMenu, 600 + i, (items[i].m_unlocked) ? MF_CHECKED : MF_UNCHECKED );
+					for ( int i = 0; i < 9; i++ ) {
+						CheckMenuItem( subMenu, ID_ITEMS + i, (items[i].m_unlocked) ? MF_CHECKED : MF_UNCHECKED );
 					}
 					break;
 				case 2:
 					for ( int i = 0; i < 6; i++ ) {
-						EnableMenuItem( subMenu, 608 + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
+						EnableMenuItem( subMenu, ID_SKILLS + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
 					}
-					CheckMenuItem( subMenu, 608, (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, 609, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, 610, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, 611, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, 612, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, 613, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
+					CheckMenuItem( subMenu, ID_SKILLS,   (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
+					CheckMenuItem( subMenu, ID_SKILLS+1, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
+					CheckMenuItem( subMenu, ID_SKILLS+2, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
+					CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
+					CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
+					CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
 					break;
 				}
 			}
@@ -526,43 +647,70 @@ static HMENU create_menu()
 	HMENU goTo = CreateMenu(); {
 		HMENU beta = CreateMenu(); {
 			for ( int i = 0; i < levels_beta.count; i++ ) {
-				AppendMenu( beta, MF_STRING, 500 + i, levels_beta.levels[i].name );
+				AppendMenu( beta, MF_STRING, 500 + i, levels_beta.levels[i].displayName );
 			}
 
 			AppendMenu( goTo, MF_POPUP, (UINT_PTR) beta, "Beta" );
 		}
 
-		AppendMenu( goTo, MF_SEPARATOR, 0, 0 );
-
+		const int rows = 18;
 		for ( int i = 0; i < levels_game.count; i++ ) {
-			AppendMenu( goTo, MF_STRING, 400 + i, levels_game.levels[i].name );
+			UINT flags = MF_STRING;
+			if      ( i == 0 )        flags |= MF_MENUBARBREAK;
+			else if ( i % rows == 0 ) flags |= MF_MENUBREAK;
+
+			AppendMenu( goTo, flags, 400 + i, levels_game.levels[i].displayName );
 		}
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) goTo, "Go to" );
 	}
 
 	HMENU items = CreateMenu(); {
-		AppendMenu( items, MF_STRING, 600, "Canteen" );
-		AppendMenu( items, MF_STRING, 601, "Sling" );
-		AppendMenu( items, MF_STRING, 602, "Torch" );
-		AppendMenu( items, MF_STRING, 603, "Shield" );
-		AppendMenu( items, MF_STRING, 604, "Gas Mask" );
+		AppendMenu( items, MF_STRING, 607, "Canteen" );
+		AppendMenu( items, MF_STRING, 600, "Sling" );
+		AppendMenu( items, MF_STRING, 601, "Torch" );
+		AppendMenu( items, MF_STRING, 604, "Shield" );
+		AppendMenu( items, MF_STRING, 606, "Gas Mask" );
 		AppendMenu( items, MF_STRING, 605, "Raft" );
-		AppendMenu( items, MF_STRING, 606, "Pickaxes" );
-		AppendMenu( items, MF_STRING, 607, "TNT" );
+		AppendMenu( items, MF_STRING, 602, "Pickaxes" );
+		AppendMenu( items, MF_STRING, 603, "TNT" );
+		AppendMenu( items, MF_STRING, 608, "Stink Bomb" );   // TODO : doesn't work.
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) items, "Items" );
 	}
 
 	HMENU skills = CreateMenu(); {
-		AppendMenu( skills, MF_STRING, 608, "Rising Strike" );
-		AppendMenu( skills, MF_STRING, 609, "Smash Strike" );
-		AppendMenu( skills, MF_STRING, 610, "Heroic Dash" );
-		AppendMenu( skills, MF_STRING, 611, "Heroic Dive" );
-		AppendMenu( skills, MF_STRING, 612, "Super Sling" );
-		AppendMenu( skills, MF_STRING, 613, "Breakdance" );
+		AppendMenu( skills, MF_STRING, 609, "Rising Strike" );
+		AppendMenu( skills, MF_STRING, 610, "Smash Strike" );
+		AppendMenu( skills, MF_STRING, 611, "Heroic Dash" );
+		AppendMenu( skills, MF_STRING, 612, "Heroic Dive" );
+		AppendMenu( skills, MF_STRING, 613, "Super Sling" );
+		AppendMenu( skills, MF_STRING, 614, "Breakdance" );
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) skills, "Skills" );
+	}
+
+	HMENU saveSlots = CreateMenu(); {
+		HMENU load = CreateMenu(); {
+			for ( int i = 0; i < 10; i++ ) {
+				char name[256] = {0,};
+				sprintf( name, "Slot %d", i );
+				AppendMenu( load, MF_STRING, ID_SAVESLOT_LOAD+i, name );
+			}
+
+			AppendMenu( saveSlots, MF_POPUP, (UINT_PTR) load, "Load..." );
+		}
+		HMENU save = CreateMenu(); {
+			for ( int i = 0; i < 10; i++ ) {
+				char name[256] = {0,};
+				sprintf( name, "Slot %d", i );
+				AppendMenu( save, MF_STRING, ID_SAVESLOT_SAVE+i, name );
+			}
+
+			AppendMenu( saveSlots, MF_POPUP, (UINT_PTR) save, "Save..." );
+		}
+
+		AppendMenu( menu, MF_POPUP, (UINT_PTR) saveSlots, "Save Slots" );
 	}
 
 	return menu;

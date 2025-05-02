@@ -3,7 +3,6 @@
 #include "ptle/containers/TreeMap/TreeMap.h"
 
 class Matrix4f;
-class ERCharacter;
 
 
 // Exact size of this type is still unknown, but is at least 0x60 bytes.
@@ -18,7 +17,7 @@ public:
 
 	int unknown0;
 
-	ERCharacter* m_characterResource;
+	Matrix4f* unknown1;
 
 	char padding0[0x1C];
 

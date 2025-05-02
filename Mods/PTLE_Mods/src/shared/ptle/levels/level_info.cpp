@@ -6,76 +6,76 @@
 
 static level_info_t level_info[] =
 {
-	{ 0xEA667977, "Abandoned Cavern" },
-	{ 0xABD7CCD8, "Altar of Ages" },
-	{ 0x70EBFCA3, "Altar of Huitaca" },
-	{ 0xCFD2FE10, "Ancient El Dorado (Pusca)" },
-	{ 0x5511C46C, "Apu Illapu Shrine" },
-	{ 0x69F0CDE2, "Battered Bridge" },
-	{ 0x47508760, "Beta Volcano" },
-	{ 0x0EF63551, "Bittenbinder's Camp" },
-	{ 0xCD944049, "Butterfly Glade" },
-	{ 0x8B372E42, "Cavern Lake" },
-	{ 0x0081082C, "Chameleon Temple" },
-	{ 0x8147EA91, "Copacanti Lake" },
-	{ 0xEE8F6900, "Crash Site" },
-	{ 0x0DDE5470, "Crystal Cavern" },
-	{ 0x3E7EE822, "Ekkeko Ice Cavern" },
-	{ 0x9A0C8DF8, "Eyes of Doom" },
-	{ 0xF0F99C58, "Fire-bombed Towers" },
-	{ 0x3A811024, "Flooded Cave" },
-	{ 0xECC9D759, "Flooded Courtyard" },
-	{ 0x93F89D45, "Gates of El Dorado" },
-	{ 0x3292B6C9, "Great Tree" },
-	{ 0xDEDA69BC, "Jungle Canyon" },
-	{ 0x7A9B3870, "Jungle Trail" },
-	{ 0xE411440A, "KaBOOM!" },
-	{ 0x619E1126, "Ladder of Miles" },
-	{ 0x07ECCC35, "Mama-Oullo Tower" },
-	{ 0x02C7B675, "Monkey Temple (Spirit)" },
-	{ 0xF3B4DC8E, "Monkey Temple (Harry)" },
-	{ 0x907C492B, "Mountain Overlook" },
-	{ 0x1B8833D3, "Mountain Sled Run" },
-	{ 0xB8D5CE86, "Mouth of Inti" },
-	{ 0x099BF148, "Mysterious Temple" },
-	{ 0x0AF1CCFF, "Native Jungle" },
-	{ 0x05AA726C, "Native Village" },
-	{ 0x1553BBE1, "Penguin Den" },
-	{ 0x1F237F32, "Penguin Temple (Spirit)" },
-	{ 0x1B11EC74, "Penguin Temple (Harry)" },
-	{ 0x7A75D1A9, "Pickaxe Race" },
-	{ 0x4A3E4058, "Plane Cockpit" },
-	{ 0x53257119, "Plane Cutscene" },
-	{ 0x38C7AE7D, "Punchau Shrine" },
-	{ 0x9316749C, "Raft Bowling" },
-	{ 0x0C1C3E47, "Renegade Fort" },
-	{ 0x1CB1432D, "Renegade Headquarters" },
-	{ 0x99885996, "Ruins of El Dorado (Supai)" },
-	{ 0x0305DC42, "Scorpion Temple (Spirit)" },
-	{ 0x4B08BBEB, "Scorpion Temple (Harry)" },
-	{ 0x7652BAFC, "Spinja Lair" },
-	{ 0xA85A2793, "Statues of Ayar" },
-	{ 0xBA9370DF, "St. Claire's Excavation Camp (Day)" },
-	{ 0x72AD42FA, "St. Claire's Excavation Camp (Night)" },
-	{ 0xE97CB47C, "Teleport" },
-	{ 0x0D72E13F, "Tuco Shoot" },
-	{ 0x239A2165, "Turtle Monument" },
-	{ 0xE6B9138A, "Twin Outposts" },
-	{ 0xDE524DA6, "Twin Outposts (Underwater Cave)" },
-	{ 0x9D6149E1, "Underground Dam" },
-	{ 0x08E3C641, "Valley of the Spirits" },
-	{ 0x6F498BBD, "Viracocha Monoliths" },
-	{ 0xE8362F5F, "Viracocha Monoliths (Cutscene)" },
-	{ 0x0A1F2526, "Whack-A-Tuco" },
-	{ 0x62548B77, "White Valley" },
+	{ 0xEA667977, "c07",     "Abandoned Cavern" },
+	{ 0xABD7CCD8, "m01a",    "Altar of Ages" },
+	{ 0x70EBFCA3, "a04",     "Altar of Huitaca" },
+	{ 0xCFD2FE10, "a62",     "Ancient El Dorado (Pusca)" },
+	{ 0x5511C46C, "s58b",    "Apu Illapu Shrine" },
+	{ 0x69F0CDE2, "a14",     "Battered Bridge" },
+	{ 0x47508760, "0-justin", "Beta Volcano" },
+	{ 0x0EF63551, "m05",     "Bittenbinder's Camp" },
+	{ 0xCD944049, "b62",     "Butterfly Glade" },
+	{ 0x8B372E42, "s57",     "Cavern Lake" },
+	{ 0x0081082C, "A01",     "Chameleon Temple" },
+	{ 0x8147EA91, "s06",     "Copacanti Lake" },
+	{ 0xEE8F6900, "A03",     "Crash Site" },
+	{ 0x0DDE5470, "c09",     "Crystal Cavern" },
+	{ 0x3E7EE822, "S60",     "Ekkeko Ice Cavern" },
+	{ 0x9A0C8DF8, "c02",     "Eyes of Doom" },
+	{ 0xF0F99C58, "a17",     "Fire-bombed Towers" },
+	{ 0x3A811024, "b70",     "Flooded Cave" },
+	{ 0xECC9D759, "B03",     "Flooded Courtyard" },
+	{ 0x93F89D45, "a53",     "Gates of El Dorado" },
+	{ 0x3292B6C9, "a202",    "Great Tree" },
+	{ 0xDEDA69BC, "a100",    "Jungle Canyon" },
+	{ 0x7A9B3870, "a55",     "Jungle Trail" },
+	{ 0xE411440A, "o03",     "KaBOOM!" },
+	{ 0x619E1126, "save_a3", "Ladder of Miles" },
+	{ 0x07ECCC35, "a05",     "Mama-Oullo Tower" },
+	{ 0x02C7B675, "B01",     "Monkey Temple (Spirit)" },
+	{ 0xF3B4DC8E, "b01a",    "Monkey Temple (Harry)" },
+	{ 0x907C492B, "c53",     "Mountain Overlook" },
+	{ 0x1B8833D3, "s58",     "Mountain Sled Run" },
+	{ 0xB8D5CE86, "a63",     "Mouth of Inti" },
+	{ 0x099BF148, "M01",     "Mysterious Temple" },
+	{ 0x0AF1CCFF, "a50",     "Native Jungle" },
+	{ 0x05AA726C, "b05",     "Native Village" },
+	{ 0x1553BBE1, "s50",     "Penguin Den" },
+	{ 0x1F237F32, "S01",     "Penguin Temple (Spirit)" },
+	{ 0x1B11EC74, "S01a",    "Penguin Temple (Harry)" },
+	{ 0x7A75D1A9, "o04",     "Pickaxe Race" },
+	{ 0x4A3E4058, "a03b",    "Plane Cockpit" },
+	{ 0x53257119, "a02b",    "Plane Cutscene" },
+	{ 0x38C7AE7D, "a70",     "Punchau Shrine" },
+	{ 0x9316749C, "o02",     "Raft Bowling" },
+	{ 0x0C1C3E47, "b09",     "Renegade Fort" },
+	{ 0x1CB1432D, "B15",     "Renegade Headquarters" },
+	{ 0x99885996, "A02",     "Ruins of El Dorado (Supai)" },
+	{ 0x0305DC42, "C01",     "Scorpion Temple (Spirit)" },
+	{ 0x4B08BBEB, "C01a",    "Scorpion Temple (Harry)" },
+	{ 0x7652BAFC, "S14",     "Spinja Lair" },
+	{ 0xA85A2793, "a202b",   "Statues of Ayar" },
+	{ 0xBA9370DF, "b63",     "St. Claire's Excavation Camp (Day)" },
+	{ 0x72AD42FA, "b04",     "St. Claire's Excavation Camp (Night)" },
+	{ 0xE97CB47C, "save_warp_b_master", "Teleport" },
+	{ 0x0D72E13F, "o05",     "Tuco Shoot" },
+	{ 0x239A2165, "b60",     "Turtle Monument" },
+	{ 0xE6B9138A, "b52",     "Twin Outposts" },
+	{ 0xDE524DA6, "b52a",    "Twin Outposts (Underwater Cave)" },
+	{ 0x9D6149E1, "c06",     "Underground Dam" },
+	{ 0x08E3C641, "s19",     "Valley of the Spirits" },
+	{ 0x6F498BBD, "S04",     "Viracocha Monoliths" },
+	{ 0xE8362F5F, "s13",     "Viracocha Monoliths (Cutscene)" },
+	{ 0x0A1F2526, "o01",     "Whack-A-Tuco" },
+	{ 0x62548B77, "s51",     "White Valley" },
 };
 
 static level_info_t level_info_beta[] =
 {
-	{ 0xE9809967, "gym" },
-	{ 0x47508760, "0-justin (Beta Volcano Crash Site)" },
-	{ 0x303E8832, "0-Brad (Beta Mama-Oullo Tower)" },
-	{ 0x9FB1EC73, "0-Lacy (Shaman Horde)" },
+	{ 0xE9809967, "gym",      "gym" },
+	{ 0x47508760, "0-justin", "0-justin (Beta Volcano Crash Site)" },
+	{ 0x303E8832, "0-Brad",   "0-Brad (Beta Mama-Oullo Tower)" },
+	{ 0x9FB1EC73, "0-Lacy",   "0-Lacy (Shaman Horde)" },
 };
 
 
@@ -94,7 +94,7 @@ const char* level_get_name( uint32_t id )
 		return "INVALID_LEVEL";
 	}
 
-	return level_info[id].name;
+	return level_info[id].displayName;
 }
 
 uint32_t level_get_by_crc( uint32_t crc )
@@ -106,4 +106,14 @@ uint32_t level_get_by_crc( uint32_t crc )
 		}
 	}
 	return -1;
+}
+
+
+const level_info_t* level_get_info( uint32_t id )
+{
+	if ( id >= levels_t::NUM_LEVELS ) {
+		return 0;
+	}
+
+	return &level_info[id];
 }

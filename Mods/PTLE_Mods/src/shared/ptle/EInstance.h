@@ -5,6 +5,10 @@
 #include "math/AABB.h"
 
 class ERLevel;
+class ERScript;
+class Vector3f;
+class Vector4f;
+class Matrix4f;
 
 
 class EInstance : public EStorable
@@ -28,4 +32,39 @@ public:
 	char padding2[0xC];
 
 	uint32_t m_frameCount;
+
+
+
+	virtual void Init();
+	virtual void Tick();
+	virtual int func_unknown1();
+	virtual void func_unknown2();
+	virtual void func_unknown3();
+	virtual void func_unknown4();
+	virtual int func_unknown5();
+	virtual bool func_unknown6(void*, Vector3f*, Vector3f*, uint32_t);
+	virtual bool func_unknown7(void*, Vector3f*, Vector3f*, float, int);
+	virtual bool func_unknown8();
+	virtual void func_unknown9(Vector3f*, float*, int*);
+	virtual void func_unknown10();
+	virtual void SetFlags(uint32_t);
+	virtual void ClearFlags(uint32_t);
+	virtual void func_unknown11(bool, bool, bool);
+	virtual void func_unknown12(bool, bool);
+	virtual void GetBoundsCenterAndExtent(Vector4f*);
+	virtual void Deserialize(/*EStream*/ void*);
+	virtual bool func_unknown13();
+	virtual void CreateScriptContext(ERScript*, int);
+	virtual void func_unknown14();
+	virtual void func_unknown15();
+	virtual void func_unknown16();
+	virtual void func_unknown17(Vector4f*);
+	virtual void GetBoundsCenter(Vector3f*);
+	virtual void GetTransformMatrix(Matrix4f*);
+	virtual void func_unknown20();
+	virtual void func_unknown21();
+	virtual void func_unknown22();
+	virtual void func_unknown23();
+	virtual void func_unknown24();
+	virtual bool func_unknown25();
 };

@@ -63,5 +63,14 @@
     <ClInclude Include="ptle\EISupai.h" />
     <ClInclude Include="ptle\containers\Array\Array.h" />
     <ClInclude Include="ptle\math\AABB.h" />
+    <ClInclude Include="ptle\EBeastStateMachine.h" />
+    <ClInclude Include="ptle\EIStClair.h" />
+    <ClInclude Include="ptle\containers\HashMap\HashMap.h" />
+    <ClInclude Include="ptle\EIPlayerStart.h" />
+    <ClInclude Include="ptle\EICamera.h" />
+    <ClInclude Include="ptle\EICameraPit.h" />
+    <ClInclude Include="ptle\EICameraFollow.h" />
+    <ClInclude Include="ptle\EICameraBossPusca.h" />
+    <ClInclude Include="ptle\EICameraLook.h" />
   </ItemGroup>
 </Project>

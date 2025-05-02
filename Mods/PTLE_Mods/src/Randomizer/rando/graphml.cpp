@@ -4,6 +4,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <string>
 #include <set>
 using namespace std;
 
@@ -11,7 +12,7 @@ using namespace std;
 #define STARTING_AREA_COLOR "#ff8000"  // Orange
 #define UPGRADE_AREAS_COLOR "#0080ff"  // Blue
 #define IMPORTANT_STORY_TRIGGER_AREAS_COLOR "#ff0000"  // Red
-#define UNRANDOMIZED_EDGE_COLOR "#000000"  // Black
+#define UNRANDOMIZED_EDGE_COLOR "#707070"  // Gray
 #define CLOSED_DOOR_EDGE_COLOR "#ff0000"  // Red
 
 
@@ -60,6 +61,15 @@ static void write_fillStyle( ofstream& os, const char* color )
 	os << "ownStyles=\"{&quot;0&quot;:{" << "&quot;fillStyle&quot;: &quot;" << color << "&quot;" << "}}\"";
 }
 
+static void write_edgeStyle( ofstream& os, const char* color, bool dashed )
+{
+	int i = 0;
+	os << "ownStyles=\"{&quot;0&quot;:{";
+		if ( color ) { os << "&quot;strokeStyle&quot;: &quot;" << color << "&quot;"; i++; }
+		if ( dashed ) { if (i!=0) os << ','; os << "&quot;lineDash&quot;: 2"; i++; }
+	os << "}}\"";
+}
+
 static void write_vertices( ofstream& os, const std::set<uint32_t>& accessibleAreas )
 {
 	// TODO : Tell me with a straight face that the STL isn't stupid.
@@ -68,7 +78,15 @@ static void write_vertices( ofstream& os, const std::set<uint32_t>& accessibleAr
 
 	int px = 0;
 	for ( uint32_t levelID : accessibleAreas ) {
-		os << "<node positionX=\"" << (px % 10) * 100 << "\" positionY=\"" << (px / 10) * 100 << "\" id=\"" << levelID << "\" mainText=\"" << level_get_name(levelID) << "\" ";
+		// Remove parentheses from names (since we removed their counterpart anyway).
+		std::string name = level_get_name(levelID);
+		if ( levelID != levels_t::TWIN_OUTPOSTS_UNDERWATER ) {
+			size_t paren = name.find_last_of('(');
+			if ( paren != std::string::npos ) {
+				name = name.substr(0, paren - 1);
+			}
+		}
+		os << "<node positionX=\"" << (px % 10) * 100 << "\" positionY=\"" << (px / 10) * 100 << "\" id=\"" << levelID << "\" mainText=\"" << name << "\" ";
 
 		// Node coloring.
 		if ( levelID == rando_config.startingArea )
@@ -83,72 +101,92 @@ static void write_vertices( ofstream& os, const std::set<uint32_t>& accessibleAr
 	}
 }
 
-static void write_edges( ofstream& os, const std::set<Transition>& possibleTransitions )
+static void write_edges( ofstream& os, const std::map<Transition, Transition>& possibleTransitions )
 {
-	std::set<Transition> transitionsTwoWay;
-	std::set<Transition> transitionsOneWay;
+	std::map<Transition, Transition> transitionsTwoWay;
+	std::map<Transition, Transition> transitionsOneWay;
 
 	int edgeID = 0;
 
 	// Sort by directed / undirected.
-	for ( const Transition& actual : possibleTransitions ) {
-		Transition reverse = actual.mirror();
+	for ( const auto& p : possibleTransitions ) {
+		Transition real( p.first.areaFromID, p.second.areaToID );
+		Transition incoming( p.second.areaFromID, p.first.areaToID );
 
 		// Promote to two-way.
-		if ( transitionsOneWay.find(reverse) != transitionsOneWay.end() ) {
-			transitionsOneWay.erase(reverse);
-			transitionsTwoWay.emplace( actual );
+		if ( transitionsOneWay.find(real.mirror()) != transitionsOneWay.end() ) {
+			transitionsOneWay.erase(real.mirror());
+			transitionsTwoWay.emplace( real, incoming );
 		}
 		else {
-			transitionsOneWay.emplace( actual );
+			transitionsOneWay.emplace( real, incoming );
 		}
 	}
 
-	for ( const Transition& t : transitionsTwoWay ) {
-		os << "<edge id=\"" << edgeID << "\" source=\"" << t.areaFromID << "\" target=\"" << t.areaToID << "\" isDirect=\"false\" />";
+	for ( const auto& p : transitionsTwoWay ) {
+		const Transition& t = p.first;
+		Transition orig( p.first.areaFromID, p.second.areaToID );
+
+		os << "<edge id=\"" << edgeID << "\" source=\"" << t.areaFromID << "\" target=\"" << t.areaToID << "\" isDirect=\"false\" ";
+
+		bool lockedDoor = (softlockableTransitions.find(orig.mirror()) != softlockableTransitions.end());
+		if ( lockedDoor ) {
+			write_edgeStyle( os, CLOSED_DOOR_EDGE_COLOR, false );
+		}
+
+		os << " />";
 		edgeID++;
 	}
 
-	for ( const Transition& t : transitionsOneWay ) {
-		os << "<edge id=\"" << edgeID << "\" source=\"" << t.areaFromID << "\" target=\"" << t.areaToID << "\" isDirect=\"true\" />";
+	for ( const auto& p : transitionsOneWay ) {
+		const Transition& t = p.first;
+
+		os << "<edge id=\"" << edgeID << "\" source=\"" << t.areaFromID << "\" target=\"" << t.areaToID << "\" isDirect=\"true\" ";
+
+		bool lockedDoor = (softlockableTransitions.find(t) != softlockableTransitions.end());
+		if ( lockedDoor ) {
+			write_edgeStyle( os, CLOSED_DOOR_EDGE_COLOR, true );
+		}
+		else {
+			write_edgeStyle( os, 0, true );
+		}
+
+		os << " />";
 		edgeID++;
 	}
 }
 
 void write_graphml()
 {
-	const std::set<uint32_t> dontShow( DONT_SHOW, DONT_SHOW+_countof(DONT_SHOW) );
+	std::set<uint32_t> dontShow( DONT_SHOW, DONT_SHOW+_countof(DONT_SHOW) );
 
 	ofstream graph( "rando.graphml" );
 
 	graph << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	graph << "<graphml><graph id=\"Graph\" uidGraph=\"1\" uidEdge=\"1\">";
 
-	std::set<uint32_t> accessibleAreas;
-	std::set<Transition> possibleTransitions;
+	std::map<Transition, Transition> possibleTransitions;
 
-	for ( auto& p : transition_infos ) {
-		for ( const Area& area : p.second ) {
-			uint32_t fromID = level_get_by_crc(area.areaCRC);
-			if ( dontShow.find(fromID) != dontShow.end() ) continue;
+	for ( auto& p : level_infos ) {
+		uint32_t fromID = p.first;
+		Area* area = p.second;
+		if ( dontShow.find(fromID) != dontShow.end() ) continue;
+		if ( rando_map.getAccessibleAreas().find(fromID) == rando_map.getAccessibleAreas().end() ) continue;
 
-			for ( const Exit& exit : area.exits ) {
-				uint32_t toID = level_get_by_crc(exit.areaCRC);
-				if ( dontShow.find(toID) != dontShow.end() ) continue;
+		for ( const Exit& exit : area->exits ) {
+			uint32_t toID = level_get_by_crc(exit.areaCRC);
+			if ( dontShow.find(toID) != dontShow.end() ) continue;
 
-				Transition original( fromID, toID );
-				Transition redirect = original;
+			Transition original( fromID, toID );
+			Transition redirect = original;
 
-				spoof_transition( redirect );
+			rando_map.spoofTransition( redirect );
 
-				possibleTransitions.emplace( Transition(original.areaFromID, redirect.areaToID) );
-				accessibleAreas.emplace( original.areaFromID );
-				accessibleAreas.emplace( redirect.areaToID );
-			}
+			possibleTransitions.emplace( original, redirect );
 		}
 	}
 
-	write_vertices( graph, accessibleAreas );
+	write_vertices( graph, rando_map.getAccessibleAreas() );
 	write_edges( graph, possibleTransitions );
 
 	graph << "</graph></graphml>";

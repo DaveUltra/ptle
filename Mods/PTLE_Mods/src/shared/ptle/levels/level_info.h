@@ -77,7 +77,8 @@ struct levels_t
 struct level_info_t
 {
 	uint32_t crc;
-	const char* name;
+	const char* assetName;
+	const char* displayName;
 };
 
 struct level_collection_t
@@ -94,3 +95,10 @@ extern level_collection_t levels_beta;
 uint32_t level_get_crc( uint32_t id );
 const char* level_get_name( uint32_t id );
 uint32_t level_get_by_crc( uint32_t crc );
+
+const level_info_t* level_get_info( uint32_t id );
+
+
+#include "utils/func.h"
+
+GET_FUNC( 0x6F8EC0, uint32_t, level_HashString, char* );

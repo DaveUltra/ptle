@@ -1118,7 +1118,6 @@
       <ID>335</ID>
       <Description>"Fog enabled"</Description>
       <Options moManualExpandCollapse="1"/>
-      <ShowAsHex>1</ShowAsHex>
       <ShowAsSigned>0</ShowAsSigned>
       <VariableType>4 Bytes</VariableType>
       <Address>90f0ac</Address>
@@ -1929,6 +1928,150 @@
           </CheatEntries>
         </CheatEntry>
       </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>427</ID>
+      <Description>"Global_90F0AC"</Description>
+      <Options moManualExpandCollapse="1"/>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>90F0AC</Address>
+      <Offsets>
+        <Offset>0</Offset>
+      </Offsets>
+      <CheatEntries>
+        <CheatEntry>
+          <ID>422</ID>
+          <Description>"Camera shake duration"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>90f0ac</Address>
+          <Offsets>
+            <Offset>5da0</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>423</ID>
+          <Description>"Camera shake intensity"</Description>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>Float</VariableType>
+          <Address>90f0ac</Address>
+          <Offsets>
+            <Offset>5da4</Offset>
+          </Offsets>
+        </CheatEntry>
+        <CheatEntry>
+          <ID>424</ID>
+          <Description>"Camera Entity"</Description>
+          <Options moManualExpandCollapse="1"/>
+          <ShowAsHex>1</ShowAsHex>
+          <ShowAsSigned>0</ShowAsSigned>
+          <VariableType>4 Bytes</VariableType>
+          <Address>90F0AC</Address>
+          <Offsets>
+            <Offset>640C</Offset>
+          </Offsets>
+          <CheatEntries>
+            <CheatEntry>
+              <ID>432</ID>
+              <Description>"Player ref"</Description>
+              <ShowAsHex>1</ShowAsHex>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>4 Bytes</VariableType>
+              <Address>90F0AC</Address>
+              <Offsets>
+                <Offset>64c</Offset>
+                <Offset>640c</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>435</ID>
+              <Description>"Camera Target Yaw"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>Float</VariableType>
+              <Address>90F0AC</Address>
+              <Offsets>
+                <Offset>140</Offset>
+                <Offset>640c</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>436</ID>
+              <Description>"Camera Target Pitch"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>Float</VariableType>
+              <Address>90F0AC</Address>
+              <Offsets>
+                <Offset>148</Offset>
+                <Offset>640c</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>437</ID>
+              <Description>"Camera Target Distance"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>Float</VariableType>
+              <Address>90F0AC</Address>
+              <Offsets>
+                <Offset>14c</Offset>
+                <Offset>640c</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>431</ID>
+              <Description>"Camera Yaw"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>Float</VariableType>
+              <Address>90F0AC</Address>
+              <Offsets>
+                <Offset>154</Offset>
+                <Offset>640c</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>429</ID>
+              <Description>"Camera Pitch"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>Float</VariableType>
+              <Address>90F0AC</Address>
+              <Offsets>
+                <Offset>150</Offset>
+                <Offset>640c</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>420</ID>
+              <Description>"Camera Distance"</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>Float</VariableType>
+              <Address>90f0ac</Address>
+              <Offsets>
+                <Offset>144</Offset>
+                <Offset>640c</Offset>
+              </Offsets>
+            </CheatEntry>
+            <CheatEntry>
+              <ID>421</ID>
+              <Description>"Camera "tilt""</Description>
+              <ShowAsSigned>0</ShowAsSigned>
+              <VariableType>Float</VariableType>
+              <Address>90f0ac</Address>
+              <Offsets>
+                <Offset>264</Offset>
+                <Offset>640c</Offset>
+              </Offsets>
+            </CheatEntry>
+          </CheatEntries>
+        </CheatEntry>
+      </CheatEntries>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>433</ID>
+      <Description>"Can Camera Move"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>8e6314</Address>
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>

@@ -71,6 +71,28 @@ void InitMod()
 		injector::WriteMemoryRaw( 0x6E859C, bytes, sizeof(bytes), true );
 	}
 
+	/*injector::MakeRangedNOP( 0x669C87, 0x669CA9 );
+	injector::MakeNOP( 0x669C27, 8 );
+	injector::MakeNOP( 0x669C37, 8 );
+	injector::MakeNOP( 0x669C4E, 8 );
+	injector::MakeNOP( 0x669C60, 8 );
+	injector::MakeNOP( 0x669CA9, 8 );
+
+	injector::MakeNOP( 0x699C7E, 8 );
+	injector::MakeNOP( 0x699C9E, 8 );
+
+	injector::MakeNOP( 0x6944DF, 8 );
+
+	// MainGameLoop
+	injector::MakeNOP( 0x68A09A, 8 );
+	injector::MakeNOP( 0x68A126, 8 );
+	injector::MakeNOP( 0x68A13E, 8 );
+
+	// FindAsset blockers.
+	injector::MakeRangedNOP( 0x620C0C, 0x620C19 );
+	injector::MakeRangedNOP( 0x620C6F, 0x620C72 );
+	injector::MakeRangedNOP( 0x620C51, 0x620C54 );*/
+
 	log_printf( "PTLE Windowed Mode : Patch completed.\n" );
 }
 

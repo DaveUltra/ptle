@@ -19,6 +19,8 @@ one result should appear, that result being Harry's memory location.
 
 0086A4E0 - Movable models ("EIAnimPlatform")
 
+0086A850 - ("EAnimatedProjectile")
+
 0086B3C8 - Bats ("EIBats")
 
 0086C3D0 - Generic NPC / creature ("EIBeast")
@@ -54,17 +56,35 @@ one result should appear, that result being Harry's memory location.
 
 00870FAC - ???
 
+00871050 - ("EICameraBossPenguin")
+
 00871220 - ("EICameraPit")
+
+00871400 - ("EICameraBossPusca")
+
+008715F0 - ("EICameraFollow")
+
+00871840 - ("EICameraFollowPogo")
+
+00871C10 - ("EICameraLook")
 
 00871DF0 - ("EICameraPath")
 
+00871FB0 - ("EICameraPathFollow")
+
 00872210 - ("EICameraPathPlayback")
+
+00872410 - ("EICameraRing")
+
+00872770 - ("EICameraSpecial")
+
+00872AE8 - ("EICameraTethered")
 
 00872E98 - ("EICameraWatch")
 
 008732C8 - ("EIPlayerStart")
 
-00873B68 - Electric eel ("EIElectricEel")
+00873B68 - ("EIElectricEel")
 
 00874688 - ("EIEvilHarryMM")
 
@@ -97,9 +117,17 @@ one result should appear, that result being Harry's memory location.
 
 00879B90 - ("EIGamesTucoTarget")
 
+0087A110 - ("EGamesUI3dBowlingScore")
+
+0087A3D8 - ("EGamesUI3dScore")
+
+0087A750 - ("EGamesUI3dTimer")
+
 0087ADB8 - ("EGamesUIBomb")
 
 0087B320 - ("EGamesUIBowling")
+
+0087C9C0 - ("EGamesUIWackATuco")
 
 0087CAD8 - Item structure (gasmask)
 
@@ -149,6 +177,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 0088AFE8 - Native ("EINative")
 - Note : This vtable shares the same update function (+2C) as other NPC-related vtables.
+
+0088B370 - ("EINinjaBat")
 
 0088B4F0 - Bush ("EINinjaBush")
 
@@ -200,6 +230,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00894DD0 - ("EISavePoint")
 
+00895748 - ("ESaveUi")
+
 00896438 - Scorpion ("EIScorps")
 
 00896830 - ("EIScriptAnim")
@@ -238,13 +270,33 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 0089A6D8 - ("EITucoTuco")
 
+0089B860 - ("EUIDDDialogMenu")
+
+0089BA48 - ("EUIDDHintCardMenu")
+
+0089C170 - ("EUIDDLevelCardMenu")
+
 0089CDD0 - ???
+
+0089EDB0 - ("EUIDDTextPages")
 
 0089EEB8 - ("EUIHud")
 
 0089F4B8 - ("EUIHudButt")
 
+0089F608 - ("EUIHudCube")
+
+0089F840 - ("EUIHudInventory")
+
+0089FF50 - ("EUIHudInventoryMapping")
+
+008A0260 - ("EUIHudInvStone")
+
+008A04D8 - ("EUIHudLifeMeter")
+
 008A06E0 - ("EUIHudMain")
+
+008A0C20 - ("EUIInventoryMenu")
 
 008A18A0 - ("EIWackATuco")
 
@@ -292,6 +344,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 008A6330 - Base resource class ("EResource")
 
+008A6398 - ("EUIMenu")
+
 008A65C0 - ("EUIIcon")
 
 008A66C0 - ("EUIObjectNode")
@@ -329,6 +383,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 008A9868 - ("EIEffector")
 
 008A999C - ("ERSfx")
+
+008A9B78 - ??? (global object at 0x920FA0)
 
 008A9F68 - ("EIParticleEmitLimpet")
 
@@ -393,6 +449,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 008AEC00 - ("EParticle")
 
 008AEE18 - Spline particle emitter ("EIParticleEmitSpline")
+
+008AF1D0 - ("ESfx")
 
 008AF208 - Dataset resource ("ERDataset")
 

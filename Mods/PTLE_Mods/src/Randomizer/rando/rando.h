@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <map>
+#include <set>
 #include <stdint.h>
 
 
@@ -33,7 +34,7 @@ struct Area
 };
 
 // Major areas (jungle, mountains, caverns, ...).
-typedef std::map<std::string, std::vector<Area>> MajorAreas;
+typedef std::map<std::string, std::vector<Area*>> MajorAreas;
 
 // One-way level transition.
 struct Transition
@@ -95,18 +96,44 @@ extern RandoConfig rando_config;
 
 
 
+// Map.
+class RandoMap
+{
+public:
+
+	void generateMap();
+
+	bool spoofTransition( Transition& o );
+
+	inline const std::set<uint32_t>& getAccessibleAreas() const { return m_accessibleAreas; }
+	inline std::map<Transition, Transition>& getTransitionsMap() { return m_transitionsMap; }
+
+
+private:
+
+	void generateLegacy();
+	void generateLinkedTransitions();
+
+	std::set<uint32_t> m_accessibleAreas;
+	std::map<Transition, Transition> m_transitionsMap;   // Exit (currentLevel, normalDest) -> Entrance (whereFrom, redirectedDest).
+};
+
+extern RandoMap rando_map;
+
+
+
 // Levels & transitions, loaded from "transition_infos.json".
 extern MajorAreas transition_infos;
 
-// Randomized transitions, as a map of (original transition) -> (override transition).
-extern std::map<Transition, Transition> rando_transitions_map;
+// Area info for each level ID.
+extern std::map<uint32_t, Area*> level_infos;
+
+extern const std::set<Transition> softlockableTransitions;
 
 
 
 // Load configuration.
 void rando_init();
-
-void generate_randomized_map();
 
 void randomize_shaman_shop();
 void patch_shaman_shop();
@@ -114,7 +141,5 @@ void patch_shaman_shop();
 void prevent_transition_softlock();
 
 void write_graphml();
-
-bool spoof_transition( Transition& t );
 
 uint32_t* find_previous_area_memory();

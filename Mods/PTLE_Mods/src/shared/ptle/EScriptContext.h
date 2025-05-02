@@ -2,6 +2,8 @@
 
 #include "EStorable.h"
 
+class EInstance;
+
 
 class EScriptContext : public EStorable
 {
@@ -9,8 +11,11 @@ public:
 
 	int unknown0;
 	int m_stackPointer;
+	int unknown2;
 
-	char padding0[0x14];
+	EInstance* m_owningInstance;
+
+	char padding0[0xC];
 
 	void* unknown1;
 	EStorable* /* ( EScriptData* ) */ m_scriptStack[512];
