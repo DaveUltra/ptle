@@ -11,8 +11,6 @@ class EIStaticModel : public EIGameInstance
 {
 public:
 
-	char padding3[12];
-
 	Matrix4f m_worldTransform;
 	Matrix4f m_inverseWorldTransform;
 
@@ -23,9 +21,9 @@ public:
 
 	uint32_t m_modelCRC;
 
-	char padding4[0x14];
+	char padding3[0x14];
 
 	ERModel* m_modelResource;
 
-	char padding5[0x80];
+	char padding4[0x80];
 };

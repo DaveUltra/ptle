@@ -20,6 +20,8 @@ size = 0x11C
 
 803BFFA8 - Idol
 
+803D89B8 - ("EIEffector")
+
 
 Entity vtables :
 + 0x64 : Tick function

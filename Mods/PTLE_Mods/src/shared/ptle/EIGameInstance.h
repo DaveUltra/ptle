@@ -7,7 +7,10 @@ class EIGameInstance : public EInstance
 {
 public:
 
-	char padding2[0x50];
+	Vector3f unknown0;
+	Vector3f unknown1;
+
+	char padding2[0x38];
 
 
 	virtual void GetOrientationAngle(float*);

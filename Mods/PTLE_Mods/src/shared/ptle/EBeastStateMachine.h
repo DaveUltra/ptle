@@ -1,5 +1,14 @@
+#pragma once
 
+class EIBeast;
 class ERScript;
+
+
+struct MemberFuncCallback
+{
+	void (*m_func)();
+	char zero[0x0C];
+};
 
 
 class EBeastState
@@ -10,20 +19,47 @@ public:
 
 	char* m_name;
 
-	void (*m_func0)();
-	char padding0[0xC];
-	void (*m_func1)();
-	char padding1[0xC];
-	void (*m_func2)();
-	char padding2[0xC];
+	MemberFuncCallback m_onEnter;
+	MemberFuncCallback m_onUpdate;
+	MemberFuncCallback m_onLeave;
 
-	char padding3[0x10];
+	char padding3[0x0C];
+
+	int m_index;
 
 	ERScript* m_script0;
 	ERScript* m_script1;
 	ERScript* m_script2;
 
-	int unknown1;
+	uint32_t unknown1;
+};
+
+class EBeastCondition
+{
+public:
+
+	void* unknown0;
+
+	char* m_name;
+
+	EBeastCondition* unknown2;
+
+	char padding0[0x04];
+
+	MemberFuncCallback m_func;
+	int m_index;
+
+	char padding1[0x04];
+};
+
+class EBeastTransition
+{
+public:
+
+	void* m_transitionInfo;
+	EBeastCondition* m_condition;
+	EBeastState* m_stateA;
+	EBeastState* m_stateB;
 };
 
 
@@ -32,15 +68,17 @@ class EBeastStateMachine
 {
 public:
 
-	char padding0[0x8];
+	void* unknown0;
 
-	EBeastState* m_states;
+	char* m_beastTypeName;
 
-	char padding1[0x8];
+	EBeastState*      m_states;
+	EBeastCondition*  m_conditions;
+	EBeastTransition* m_transitions;
 
 	uint32_t m_numStates;
-
-	char padding2[0x8];
+	uint32_t m_numConditions;
+	uint32_t m_numTransitions;
 
 	uint32_t m_refCount;
 };

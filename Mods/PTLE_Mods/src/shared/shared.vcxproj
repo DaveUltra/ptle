@@ -83,6 +83,8 @@
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ptle\EIEvilHarryMM.h" />
+    <ClInclude Include="ptle\EIPorcupine.h" />
     <ClInclude Include="ptle\EICamera.h" />
     <ClInclude Include="ptle\EICameraBossPusca.h" />
     <ClInclude Include="ptle\EICameraFollow.h" />
@@ -107,6 +109,7 @@
     <ClInclude Include="ptle\EISupai.h" />
     <ClInclude Include="ptle\EScriptContext.h" />
     <ClInclude Include="ptle\math\AABB.h" />
+    <ClInclude Include="ptle\types\defs.h" />
     <ClInclude Include="utils\func.h" />
     <ClInclude Include="ptle\containers\TreeMap\TreeMap.h" />
     <ClInclude Include="ptle\EILight.h" />

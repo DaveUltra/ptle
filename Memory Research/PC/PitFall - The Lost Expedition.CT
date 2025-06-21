@@ -1159,6 +1159,14 @@
     </CheatEntry>
     <CheatEntry>
       <ID>389</ID>
+      <Description>"EIEffector DEBUG DISPLAY"</Description>
+      <ShowAsHex>1</ShowAsHex>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>Byte</VariableType>
+      <Address>920F3C</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>439</ID>
       <Description>"Global font pointer"</Description>
       <ShowAsHex>1</ShowAsHex>
       <ShowAsSigned>0</ShowAsSigned>
@@ -2072,6 +2080,13 @@
       <ShowAsSigned>0</ShowAsSigned>
       <VariableType>4 Bytes</VariableType>
       <Address>8e6314</Address>
+    </CheatEntry>
+    <CheatEntry>
+      <ID>438</ID>
+      <Description>"Pause the whole friggin game"</Description>
+      <ShowAsSigned>0</ShowAsSigned>
+      <VariableType>4 Bytes</VariableType>
+      <Address>8FB95C</Address>
     </CheatEntry>
   </CheatEntries>
   <UserdefinedSymbols/>

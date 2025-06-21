@@ -1,7 +1,9 @@
 #pragma once
 
+#include "ptle/types/defs.h"
 
-class Matrix4f
+
+ALIGN( class Matrix4f, 16 )
 {
 public:
 

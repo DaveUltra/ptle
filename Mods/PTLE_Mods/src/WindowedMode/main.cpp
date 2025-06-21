@@ -23,7 +23,7 @@ static void adjust_window_size()
 	*width = rect.right - rect.left;
 	*height = rect.bottom - rect.top;
 }
-
+#include <d3d9.h>
 void InitMod()
 {
 	log_printf( "PTLE Windowed Mode : Patching...\n" );
@@ -58,12 +58,12 @@ void InitMod()
 	// Renderer-related corrections.
 	{
 		// Allow Direct3D 9 context to be windowed, instead of fullscreen.
-		injector::WriteMemory<uint32_t>( 0x697EF4, 0xEF4 );
-		injector::WriteMemory<uint32_t>( 0x697EF8, 1 );
+		injector::WriteMemory<uint32_t>( 0x697EF4, 0xEF4 );  // Replace "d3dPresentParams.RefreshRateInHz = 0"
+		injector::WriteMemory<uint32_t>( 0x697EF8, 1 );      // by      "d3dPresentParams.WindowedMode = 1"
 
 		// Correct window resolution.
-		injector::MakeCALL( 0x60D4CD, adjust_window_size );
-		injector::MakeNOP( 0x60D4CD+5 );
+		injector::MakeCALL( 0x60D4CD, adjust_window_size );  // We replace a "ShowCursor()" call by a function
+		injector::MakeNOP( 0x60D4CD+5 );                     // that corrects client size based on window decorations.
 
 		// Remove the game's adjust and move our own values.
 		injector::MakeRangedNOP( 0x6E859C, 0x6E85E6 );
@@ -95,7 +95,6 @@ void InitMod()
 
 	log_printf( "PTLE Windowed Mode : Patch completed.\n" );
 }
-
 
 BOOL WINAPI DllMain( HINSTANCE hinstace, DWORD reason, LPVOID )
 {

@@ -4,6 +4,7 @@
 #include "EICameraBossPusca.h"
 #include "EICameraLook.h"
 #include "EIEffector.h"
+#include "EIEvilHarryMM.h"
 #include "EIExplorer.h"
 #include "EIHarry.h"
 #include "EIHenchman.h"
@@ -97,6 +98,7 @@ CHECK_TYPE_SIZE( EIHenchman,         0x7E0 );
 CHECK_TYPE_SIZE( EIPusca,            0x7E0 );
 CHECK_TYPE_SIZE( EIStClair,          0x7F0 );
 CHECK_TYPE_SIZE( EIBushNinja,        0x850 );
+CHECK_TYPE_SIZE( EIEvilHarryMM,      0x8B0 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );
 CHECK_TYPE_SIZE( EResource,          0x14 );
 CHECK_TYPE_SIZE( ERShader,           0x20 );

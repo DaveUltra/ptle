@@ -312,6 +312,76 @@ static void _micay_spawn()
 }
 
 
+#include "ptle/EBeastStateMachine.h"
+static void log_state_machine_info( EBeastStateMachine* sm )
+{
+	if ( !sm->m_states ) return;
+
+	log_printf( "\"%s\"\n", sm->m_beastTypeName );
+	log_printf( "%d states :\n", sm->m_numStates );
+	for ( int i = 0; i < sm->m_numStates; i++ ) {
+		log_printf( "- %d : \"%s\"\n", i, sm->m_states[i].m_name );
+	}
+
+	log_printf( "%d conditions :\n", sm->m_numConditions );
+	for ( int i = 0; i < sm->m_numConditions; i++ ) {
+		log_printf( "- %d : \"%s\"\n", i, sm->m_conditions[i].m_name );
+	}
+
+	log_printf( "%d transitions :\n", sm->m_numTransitions );
+	for ( int i = 0; i < sm->m_numTransitions; i++ ) {
+		EBeastTransition& t = sm->m_transitions[i];
+		log_printf( "- %d -> %d (%d)\n", t.m_stateA->m_index, t.m_stateB->m_index, t.m_condition->m_index );
+	}
+}
+static void _ai_patch()
+{
+	// St.Claire super throw.
+	void* dummy = (void*) (0x899130);
+	EBeastStateMachine* stc = ((EIBeast*)(&dummy))->GetStateMachine();
+
+	if ( stc->m_states ) {
+		// Get animation complete.
+		EBeastCondition* condAnimComplete = stc->m_conditions + 6;
+
+		// Get both states to loop in.
+		EBeastState* stateTntThrowStart = stc->m_states + 5;
+		EBeastState* stateDoubleThrow = stc->m_states + 1;
+
+		// Tighten loop between TNT throw start & TNT throw.
+		EBeastTransition aToB = { 0, condAnimComplete, stateTntThrowStart, stateDoubleThrow };
+		EBeastTransition bToA = { 0, condAnimComplete, stateDoubleThrow, stateTntThrowStart };
+
+		// Inject our transitions.
+		stc->m_transitions[0] = aToB;
+		stc->m_transitions[1] = bToA;
+	}
+
+
+	// Pusca minions.
+	dummy = (void*) (0x894398);
+	EBeastStateMachine* puscaMinion = ((EIBeast*)(&dummy))->GetStateMachine();
+
+	if ( puscaMinion->m_states ) {
+		EBeastCondition* condAnimComplete = puscaMinion->m_conditions + 0;
+		EBeastCondition* condYes = puscaMinion->m_conditions + 5;
+
+		EBeastState* stateFire = puscaMinion->m_states + 1;
+		EBeastState* stateLoad = puscaMinion->m_states + 6;
+
+		// Repeatedly fire.
+		puscaMinion->m_transitions[0].m_stateA = stateLoad;
+		puscaMinion->m_transitions[0].m_stateB = stateFire;
+		puscaMinion->m_transitions[0].m_condition = condYes;
+
+		puscaMinion->m_transitions[1].m_stateA = stateFire;
+		puscaMinion->m_transitions[1].m_stateB = stateLoad;
+		puscaMinion->m_transitions[1].m_condition = condAnimComplete;
+	}
+	log_state_machine_info( puscaMinion );
+}
+
+
 // --------------------------------------------------------------------------------
 // List all loaded models.
 // --------------------------------------------------------------------------------
@@ -432,6 +502,12 @@ static void _auto_skip_cutscenes( bool enable )
 	}
 }
 
+static void _effector_debug_draw( bool enable )
+{
+	bool* effectorDebugDraw = (bool*) (0x920F3C);
+	*effectorDebugDraw = enable;
+}
+
 
 
 //
@@ -441,6 +517,7 @@ static void _auto_skip_cutscenes( bool enable )
 const cheat_t cheats[] =
 {
 	{ "Auto Skip Cutscene", _auto_skip_cutscenes },
+	{ "Effector Debug Draw", _effector_debug_draw },
 };
 
 const command_t commands[] =
@@ -456,7 +533,7 @@ const command_t commands[] =
 	{ "Spawn Idol",   _idol_spawn },
 	{ "Spawn Micay",  _micay_spawn },
 	{ "Spawn Native", _netiv_spawn },
-	{ "",             _empty },
+	{ "AI patch",     _ai_patch },
 	{ "List models",  _list_model_assets },
 	{ "List updates 1", _list_updates_1 },
 	{ "List updates 2", _list_updates_2 },
@@ -517,27 +594,31 @@ static char className[] = "PaletteWindow";
 
 static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-	int i = 0, y = 0;
+	int y = 0;
 
 	switch ( msg )
 	{
 	case WM_CREATE:
-		y = 10;
-		for ( const cheat_t* cheat = cheats; cheat != cheats + NUM_CHEATS; cheat++ ) {
-			CreateWindow( "BUTTON", cheat->name,
-				WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
-				10, y,
-				230, 20, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
-			y += 30;
-		}
-		y += 10;
-		for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
-			CreateWindow( "BUTTON", cmd->name,
-				WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-				10 + (i & 1) * 120, y,
-				110, 20, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
-			if ( i & 1 ) {
+		{
+			y = 10;
+			int i = 0;
+			for ( const cheat_t* cheat = cheats; cheat != cheats + NUM_CHEATS; cheat++, i++ ) {
+				CreateWindow( "BUTTON", cheat->name,
+					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
+					10, y,
+					230, 20, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
 				y += 30;
+			}
+			y += 10;
+			i = 0;
+			for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
+				CreateWindow( "BUTTON", cmd->name,
+					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+					10 + (i & 1) * 120, y,
+					110, 20, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
+				if ( i & 1 ) {
+					y += 30;
+				}
 			}
 		}
 		break;
@@ -554,7 +635,7 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 			int id = wparam;
 
 			if ( id >= ID_CHEATS && id < ID_CHEATS + NUM_CHEATS ) {
-				i = id - ID_CHEATS;
+				int i = id - ID_CHEATS;
 				const cheat_t* cmd = &cheats[i];
 				cheat_states[i] = !cheat_states[i];
 				cmd->func( cheat_states[i] );

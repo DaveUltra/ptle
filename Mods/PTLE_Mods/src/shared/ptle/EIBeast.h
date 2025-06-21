@@ -5,6 +5,7 @@
 #include "ptle/math/Vector4f.h"
 
 class EResource;
+class EBeastStateMachine;
 
 
 class EIBeast : public EICharacter
@@ -32,5 +33,9 @@ public:
 	virtual bool func_unknown60();
 	virtual void func_unknown61();
 	virtual void func_unknown62();
-
+	virtual EBeastStateMachine* GetStateMachine();
+	virtual bool func_unknown63();
+	virtual void func_unknown64();
+	virtual void func_unknown65();
+	virtual void func_unknown66();
 };

@@ -40,7 +40,7 @@ one result should appear, that result being Harry's memory location.
 0086E660 - Cutscene entity ("EICinematic")
 - Note : it is possible to play with the cutscene skipping timer in the entity's update function (+2C).
 
-0086E8C8 - ???
+0086E8C8 - ("EICoverObject")
 
 0086FD18 - Crocodiles ("EICrocs")
 
@@ -66,6 +66,8 @@ one result should appear, that result being Harry's memory location.
 
 00871840 - ("EICameraFollowPogo")
 
+00871A48 - ("EICameraFollowTargetOnly")
+
 00871C10 - ("EICameraLook")
 
 00871DF0 - ("EICameraPath")
@@ -76,9 +78,15 @@ one result should appear, that result being Harry's memory location.
 
 00872410 - ("EICameraRing")
 
+008725C8 - ("EICameraSlingAim")
+
 00872770 - ("EICameraSpecial")
 
+00872908 - ("EICameraSwimUfo")
+
 00872AE8 - ("EICameraTethered")
+
+00872CC8 - ("EICameraUfo")
 
 00872E98 - ("EICameraWatch")
 
@@ -127,9 +135,13 @@ one result should appear, that result being Harry's memory location.
 
 0087B320 - ("EGamesUIBowling")
 
+0087BA58 - ("EGamesUIHogan")
+
 0087C9C0 - ("EGamesUIWackATuco")
 
 0087CAD8 - Item structure (gasmask)
+
+0087CDD0 - ("EIGrabable")
 
 0087D300 - Harry ("EIHarry")
 
@@ -161,6 +173,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 00882B50 - ("EILadder")
 
 00882FA8 - ("EILever")
+
+00883100 - ("EIUseable")
 
 008832D8 - ("EILightbeam")
 
@@ -199,6 +213,10 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 00890840 - Foliage ("EIPlant")
 
 00890A40 - Stink plant ("EIPlantNox")
+
+00890E50 - ("EIPlayerBeast")
+
+00891188 - ("EPlayerIceCube")
 
 00891358 - Player-controlled Monkey ("EIPlayerMonkey")
 
@@ -462,6 +480,8 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 - Small fire
 - Yellow trail on Monkey Temple entrance
 - Blue particles during monkey transformation cutscene
+
+008B01A0 - ("EIStaticSubModel")
 
 008B02C4 - Texture resource ("ERTexture")
 
