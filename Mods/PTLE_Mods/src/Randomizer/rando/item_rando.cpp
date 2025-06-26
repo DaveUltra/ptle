@@ -3,6 +3,9 @@
 #include "rando.h"
 
 #include "ptle/EIHarry.h"
+#include "ptle/EScriptContext.h"
+#include "ptle/levels/level_info.h"
+
 #include "injector/injector.hpp"
 #include "utils/func.h"
 #include "utils/log.h"
@@ -17,6 +20,13 @@
 // Definitions.
 //
 
+GET_METHOD( 0x506170, void, UnlockItem, void*, uint32_t );
+GET_FUNC( 0x4E9EC0, void, Script_HarryIsInInventory, EScriptContext* );
+GET_FUNC( 0x65BDF0, int*, PopScriptVariable_Int, EScriptContext* );
+GET_FUNC( 0x65C880, int*, GetOutVariable, EScriptContext* );
+
+static ItemStruct* _get_item_by_hash( uint32_t itemHash );
+
 enum UnlockableType
 {
 	INVENTORY_ITEM = 0,
@@ -30,13 +40,49 @@ struct Unlockable
 	UnlockableType m_type;
 	uint32_t m_itemHash;
 	const char* m_displayName;
+
+	void grant()
+	{
+		EIHarry* harry;
+
+		switch ( m_type )
+		{
+		case INVENTORY_ITEM:
+			harry = *((EIHarry**) 0x917034);
+			UnlockItem( harry->m_itemHotbar, m_itemHash );
+			break;
+		}
+	}
+
+	void revoke()
+	{
+		switch ( m_type )
+		{
+		case INVENTORY_ITEM:
+			_get_item_by_hash( m_itemHash )->m_unlocked = false;
+			break;
+		}
+	}
 };
 
 
-struct less : public std::less<Unlockable*>
+static Unlockable g_unlockableItems[] =
 {
-	bool operator()( Unlockable* const a, Unlockable* const b )
-	{
+	{ INVENTORY_ITEM, 0x915AA574, "Sling" },
+	{ INVENTORY_ITEM, 0x04ADF9C7, "Torch" },
+	{ INVENTORY_ITEM, 0xC024157C, "Pickaxes" },
+	{ INVENTORY_ITEM, 0x9608A818, "TNT" },
+	{ INVENTORY_ITEM, 0xEE6B156E, "Shield" },
+	{ INVENTORY_ITEM, 0xFB3D82AC, "Raft" },
+	{ INVENTORY_ITEM, 0xCFC909C3, "Gas Mask" },
+	{ INVENTORY_ITEM, 0xE51C8F72, "Canteen" },
+	//{ INVENTORY_ITEM, 0x55A51DAB, "Stink Bomb" },
+};
+
+
+// Global item rando mapping.
+struct less : public std::less<Unlockable*> {
+	bool operator()( Unlockable* const a, Unlockable* const b ) {
 		if ( a->m_type == b->m_type ) {
 			return a->m_itemHash < b->m_itemHash;
 		}
@@ -45,24 +91,7 @@ struct less : public std::less<Unlockable*>
 		}
 	}
 };
-
-
-static Unlockable g_unlockableItems[] =
-{
-	{ INVENTORY_ITEM, 0x915AA574, "Sling" },   // Sling.
-	{ INVENTORY_ITEM, 0x04ADF9C7, "Torch" },   // Torch.
-	{ INVENTORY_ITEM, 0xC024157C, "Pickaxes" },   // Pickaxes.
-	{ INVENTORY_ITEM, 0x9608A818, "TNT" },   // TNT.
-	{ INVENTORY_ITEM, 0xEE6B156E, "Shield" },   // Shield.
-	{ INVENTORY_ITEM, 0xFB3D82AC, "Raft" },   // Raft.
-	{ INVENTORY_ITEM, 0xCFC909C3, "Gas Mask" },   // Gas Mask.
-	{ INVENTORY_ITEM, 0xE51C8F72, "Canteen" },   // Canteen.
-	//{ INVENTORY_ITEM, 0x55A51DAB, "Stink Bomb" },   // Stink Bomb.
-};
-
 static std::map<Unlockable*, Unlockable*, less> g_unlockablesMap;
-
-GET_METHOD( 0x506170, void, UnlockItem, void*, uint32_t );
 
 
 
@@ -82,29 +111,6 @@ static ItemStruct* _get_item_by_hash( uint32_t itemHash )
 	return 0;
 }
 
-static void _grant_unlockable( Unlockable* u )
-{
-	EIHarry* harry;
-
-	switch ( u->m_type )
-	{
-	case INVENTORY_ITEM:
-		harry = *((EIHarry**) 0x917034);
-		UnlockItem( harry->m_itemHotbar, u->m_itemHash );
-		break;
-	}
-}
-
-static void _revoke_unlockable( Unlockable* u )
-{
-	switch ( u->m_type )
-	{
-	case INVENTORY_ITEM:
-		_get_item_by_hash( u->m_itemHash )->m_unlocked = false;
-		break;
-	}
-}
-
 static void _UnlockItem_custom( void* self, uint32_t itemHash )
 {
 	// Find override.
@@ -117,9 +123,25 @@ static void _UnlockItem_custom( void* self, uint32_t itemHash )
 		return;
 	}
 
-	_grant_unlockable( it->second );
+	it->second->grant();
 }
 MAKE_THISCALL_WRAPPER( UnlockItem_custom, _UnlockItem_custom );
+
+static void Script_HarryIsInInventory_custom( EScriptContext* context )
+{
+	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
+
+	// Plane cockpit cutscene checks if we have canteen, just spoof the answer with "no".
+	if ( currentAreaCRC == levelCRC::PLANE_COCKPIT ) {
+		PopScriptVariable_Int( context );
+		int* out = GetOutVariable( context );
+
+		*out = 0;
+	}
+	else {
+		Script_HarryIsInInventory( context );
+	}
+}
 
 
 
@@ -156,6 +178,8 @@ void item_rando_init()
 
 
 	// Code injection.
-	injector::MakeCALL( 0x4E9E51, UnlockItem_custom );   // Intercept item unlock.
+	injector::MakeCALL( 0x4E9E51, UnlockItem_custom );   // Intercept item unlock ("HarryAddInventoryItem" script function).
+	injector::MakeCALL( 0x598036, UnlockItem_custom );   // Intercept item unlock (picking up an EITreasure).
 	injector::MakeRangedNOP( 0x4E9D6F, 0x4E9D83 );       // Remove hotbar autoset for the first 4 items.
+	injector::WriteMemory( 0x8EF35C, Script_HarryIsInInventory_custom );   // Disable Plane Cockpit's check for canteen.
 }
