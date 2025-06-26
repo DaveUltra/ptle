@@ -52,15 +52,6 @@
 #include "rando/menu_patcher.h"
 
 
-enum TwinOutpostsWaterExits
-{
-	JUNGLE_TO_WATER  = 0x9D1A6D4A,
-	BURNING_TO_WATER = 0x7C65128A,
-	WATER_TO_JUNGLE  = 0x00D15464,
-	WATER_TO_BURNING = 0xE1AE2BA4
-};
-
-
 
 void ensure_item_swap()
 {
@@ -72,8 +63,6 @@ GET_METHOD( 0x5EBA90, void, ScheduleWorldLoad, void*, uint32_t, bool );
 
 void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 {
-	extern uint32_t rando_prev_area;
-
 	ensure_item_swap();
 
 	if ( rando_config.randomizeShamanShop ) {
@@ -102,9 +91,6 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 	//case 0xF3ACDE92:   // Apu Illapu to White Valley.
 	}
 
-
-	// Update previous area.
-	rando_prev_area = prevAreaCRC;
 
 	// Transition in progress.
 	Transition original( prevAreaCRC, targetAreaCRC );
@@ -255,11 +241,13 @@ char* get_patched_level_name( char* orig )
 	case 0x1A94503D:  // "warp_c"
 		tr.areaToID = levelCRC::TELEPORT;
 		break;
+
 	case 0xE6B9138A:  // "b52"  (Twin Outposts)
 	case 0x4EED5037:  // "b52n" (Jungle Outpost)    | These two are only used
 	case 0x2DEB3CEE:  // "b52s" (Burning Outpost)   | in the underwater passage.
 		tr.areaToID = 0xE6B9138A;
 		break;
+
 	default:
 		tr.areaToID = destCRC;
 		break;
@@ -269,6 +257,14 @@ char* get_patched_level_name( char* orig )
 	if ( !rando_map.spoofTransition( tr ) ) {
 		log_printf( "Failed.\n" );
 		return orig;
+	}
+
+	// Areas that do not have a name.
+	switch ( tr.areaToID )
+	{
+	case levelCRC::MONKEY_SPIRIT:   tr.areaToID = levelCRC::MONKEY_TEMPLE;   break;
+	case levelCRC::SCORPION_SPIRIT: tr.areaToID = levelCRC::SCORPION_TEMPLE; break;
+	case levelCRC::PENGUIN_SPIRIT:  tr.areaToID = levelCRC::PENGUIN_TEMPLE;  break;
 	}
 
 	// Compose transition string.

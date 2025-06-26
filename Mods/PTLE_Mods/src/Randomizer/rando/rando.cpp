@@ -15,6 +15,15 @@
 #include <time.h>
 
 
+enum TwinOutpostsWaterExits
+{
+	JUNGLE_TO_WATER  = 0x9D1A6D4A,
+	BURNING_TO_WATER = 0x7C65128A,
+	WATER_TO_JUNGLE  = 0x00D15464,
+	WATER_TO_BURNING = 0xE1AE2BA4
+};
+
+
 // Config.
 RandoConfig::RandoConfig()
 	: seed( 0 )
@@ -30,9 +39,6 @@ RandoConfig::RandoConfig()
 
 RandoConfig rando_config;
 RandoMap rando_map;
-
-uint32_t rando_prev_area = -1;
-
 
 
 std::set<Transition> disabledTransitions;
@@ -259,8 +265,6 @@ void rando_init()
 	}
 
 	load_config();
-
-	rando_prev_area = rando_config.startingArea;
 
 	set_excluded_levels();
 	set_disabled_transitions();
@@ -627,21 +631,53 @@ void RandoMap::generateMap()
 
 bool RandoMap::spoofTransition( Transition& o )
 {
-	// Where the actual hijacking takes place.
-	Transition original, redirect;
-	original = o;
-
 	// Skip Viracocha cutscene entirely (then proceed with regular hijacking).
-	if ( original.areaToID == levelCRC::VIRACOCHA_MONOLITHS_CUTSCENE ) {
-		original.areaToID = levelCRC::VIRACOCHA_MONOLITHS;
+	if ( o.areaToID == levelCRC::VIRACOCHA_MONOLITHS_CUTSCENE ) {
+		o.areaToID = levelCRC::VIRACOCHA_MONOLITHS;
+		goto _hijack;
 	}
 
-	auto it = m_transitionsMap.find( original );
+	// Remove twin outpost underwater cave here.
+	if ( rando_config.skipWaterLevels ) {
+		// Jungle Outpost to Water -> Reroute to Burning Outpost.
+		if ( o.areaFromID == TwinOutpostsWaterExits::JUNGLE_TO_WATER ) {
+			o.areaFromID = TwinOutpostsWaterExits::WATER_TO_BURNING;
+			o.areaToID   = levelCRC::TWIN_OUTPOSTS;
+			return true;
+		}
+		// Burning Outpost to Water -> Reroute to Jungle Outpost.
+		else if ( o.areaFromID == TwinOutpostsWaterExits::BURNING_TO_WATER ) {
+			o.areaFromID = TwinOutpostsWaterExits::WATER_TO_JUNGLE;
+			o.areaToID   = levelCRC::TWIN_OUTPOSTS;
+			return true;
+		}
+	}
+
+	// Refer to transitions map.
+_hijack:
+	auto it = m_transitionsMap.find( o );
 	if ( it == m_transitionsMap.end() ) {
 		return false;
 	}
 	else {
 		o = it->second;
+
+		// Immediate spirit fights.
+		if ( rando_config.immediateSpiritFights ) {
+			if ( o.areaToID == levelCRC::MONKEY_TEMPLE && o.areaFromID == levelCRC::FLOODED_COURTYARD ) {
+				o.areaToID   = levelCRC::MONKEY_SPIRIT;
+				o.areaFromID = levelCRC::MONKEY_TEMPLE;
+			}
+			else if ( o.areaToID == levelCRC::SCORPION_TEMPLE && o.areaFromID == levelCRC::EYES_OF_DOOM ) {
+				o.areaToID   = levelCRC::SCORPION_SPIRIT;
+				o.areaFromID = levelCRC::SCORPION_TEMPLE;
+			}
+			else if ( o.areaToID == levelCRC::PENGUIN_TEMPLE && o.areaFromID == levelCRC::VIRACOCHA_MONOLITHS ) {
+				o.areaToID   = levelCRC::PENGUIN_SPIRIT;
+				o.areaFromID = levelCRC::PENGUIN_TEMPLE;
+			}
+		}
+
 		return true;
 	}
 }
