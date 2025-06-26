@@ -49,6 +49,7 @@
 #include "utils/func.h"
 
 #include "rando/rando.h"
+#include "rando/item_rando.h"
 #include "rando/menu_patcher.h"
 
 
@@ -336,6 +337,9 @@ void InitMod()
 	// Patch this script function, to display the actual (randomized) destination level name when approaching
 	// an entrance.
 	injector::WriteMemory( 0x8F04EC, &Script_QueueDialogHint_hijack );
+
+	// Item rando.
+	item_rando_init();
 
 	// Menu patcher. Replaces "NEW GAME".
 	init_menu_patcher();

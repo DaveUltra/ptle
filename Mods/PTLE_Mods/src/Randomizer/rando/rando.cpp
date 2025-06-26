@@ -33,6 +33,7 @@ RandoConfig::RandoConfig()
 	, skipJaguar2( false )
 	, skipWaterLevels( false )
 	, immediateSpiritFights( false )
+	, itemRandoInventory( false )
 {
 
 }
@@ -242,6 +243,10 @@ void load_config()
 		}
 		else if ( option == "immediateSpiritFights" ) {
 			rando_config.immediateSpiritFights = (value == "true");
+		}
+
+		else if ( option == "itemRandoInventory" ) {
+			rando_config.itemRandoInventory = (value == "true");
 		}
 	}
 

@@ -7,9 +7,11 @@
     <ClCompile Include="rando\graphml.cpp" />
     <ClCompile Include="rando\rando.cpp" />
     <ClCompile Include="rando\menu_patcher.cpp" />
+    <ClCompile Include="rando\item_rando.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rando\rando.h" />
     <ClInclude Include="rando\menu_patcher.h" />
+    <ClInclude Include="rando\item_rando.h" />
   </ItemGroup>
 </Project>
