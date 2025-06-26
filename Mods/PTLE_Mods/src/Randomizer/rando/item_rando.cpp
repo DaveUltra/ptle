@@ -82,7 +82,7 @@ static Unlockable g_unlockableItems[] =
 
 // Global item rando mapping.
 struct less : public std::less<Unlockable*> {
-	bool operator()( Unlockable* const a, Unlockable* const b ) {
+	bool operator()( Unlockable* const a, Unlockable* const b ) const {
 		if ( a->m_type == b->m_type ) {
 			return a->m_itemHash < b->m_itemHash;
 		}
