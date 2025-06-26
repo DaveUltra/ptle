@@ -10,6 +10,8 @@
 #include "ptle/levels/level_info.h"
 #include "ptle/types/types.h"
 
+#include "ptle/EBeastStateMachine.h"
+
 #include "ptle/containers/TreeMap/TreeMap.h"
 
 #include "utils/log.h"
@@ -26,7 +28,10 @@ GET_METHOD( 0x559640, void, EIProjectile_Spawn, EIProjectile*, Vector3f*, Vector
 
 static void _empty()
 {
+}
 
+static void _empty_cheat( bool enable )
+{
 }
 
 
@@ -100,7 +105,7 @@ static void _die()
 // --------------------------------------------------------------------------------
 // TNT rain.
 // --------------------------------------------------------------------------------
-static EIProjectile* _do_tnt_rain( uint32_t code )
+static EIProjectile* _do_tnt_rain( uint32_t projectileType )
 {
 	Vector3f pos, dir;
 	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
@@ -118,23 +123,37 @@ static EIProjectile* _do_tnt_rain( uint32_t code )
 		}
 	}
 
-	return EIProjectile_Create( code );
+	return EIProjectile_Create( projectileType );
 }
 
-static void _tnt_rain()
+static void _tnt_rain( bool enable )
 {
-	injector::MakeCALL( 0x59540E, _do_tnt_rain );
+	static char orig[5];
+	if ( enable ) {
+		// Save original bytes.
+		for (int i = 0; i < 5; i++) orig[i] = ((char*) 0x59540E)[i];
+
+		injector::MakeCALL( 0x59540E, _do_tnt_rain );
+	}
+	else {
+		injector::WriteMemoryRaw( 0x59540E, orig, sizeof(orig), true );
+	}
 }
 
 
 // --------------------------------------------------------------------------------
 // Every projectile is a TNT.
 // --------------------------------------------------------------------------------
-static void _all_tnt()
+static void _all_tnt( bool enable )
 {
-	// mov ecx, BBCAC492
-	uint8_t bytes[] = { 0xC7, 0x45, 0x08, 0x92, 0xC4, 0xCA, 0xBB };
-	injector::WriteMemoryRaw( 0x55784E, bytes, sizeof(bytes), true );
+	if ( enable ) {
+		// mov DWORD PTR [ebp+0x8], BBCAC492
+		uint8_t bytes[] = { 0xC7, 0x45, 0x08, 0x92, 0xC4, 0xCA, 0xBB };
+		injector::WriteMemoryRaw( 0x55784E, bytes, sizeof(bytes), true );
+	}
+	else {
+		injector::MakeNOP( 0x55784E, 7 );
+	}
 }
 
 
@@ -151,10 +170,16 @@ void _native_tick_loop( EInstance* inst )
 }
 
 MAKE_THISCALL_WRAPPER( _native_func, _native_tick_loop );
-static void _fast_native()
+static void _fast_native( bool enable )
 {
-	void* func = &_native_func;
-	injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
+	if ( enable ) {
+		void* func = &_native_func;
+		injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
+	}
+	else {
+		void* func = (void*) 0x414F80;
+		injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
+	}
 }
 
 
@@ -235,7 +260,6 @@ static EIProjectile* _harry_spawn( uint32_t code )
 #include "ptle/EINative.h"
 GET_FUNC( 0x6F8EC0, uint32_t, HashPath, char* );
 
-GET_METHOD( 0x5242A0, void, EINative_Init, EINative* );
 GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
 GET_METHOD( 0x527E50, int,  EIBeast_Deserialize2, EIBeast* );
 static void _netiv_spawn()
@@ -269,8 +293,67 @@ static void _netiv_spawn()
 
 	AddToWorld( harry->m_world, native );
 
+	// WARN : The free at 0x412A32 crashes, since it tries to free static memory.
 	ERLevel_SetupEntity( harry->m_world, native, 0 );
-	EINative_Init( native );
+	native->Init();
+}
+
+#include "ptle/EIEvilHarryP.h"
+
+static bool no()
+{
+	return false;
+}
+
+static void _spawn_evilharry()
+{
+	EIHarry** harryPtr = ((EIHarry**) 0x917034);
+	EIHarry* harry = *harryPtr;
+
+	const type_info_t* type = get_type_by_vtable( 0x875240 );
+	EIEvilHarryP* evilHarry = instantiate_object<EIEvilHarryP>( type );
+
+	evilHarry->m_position.x = harry->m_position.x;
+	evilHarry->m_position.y = harry->m_position.y + 15.0F;
+	evilHarry->m_position.z = harry->m_position.z;
+
+	evilHarry->m_rotation.x = 0.0F;
+	evilHarry->m_rotation.y = 0.0F;
+	evilHarry->m_rotation.z = 0.0F;
+	evilHarry->m_rotation.w = 1.0F;
+
+	uint32_t hash = HashPath( "BEvilHarryP" );
+	evilHarry->m_beastTypeCRC = hash;
+	evilHarry->m_beastTypeName = "evil harry";
+	EIBeast_LoadBeastAsset( evilHarry );
+
+	// (This overrides our state machine modifications sadly).
+	evilHarry->DeserializePart2();
+
+	// Patch the state machine.
+	{
+		EBeastStateMachine* evilHarryP = evilHarry->GetStateMachine();
+
+		// Disable dancing on victory.
+		EBeastState* stateChase = evilHarryP->m_states + 3;
+		EBeastCondition* condNo = evilHarryP->m_conditions + 10;
+		condNo->m_func.m_func = (void(*)())no;
+		evilHarryP->m_transitions[1].m_condition = condNo;
+		evilHarryP->m_transitions[5].m_condition = condNo;
+		evilHarryP->m_transitions[56].m_condition = condNo;
+		evilHarryP->m_transitions[60].m_condition = condNo;
+		evilHarryP->m_transitions[64].m_condition = condNo;
+	}
+
+	AddToWorld( harry->m_world, evilHarry );
+
+	// WARN : The free at 0x412A32 crashes, since it tries to free static memory.
+	ERLevel_SetupEntity( harry->m_world, evilHarry, 0 );
+	evilHarry->Init();
+
+	// Force Evil Harry to chase us by default.
+	evilHarry->m_forceNextState = true;
+	evilHarry->m_nextState = 3;
 }
 
 #include "ptle/EINPCBeast.h"
@@ -312,7 +395,6 @@ static void _micay_spawn()
 }
 
 
-#include "ptle/EBeastStateMachine.h"
 static void log_state_machine_info( EBeastStateMachine* sm )
 {
 	if ( !sm->m_states ) return;
@@ -331,7 +413,7 @@ static void log_state_machine_info( EBeastStateMachine* sm )
 	log_printf( "%d transitions :\n", sm->m_numTransitions );
 	for ( int i = 0; i < sm->m_numTransitions; i++ ) {
 		EBeastTransition& t = sm->m_transitions[i];
-		log_printf( "- %d -> %d (%d)\n", t.m_stateA->m_index, t.m_stateB->m_index, t.m_condition->m_index );
+		log_printf( "- %d : %d -> %d (%d)\n", i, t.m_stateA->m_index, t.m_stateB->m_index, t.m_condition->m_index );
 	}
 }
 static void _ai_patch()
@@ -378,7 +460,17 @@ static void _ai_patch()
 		puscaMinion->m_transitions[1].m_stateB = stateLoad;
 		puscaMinion->m_transitions[1].m_condition = condAnimComplete;
 	}
-	log_state_machine_info( puscaMinion );
+
+
+	// Penguin Evil Harry.
+	dummy = (void*) (0x875240);
+	EBeastStateMachine* evilHarryP = ((EIBeast*)(&dummy))->GetStateMachine();
+
+	// Disable dancing on victory.
+	EBeastCondition* condNo = evilHarryP->m_conditions + 10;
+	evilHarryP->m_transitions[5].m_condition = condNo;
+
+	log_state_machine_info( evilHarryP );
 }
 
 
@@ -458,6 +550,65 @@ static void _list_updates_2()
 }
 
 
+#include "ptle/EUITextIcon.h"
+static void _log_children( EUIObjectNode* obj, int depth )
+{
+	char buf[300];
+
+	// Shift text by depth.
+	int i;
+	for ( i = 0; i < depth * 2; i += 2 ) {
+		buf[i] = ' ';
+		buf[i + 1] = ' ';
+	}
+	buf[i] = 0;
+
+	for ( LinkedListElem* e = obj->m_children.m_iterateFirst; e != 0; e = e->m_ptr1 ) {
+		EUIObjectNode* c = (EUIObjectNode*) e->m_data;
+		EUITextIcon* t = type_cast<EUITextIcon>( c, get_type_by_vtable(0x8A64B0) );
+		if ( t ) {
+			sprintf_s( buf + i, sizeof(buf) - i, "- %s (0x%.8X) \"%ls\"\n", c->GetTypeName(), c, *t->m_text );
+		}
+		else {
+			sprintf_s( buf + i, sizeof(buf) - i, "- %s (0x%.8X)\n", c->GetTypeName(), c );
+		}
+		log_printf( buf );
+
+		if ( obj->m_children.m_iterateFirst ) {
+			_log_children( c, depth + 1 ); 
+		}
+	}
+}
+static void _log_saveui_contents()
+{
+	// ESaveUi singleton.
+	EUIObjectNode* root = *((EUIObjectNode**) 0x911A08);
+
+	if ( !root ) {
+		log_printf( "No active ESaveUI instance.\n" );
+		return;
+	}
+
+	log_printf( "%s\n", root->GetTypeName() );
+	_log_children( root, 0 );
+}
+
+static void _log_epausemain()
+{
+	// EFrontEndGame
+	uint8_t* mainGameClass = *((uint8_t**) 0x910580);
+
+	// EPauseMain
+	EUIObjectNode* pauseMain = *((EUIObjectNode**) (mainGameClass + 0x20));
+	if ( !pauseMain ) {
+		return;
+	}
+
+	log_printf( "%s\n", pauseMain->GetTypeName() );
+	_log_children( pauseMain, 0 );
+}
+
+
 
 #include "ptle/EScriptContext.h"
 GET_FUNC( 0x422910, void, Script_SetCurrentState_Original, EScriptContext* );
@@ -516,27 +667,31 @@ static void _effector_debug_draw( bool enable )
 
 const cheat_t cheats[] =
 {
-	{ "Auto Skip Cutscene", _auto_skip_cutscenes },
+	{ "Auto Skip Cutscene",  _auto_skip_cutscenes },
 	{ "Effector Debug Draw", _effector_debug_draw },
+	{ "TNT Rain",            _tnt_rain },
+	{ "All TNT",             _all_tnt },
+	{ "Crack Native",        _fast_native },
+	{ "",                    _empty_cheat }
 };
 
 const command_t commands[] =
 {
-	/* Name,          On Enable */
-	{ "Give Stuff",   _give_stuff },
-	{ "Heal",         _heal },
-	{ "",             _empty },
-	{ "Die",          _die },
-	{ "TNT Rain",     _tnt_rain },
-	{ "All TNT",      _all_tnt },
-	{ "Crack Native", _fast_native },
-	{ "Spawn Idol",   _idol_spawn },
-	{ "Spawn Micay",  _micay_spawn },
-	{ "Spawn Native", _netiv_spawn },
-	{ "AI patch",     _ai_patch },
-	{ "List models",  _list_model_assets },
-	{ "List updates 1", _list_updates_1 },
-	{ "List updates 2", _list_updates_2 },
+	/* Name,                  On Enable */
+	{ "Give Stuff",           _give_stuff },
+	{ "Heal",                 _heal },
+	{ "",                     _empty },
+	{ "Die",                  _die },
+	{ "Spawn Evil Harry",     _spawn_evilharry },
+	{ "Spawn Idol",           _idol_spawn },
+	{ "Spawn Micay",          _micay_spawn },
+	{ "Spawn Native",         _netiv_spawn },
+	{ "AI patch",             _ai_patch },
+	{ "List models",          _list_model_assets },
+	{ "List updates 1",       _list_updates_1 },
+	{ "List updates 2",       _list_updates_2 },
+	{ "Log Save UI Contents", _log_saveui_contents },
+	{ "Log Main UI Contents", _log_epausemain },
 };
 
 const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);
@@ -583,11 +738,14 @@ void save_saveslot( int i )
 static HWND hwndPalette;
 static char className[] = "PaletteWindow";
 
+#define BUTTON_WIDTH 150
+
 #define ID_CHEATS   100
 #define ID_COMMANDS 200
 
 #define ID_ITEMS    600
-#define ID_SKILLS   609
+#define ID_ITEMSWAP (ID_ITEMS+9)
+#define ID_SKILLS   (ID_ITEMSWAP+1)
 
 #define ID_SAVESLOT_LOAD 620
 #define ID_SAVESLOT_SAVE 630
@@ -605,17 +763,19 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 			for ( const cheat_t* cheat = cheats; cheat != cheats + NUM_CHEATS; cheat++, i++ ) {
 				CreateWindow( "BUTTON", cheat->name,
 					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
-					10, y,
-					230, 20, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
-				y += 30;
+					10 + (i & 1) * (BUTTON_WIDTH+10), y,
+					BUTTON_WIDTH, 20, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
+				if ( i & 1 ) {
+					y += 30;
+				}
 			}
-			y += 10;
+			y += 20;
 			i = 0;
 			for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
 				CreateWindow( "BUTTON", cmd->name,
 					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-					10 + (i & 1) * 120, y,
-					110, 20, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
+					10 + (i & 1) * (BUTTON_WIDTH+10), y,
+					BUTTON_WIDTH, 20, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
 				if ( i & 1 ) {
 					y += 30;
 				}
@@ -653,6 +813,10 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 			else if ( id >= ID_ITEMS && id < ID_ITEMS+9 ) {
 				ItemStruct* items = (ItemStruct*) 0x8EEB90;
 				items[id - ID_ITEMS].m_unlocked = !items[id - ID_ITEMS].m_unlocked;
+			}
+			else if ( id == ID_ITEMSWAP ) {
+				bool* itemSwapPtr = (bool*) 0x9106A2;
+				(*itemSwapPtr) = !(*itemSwapPtr);
 			}
 			else if ( id >= ID_SKILLS && id < ID_SKILLS+6 ) {
 				EIHarry* harry = *((EIHarry**) 0x917034);
@@ -694,6 +858,7 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 					for ( int i = 0; i < 9; i++ ) {
 						CheckMenuItem( subMenu, ID_ITEMS + i, (items[i].m_unlocked) ? MF_CHECKED : MF_UNCHECKED );
 					}
+					CheckMenuItem( subMenu, ID_ITEMSWAP, *((bool*) 0x9106A2) ? MF_UNCHECKED : MF_CHECKED );
 					break;
 				case 2:
 					for ( int i = 0; i < 6; i++ ) {
@@ -757,16 +922,20 @@ static HMENU create_menu()
 		AppendMenu( items, MF_STRING, 603, "TNT" );
 		AppendMenu( items, MF_STRING, 608, "Stink Bomb" );   // TODO : doesn't work.
 
+		AppendMenu( items, MF_SEPARATOR, 0, 0 );
+
+		AppendMenu( items, MF_STRING, ID_ITEMSWAP, "Item Swap" );
+
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) items, "Items" );
 	}
 
 	HMENU skills = CreateMenu(); {
-		AppendMenu( skills, MF_STRING, 609, "Rising Strike" );
-		AppendMenu( skills, MF_STRING, 610, "Smash Strike" );
-		AppendMenu( skills, MF_STRING, 611, "Heroic Dash" );
-		AppendMenu( skills, MF_STRING, 612, "Heroic Dive" );
-		AppendMenu( skills, MF_STRING, 613, "Super Sling" );
-		AppendMenu( skills, MF_STRING, 614, "Breakdance" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS,   "Rising Strike" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+1, "Smash Strike" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+2, "Heroic Dash" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+3, "Heroic Dive" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+4, "Super Sling" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+5, "Breakdance" );
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) skills, "Skills" );
 	}
@@ -809,14 +978,15 @@ void command_create_window()
 
 	RegisterClassEx( &wcex );
 
-	RECT rect = { 600, 20, 600 + 250, 20 + 480 };
+	// Space for two columns + 3x margin.
+	RECT rect = { 0, 0, BUTTON_WIDTH*2 + 3*10, 500 };
 	DWORD style = WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
 
 	AdjustWindowRect( &rect, style, false );
 
 	HMENU menu = create_menu();
 	hwndPalette = CreateWindow( className, "Cheat Palette", style,
-		rect.left, rect.top,
+		10, 10,
 		rect.right - rect.left, rect.bottom - rect.top,
 		0, menu, GetModuleHandle(0), 0 );
 
