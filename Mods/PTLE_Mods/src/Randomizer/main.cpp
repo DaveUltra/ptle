@@ -93,6 +93,18 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 	}
 
 
+	// Detect spirit temple completion.
+	if ( prevAreaCRC == levelCRC::MONKEY_SPIRIT && targetAreaCRC == levelCRC::MONKEY_TEMPLE ) {
+		completed_monkey_temple = true;
+	}
+	else if ( prevAreaCRC == levelCRC::SCORPION_SPIRIT && targetAreaCRC == levelCRC::SCORPION_TEMPLE ) {
+		completed_scorpion_temple = true;
+	}
+	else if ( prevAreaCRC == levelCRC::PENGUIN_SPIRIT && targetAreaCRC == levelCRC::PENGUIN_TEMPLE ) {
+		completed_penguin_temple = true;
+	}
+
+
 	// Transition in progress.
 	Transition original( prevAreaCRC, targetAreaCRC );
 	log_printf( "Game wants to go from \"%s\" (0x%X) to \"%s\" (0x%X).\n",

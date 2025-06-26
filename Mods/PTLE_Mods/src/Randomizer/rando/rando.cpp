@@ -79,6 +79,12 @@ std::map<Transition, uint32_t> correctedTransitionsFrom;
 std::set<uint32_t> excludedLevels;
 
 
+bool completed_monkey_temple   = false;
+bool completed_scorpion_temple = false;
+bool completed_penguin_temple  = false;
+
+
+
 static inline void disableTransition( levelCRC::Enum areaFromCRC, levelCRC::Enum areaToCRC )
 {
 	Transition t( areaFromCRC, areaToCRC );
@@ -667,17 +673,17 @@ _hijack:
 	else {
 		o = it->second;
 
-		// Immediate spirit fights.
+		// Immediate spirit fights (avoid warping to spirit fight if completed already).
 		if ( rando_config.immediateSpiritFights ) {
-			if ( o.areaToID == levelCRC::MONKEY_TEMPLE && o.areaFromID == levelCRC::FLOODED_COURTYARD ) {
+			if ( !completed_monkey_temple && o.areaToID == levelCRC::MONKEY_TEMPLE && o.areaFromID == levelCRC::FLOODED_COURTYARD ) {
 				o.areaToID   = levelCRC::MONKEY_SPIRIT;
 				o.areaFromID = levelCRC::MONKEY_TEMPLE;
 			}
-			else if ( o.areaToID == levelCRC::SCORPION_TEMPLE && o.areaFromID == levelCRC::EYES_OF_DOOM ) {
+			else if ( !completed_scorpion_temple && o.areaToID == levelCRC::SCORPION_TEMPLE && o.areaFromID == levelCRC::EYES_OF_DOOM ) {
 				o.areaToID   = levelCRC::SCORPION_SPIRIT;
 				o.areaFromID = levelCRC::SCORPION_TEMPLE;
 			}
-			else if ( o.areaToID == levelCRC::PENGUIN_TEMPLE && o.areaFromID == levelCRC::VIRACOCHA_MONOLITHS ) {
+			else if ( !completed_penguin_temple && o.areaToID == levelCRC::PENGUIN_TEMPLE && o.areaFromID == levelCRC::VIRACOCHA_MONOLITHS ) {
 				o.areaToID   = levelCRC::PENGUIN_SPIRIT;
 				o.areaFromID = levelCRC::PENGUIN_TEMPLE;
 			}

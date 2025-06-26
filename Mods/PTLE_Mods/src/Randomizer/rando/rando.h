@@ -135,6 +135,10 @@ extern std::map<uint32_t, Area*> level_infos;
 
 extern const std::set<Transition> softlockableTransitions;
 
+extern bool completed_monkey_temple;
+extern bool completed_scorpion_temple;
+extern bool completed_penguin_temple;
+
 
 
 // Load configuration.
