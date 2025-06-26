@@ -18,9 +18,45 @@ size = 0x11C
 
 8039F048 - ???
 
-803BFFA8 - Idol
+
+803B5400 - ("EIResetPlane")
+  104 bytes
+
+803B9998 - ("EIShaman")
+  1904 bytes
+
+803BCD88 - ("EISpinja")
+  2312 bytes
+
+803BD710 - ("EIStClair")
+  2124 bytes
+
+803BE190 - ("EISwingMonkey")
+  2048 bytes
+
+803BEE18 - ("EISupai")
+  2652 bytes
+
+803BFFA8 - ("EITreasureIdol")
+  516 bytes
+
+803C0438 - ("EITucoTuco")
+  1932 bytes
+
+803C8FB8 - ("EIUseable")
+  924 bytes
+
+803C9808 - ("EIWaterType")
+  804 bytes
+
+803C9D40 - ("EIWebEffector")
+  348 bytes
+
+803CA1A0 - ("EIWell")
+  556 bytes
 
 803D89B8 - ("EIEffector")
+
 
 
 Entity vtables :

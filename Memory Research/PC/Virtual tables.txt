@@ -250,6 +250,14 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 00895748 - ("ESaveUi")
 
+00895868 - ("ELoadUi")
+
+00895960 - ("EStartupCheckUi")
+
+00895AE0 - ("ESaveUiIcon")
+
+00895C58 - ("ESaveUiMenu")
+
 00896438 - Scorpion ("EIScorps")
 
 00896830 - ("EIScriptAnim")
@@ -288,13 +296,35 @@ This vtable has an update function (+0x2C = PTLE+C15A0) that does nothing...
 
 0089A6D8 - ("EITucoTuco")
 
+0089B6C8 - ("EUIDDAudioMenu")
+
 0089B860 - ("EUIDDDialogMenu")
 
 0089BA48 - ("EUIDDHintCardMenu")
 
+0089BD90 - ("EUIDDInventoryMappingItem")
+
 0089C170 - ("EUIDDLevelCardMenu")
 
-0089CDD0 - ???
+0089C540 - ("EUIDDMapEventMenu")
+
+0089C718 - ("EUIDDMapMenu")
+
+0089C940 - ("EUIDDMapNode")
+
+0089D400 - ("EUIDDMenuAdjustItem")
+
+0089D698 - ("EUIDDMenuBtnAdjust")
+
+0089D8D8 - ("EUIDDMenuIconItem")
+
+0089DB30 - ("EUIDDMenuSliderItem")
+
+0089E3F0 - ("EUIDDShaderIcon")
+
+0089E770 - ("EUIDDTempInventoryMenuDeleteMeIcon")
+
+0089E988 - ("EUIDDTempInventoryMenuDeleteMeSubMenuIcon")
 
 0089EDB0 - ("EUIDDTextPages")
 
