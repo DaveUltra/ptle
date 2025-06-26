@@ -5,6 +5,7 @@
 #include "EICameraLook.h"
 #include "EIEffector.h"
 #include "EIEvilHarryMM.h"
+#include "EIEvilHarryP.h"
 #include "EIExplorer.h"
 #include "EIHarry.h"
 #include "EIHenchman.h"
@@ -33,6 +34,7 @@
 #include "ERScript.h"
 #include "ERShader.h"
 #include "EScriptContext.h"
+#include "EUITextIcon.h"
 
 
 
@@ -99,6 +101,7 @@ CHECK_TYPE_SIZE( EIPusca,            0x7E0 );
 CHECK_TYPE_SIZE( EIStClair,          0x7F0 );
 CHECK_TYPE_SIZE( EIBushNinja,        0x850 );
 CHECK_TYPE_SIZE( EIEvilHarryMM,      0x8B0 );
+CHECK_TYPE_SIZE( EIEvilHarryP,       0x970 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );
 CHECK_TYPE_SIZE( EResource,          0x14 );
 CHECK_TYPE_SIZE( ERShader,           0x20 );
@@ -110,6 +113,9 @@ CHECK_TYPE_SIZE( ERModel,            0x98 );
 CHECK_TYPE_SIZE( ERParticleType,     0x168 );
 CHECK_TYPE_SIZE( ERLevel,            0x644 );
 CHECK_TYPE_SIZE( EScriptContext,     0x890 );
+CHECK_TYPE_SIZE( EUIObjectNode,      0xB4 );
+CHECK_TYPE_SIZE( EUIIcon,            0xE4 );
+CHECK_TYPE_SIZE( EUITextIcon,        0x110 );
 
 
 CHECK_FIELD_OFFSET( EIHarry,        m_breakdance,        0x1914 );

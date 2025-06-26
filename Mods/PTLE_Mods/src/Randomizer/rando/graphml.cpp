@@ -17,42 +17,43 @@ using namespace std;
 
 
 static const uint32_t UPGRADE_AREAS[] = {
-	levels_t::PLANE_COCKPIT,          // Canteen
-	levels_t::BITTENBINDER_CAMP,      // Sling + Rising Strike
-	levels_t::MOUTH_OF_INTI,          // Torch
-	levels_t::SCORPION_TEMPLE,        // Torch, temporary due to the current Scorpion Temple anti-softlock
-	levels_t::NATIVE_VILLAGE,         // Shield
-	levels_t::RENEGADE_HEADQUARTERS,  // Gas Mask
-	levels_t::CAVERN_LAKE,            // Raft
-	levels_t::MOUNTAIN_SLED_RUN,      // Raft
-	levels_t::MOUNTAIN_OVERLOOK,      // Pickaxes
-	levels_t::APU_ILLAPU_SHRINE,      // TNT
-	levels_t::FLOODED_COURTYARD,      // Dash
-	levels_t::TURTLE_MONUMENT,        // Dive
+	levelCRC::PLANE_COCKPIT,          // Canteen
+	levelCRC::BITTENBINDER_CAMP,      // Sling + Rising Strike
+	levelCRC::MOUTH_OF_INTI,          // Torch
+	levelCRC::SCORPION_TEMPLE,        // Torch, temporary due to the current Scorpion Temple anti-softlock
+	levelCRC::NATIVE_VILLAGE,         // Shield
+	levelCRC::RENEGADE_HEADQUARTERS,  // Gas Mask
+	levelCRC::CAVERN_LAKE,            // Raft
+	levelCRC::MOUNTAIN_SLED_RUN,      // Raft
+	levelCRC::MOUNTAIN_OVERLOOK,      // Pickaxes
+	levelCRC::APU_ILLAPU_SHRINE,      // TNT
+	levelCRC::FLOODED_COURTYARD,      // Dash
+	levelCRC::TURTLE_MONUMENT,        // Dive
 };
 
+// These are the zones required to reach the final boss.
 static const uint32_t IMPORTANT_STORY_TRIGGER_AREAS[] = {
-	levels_t::ALTAR_OF_AGES,
-	levels_t::ST_CLAIRE_EXCAVATION_CAMP_DAY,
-	levels_t::GATES_OF_EL_DORADO,
+	levelCRC::ALTAR_OF_AGES,
+	levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY,
+	levelCRC::GATES_OF_EL_DORADO,
 };
 
 // Don't display these in the graph.
 static const uint32_t DONT_SHOW[] = {
-	levels_t::ST_CLAIRE_EXCAVATION_CAMP_NIGHT,
-	levels_t::RUINS_OF_EL_DORADO,
-	levels_t::ANCIENT_EL_DORADO,
-	levels_t::SCORPION_SPIRIT,
-	levels_t::PENGUIN_SPIRIT,
-	levels_t::MONKEY_SPIRIT,
-	levels_t::PLANE_CUTSCENE,
-	levels_t::VIRACOCHA_MONOLITHS_CUTSCENE,
-	levels_t::KABOOM,
-	levels_t::PICKAXE_RACE,
-	levels_t::WHACK_A_TUCO,
-	levels_t::TUCO_SHOOT,
-	levels_t::RAFT_BOWLING,
-	levels_t::BETA_VOLCANO,
+	levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT,
+	levelCRC::RUINS_OF_EL_DORADO,
+	levelCRC::ANCIENT_EL_DORADO,
+	levelCRC::SCORPION_SPIRIT,
+	levelCRC::PENGUIN_SPIRIT,
+	levelCRC::MONKEY_SPIRIT,
+	levelCRC::PLANE_CUTSCENE,
+	levelCRC::VIRACOCHA_MONOLITHS_CUTSCENE,
+	levelCRC::KABOOM,
+	levelCRC::PICKAXE_RACE,
+	levelCRC::WHACK_A_TUCO,
+	levelCRC::TUCO_SHOOT,
+	levelCRC::RAFT_BOWLING,
+	levelCRC::BETA_VOLCANO,
 };
 
 
@@ -79,8 +80,8 @@ static void write_vertices( ofstream& os, const std::set<uint32_t>& accessibleAr
 	int px = 0;
 	for ( uint32_t levelID : accessibleAreas ) {
 		// Remove parentheses from names (since we removed their counterpart anyway).
-		std::string name = level_get_name(levelID);
-		if ( levelID != levels_t::TWIN_OUTPOSTS_UNDERWATER ) {
+		std::string name = level_get_name(level_get_by_crc(levelID));
+		if ( levelID != levelCRC::TWIN_OUTPOSTS_UNDERWATER ) {
 			size_t paren = name.find_last_of('(');
 			if ( paren != std::string::npos ) {
 				name = name.substr(0, paren - 1);
@@ -168,19 +169,19 @@ void write_graphml()
 	std::map<Transition, Transition> possibleTransitions;
 
 	for ( auto& p : level_infos ) {
-		uint32_t fromID = p.first;
 		Area* area = p.second;
-		if ( dontShow.find(fromID) != dontShow.end() ) continue;
-		if ( rando_map.getAccessibleAreas().find(fromID) == rando_map.getAccessibleAreas().end() ) continue;
+
+		if ( dontShow.find(p.first) != dontShow.end() ) continue;
+		if ( rando_map.getAccessibleAreas().find(p.first) == rando_map.getAccessibleAreas().end() ) continue;
 
 		for ( const Exit& exit : area->exits ) {
-			uint32_t toID = level_get_by_crc(exit.areaCRC);
-			if ( dontShow.find(toID) != dontShow.end() ) continue;
+			if ( dontShow.find(exit.areaCRC) != dontShow.end() ) continue;
 
-			Transition original( fromID, toID );
+			Transition original( p.first, exit.areaCRC );
 			Transition redirect = original;
-
 			rando_map.spoofTransition( redirect );
+
+			if ( rando_map.getAccessibleAreas().find(redirect.areaToID) == rando_map.getAccessibleAreas().end() ) continue;
 
 			possibleTransitions.emplace( original, redirect );
 		}

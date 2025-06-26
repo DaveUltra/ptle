@@ -28,6 +28,7 @@ bool is_type_derived_from( const type_info_t* type, const type_info_t* base )
 		if ( ptleType == base->ptleType ) {
 			return true;
 		}
+		ptleType = ptleType->m_parent;
 	}
 	while ( ptleType->m_parent != ptleType );
 
@@ -88,6 +89,7 @@ void register_types()
 	register_type( 0x899130, 0x0091233C );   // EIStClair
 	register_type( 0x8999C8, 0x009123AC );   // EISupai
 	register_type( 0x89A2F8, 0x009124F0 );   // EITreasureIdol
+	register_type( 0x89DED0, 0x00912970 );   // EUIDDMenuTextItem
 	register_type( 0x8A2148, 0x0091FED4 );   // EIWaterPatch
 	register_type( 0x8A2580, 0x00916E98 );   // EIWell
 	register_type( 0x8A2C70, 0x009170DC );   // EIYoYoMonkey
@@ -98,6 +100,9 @@ void register_types()
 	register_type( 0x8A5B4C, 0x0091AA10 );   // ERModel
 	register_type( 0x8A5D08, 0x0091EA48 );   // ERLevel
 	register_type( 0x8A5D64, 0x0091EA80 );   // ERShader
+	register_type( 0x8A64B0, 0x0091ED20 );   // EUITextIcon
+	register_type( 0x8A65C0, 0x0091ED50 );   // EUIIcon
+	register_type( 0x8A66C0, 0x0091EE20 );   // EUIObjectNode
 	register_type( 0x8A9358, 0x0092005C );   // ESaveGameVar
 	register_type( 0x8A9398, 0x00920030 );   // ESGVInt
 	register_type( 0x8A93DC, 0x00920008 );   // ESGVFloat

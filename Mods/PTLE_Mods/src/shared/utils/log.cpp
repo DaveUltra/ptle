@@ -11,7 +11,7 @@ void log_printf( const char* fmt, ... )
 
 	char msg[512];
 	int len = vsprintf_s( msg, fmt, args );
-	WriteConsole( GetStdHandle(STD_OUTPUT_HANDLE), msg, len, 0, 0 );
+	WriteConsoleA( GetStdHandle(STD_OUTPUT_HANDLE), msg, len, 0, 0 );
 
 	va_end( args );
 }

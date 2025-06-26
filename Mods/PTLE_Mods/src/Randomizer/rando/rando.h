@@ -10,11 +10,12 @@
 struct Exit
 {
 	uint32_t areaCRC;
+	uint32_t prevCRC;
 	std::string areaName;
 	std::vector<std::vector<std::string>> requires;
 
-	Exit( uint32_t areaCRC, const std::string& areaName )
-		: areaCRC( areaCRC ), areaName( areaName )
+	Exit( uint32_t prevCRC, uint32_t areaCRC, const std::string& areaName )
+		: areaCRC( areaCRC ), prevCRC( prevCRC ), areaName( areaName )
 	{
 	}
 };

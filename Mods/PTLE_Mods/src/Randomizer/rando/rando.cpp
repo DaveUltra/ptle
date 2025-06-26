@@ -18,7 +18,7 @@
 // Config.
 RandoConfig::RandoConfig()
 	: seed( 0 )
-	, startingArea( levels_t::FLOODED_COURTYARD )
+	, startingArea( levelCRC::FLOODED_COURTYARD )
 	, legacy( true )
 	, randomizeShamanShop( true )
 	, skipJaguar2( false )
@@ -40,28 +40,28 @@ std::set<Transition> disabledTransitions;
 // These transitions can only be traversed in one direction.
 static const Transition ONE_WAY_TRANSITIONS[] = {
 	// White Valley geyser.
-	Transition( levels_t::WHITE_VALLEY, levels_t::MOUNTAIN_SLED_RUN ),
+	Transition( levelCRC::WHITE_VALLEY,      levelCRC::MOUNTAIN_SLED_RUN ),
 	// Apu Illapu Shrine geyser.
-	Transition( levels_t::APU_ILLAPU_SHRINE, levels_t::WHITE_VALLEY ),
+	Transition( levelCRC::APU_ILLAPU_SHRINE, levelCRC::WHITE_VALLEY ),
 	// Apu Illapu Shrine one-way door.
-	Transition( levels_t::MOUNTAIN_SLED_RUN, levels_t::APU_ILLAPU_SHRINE ),
+	Transition( levelCRC::MOUNTAIN_SLED_RUN, levelCRC::APU_ILLAPU_SHRINE ),
 	// Jungle Canyon waterfall.
-	Transition( levels_t::CAVERN_LAKE, levels_t::JUNGLE_CANYON ),
+	Transition( levelCRC::CAVERN_LAKE,       levelCRC::JUNGLE_CANYON ),
 	// After Altar of Ages cutscene.
-	Transition( levels_t::ALTAR_OF_AGES, levels_t::BITTENBINDER_CAMP ),
+	Transition( levelCRC::ALTAR_OF_AGES,     levelCRC::BITTENBINDER_CAMP ),
 };
 
 // These transitions can lead to softlocks due to closed doors / obstacles.
 // Harry will run indefinitely against them and the game will never give us control back.
 static const Transition SOFTLOCKABLE_TRANSITIONS[] = {
-	Transition( levels_t::ST_CLAIRE_EXCAVATION_CAMP_DAY, levels_t::FLOODED_COURTYARD ),   // St.Claire wall (requires TNT).
-	Transition( levels_t::TWIN_OUTPOSTS,                 levels_t::FLOODED_COURTYARD ),   // Monkey door.
-	Transition( levels_t::SCORPION_TEMPLE,               levels_t::EYES_OF_DOOM ),        // Door to scorp temple.
-	Transition( levels_t::MOUNTAIN_OVERLOOK,             levels_t::EYES_OF_DOOM ),        // Scorpion door.
-	Transition( levels_t::EKKEKO_ICE_CAVERN,             levels_t::VALLEY_OF_SPIRITS ),   // Ice wall (requires TNT).
-	Transition( levels_t::MOUNTAIN_SLED_RUN,             levels_t::COPACANTI_LAKE ),      // Three crystals door.
-	Transition( levels_t::COPACANTI_LAKE,                levels_t::VALLEY_OF_SPIRITS ),   // Spirit door.
-	Transition( levels_t::BATTERED_BRIDGE,               levels_t::ALTAR_OF_HUITACA ),    // Spider web (not a softlock, but it is a locked way).
+	Transition( levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY, levelCRC::FLOODED_COURTYARD ),   // St.Claire wall (requires TNT).
+	Transition( levelCRC::TWIN_OUTPOSTS,                 levelCRC::FLOODED_COURTYARD ),   // Monkey door.
+	Transition( levelCRC::SCORPION_TEMPLE,               levelCRC::EYES_OF_DOOM ),        // Door to scorp temple.
+	Transition( levelCRC::MOUNTAIN_OVERLOOK,             levelCRC::EYES_OF_DOOM ),        // Scorpion door.
+	Transition( levelCRC::EKKEKO_ICE_CAVERN,             levelCRC::VALLEY_OF_SPIRITS ),   // Ice wall (requires TNT).
+	Transition( levelCRC::MOUNTAIN_SLED_RUN,             levelCRC::COPACANTI_LAKE ),      // Three crystals door.
+	Transition( levelCRC::COPACANTI_LAKE,                levelCRC::VALLEY_OF_SPIRITS ),   // Spirit door.
+	Transition( levelCRC::BATTERED_BRIDGE,               levelCRC::ALTAR_OF_HUITACA ),    // Spider web (not a softlock, but it is a locked way).
 };
 const std::set<Transition> softlockableTransitions( SOFTLOCKABLE_TRANSITIONS, SOFTLOCKABLE_TRANSITIONS+_countof(SOFTLOCKABLE_TRANSITIONS) );
 
@@ -72,51 +72,53 @@ std::map<Transition, uint32_t> correctedTransitionsFrom;
 std::set<uint32_t> excludedLevels;
 
 
-static inline void disableTransition( uint32_t areaFromID, uint32_t areaToID )
+static inline void disableTransition( levelCRC::Enum areaFromCRC, levelCRC::Enum areaToCRC )
 {
-	Transition t( areaFromID, areaToID );
+	Transition t( areaFromCRC, areaToCRC );
 	disabledTransitions.emplace( t );
 }
-static inline void disableTransition2( uint32_t areaFromID, uint32_t areaToID )
+static inline void disableTransition2( levelCRC::Enum areaFromCRC, levelCRC::Enum areaToCRC )
 {
-	Transition t0( areaFromID, areaToID );
-	Transition t1( areaToID, areaFromID );
-	disabledTransitions.emplace( t0 );
-	disabledTransitions.emplace( t1 );
+	Transition t( areaFromCRC, areaToCRC );
+	disabledTransitions.emplace( t );
+	disabledTransitions.emplace( t.mirror() );
 }
 
+// TODO : Misnamed. These are the levels we don't want to randomize.
 static void set_excluded_levels()
 {
 	static const uint32_t excluded[] = {
 		// Ignore crash site for now, as this causes losing all acquired upgrades & items.
-		levels_t::CRASH_SITE,
+		levelCRC::CRASH_SITE,
 
 		// Ignore native games.
-		levels_t::KABOOM,
-		levels_t::PICKAXE_RACE,
-		levels_t::RAFT_BOWLING,
-		levels_t::TUCO_SHOOT,
-		levels_t::WHACK_A_TUCO,
+		levelCRC::KABOOM,
+		levelCRC::PICKAXE_RACE,
+		levelCRC::RAFT_BOWLING,
+		levelCRC::TUCO_SHOOT,
+		levelCRC::WHACK_A_TUCO,
 
 		// Avoid warping to spirit fights without warning.
-		levels_t::MONKEY_SPIRIT,
-		levels_t::SCORPION_SPIRIT,
-		levels_t::PENGUIN_SPIRIT,
+		levelCRC::MONKEY_SPIRIT,
+		levelCRC::SCORPION_SPIRIT,
+		levelCRC::PENGUIN_SPIRIT,
 
 		// Skip viracocha & plane crash cutscenes.
-		levels_t::PLANE_CUTSCENE,
-		levels_t::VIRACOCHA_MONOLITHS_CUTSCENE,
+		levelCRC::PLANE_CUTSCENE,
+		levelCRC::VIRACOCHA_MONOLITHS_CUTSCENE,
 
-		// Teleports don't work, so just straight up remove them.
-		levels_t::TELEPORT,
+		// Don't randomize teleporter entrances.
+		levelCRC::TELEPORT,
+
+		// Don't randomize this hell hole.
+		levelCRC::TWIN_OUTPOSTS_UNDERWATER,
 
 		// Don't warp straight to bosses.
-		levels_t::RUINS_OF_EL_DORADO,
-		levels_t::ANCIENT_EL_DORADO,
+		levelCRC::RUINS_OF_EL_DORADO,
+		levelCRC::ANCIENT_EL_DORADO,
 	};
 
-	// Dare tell me the STL isn't disgusting.
-	excludedLevels.insert( excluded, excluded + _countof(excluded) );
+	excludedLevels.insert( excluded, excluded+_countof(excluded) );
 }
 
 static void set_disabled_transitions()
@@ -124,28 +126,28 @@ static void set_disabled_transitions()
 	// The 3 Spirit Fights are not randomized,
 	// because that causes issues with the transformation cutscene trigger.
 	// Plus it wouldn't really improve anything, given that the Temples are randomized anyway.
-	disableTransition2( levels_t::MONKEY_TEMPLE, levels_t::MONKEY_SPIRIT );
-	disableTransition2( levels_t::SCORPION_TEMPLE, levels_t::SCORPION_SPIRIT );
-	disableTransition2( levels_t::PENGUIN_TEMPLE, levels_t::PENGUIN_SPIRIT );
+	disableTransition2( levelCRC::MONKEY_TEMPLE, levelCRC::MONKEY_SPIRIT );
+	disableTransition2( levelCRC::SCORPION_TEMPLE, levelCRC::SCORPION_SPIRIT );
+	disableTransition2( levelCRC::PENGUIN_TEMPLE, levelCRC::PENGUIN_SPIRIT );
 	// The 5 Native Games are currently chosen to not be randomized.
 	// If we at some point decide to randomize them anyway we'll have to do some rigorous testing,
 	// because it's very much possible this will cause some bugs.
-	disableTransition2( levels_t::NATIVE_VILLAGE, levels_t::WHACK_A_TUCO );
-	disableTransition2( levels_t::NATIVE_VILLAGE, levels_t::TUCO_SHOOT );
-	disableTransition2( levels_t::NATIVE_VILLAGE, levels_t::RAFT_BOWLING );
-	disableTransition2( levels_t::NATIVE_VILLAGE, levels_t::PICKAXE_RACE );
-	disableTransition2( levels_t::NATIVE_VILLAGE, levels_t::KABOOM );
+	disableTransition2( levelCRC::NATIVE_VILLAGE, levelCRC::WHACK_A_TUCO );
+	disableTransition2( levelCRC::NATIVE_VILLAGE, levelCRC::TUCO_SHOOT );
+	disableTransition2( levelCRC::NATIVE_VILLAGE, levelCRC::RAFT_BOWLING );
+	disableTransition2( levelCRC::NATIVE_VILLAGE, levelCRC::PICKAXE_RACE );
+	disableTransition2( levelCRC::NATIVE_VILLAGE, levelCRC::KABOOM );
 	// The Endgame transitions are not randomized.
 	// Currently there are no plans to randomize these transitions.
-	disableTransition2( levels_t::ST_CLAIRE_EXCAVATION_CAMP_DAY, levels_t::ST_CLAIRE_EXCAVATION_CAMP_NIGHT );
-	disableTransition( levels_t::GATES_OF_EL_DORADO, levels_t::RUINS_OF_EL_DORADO );
-	disableTransition( levels_t::RUINS_OF_EL_DORADO, levels_t::ANCIENT_EL_DORADO );
-	disableTransition( levels_t::ANCIENT_EL_DORADO, levels_t::GATES_OF_EL_DORADO );
+	disableTransition2( levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY, levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT );
+	disableTransition( levelCRC::GATES_OF_EL_DORADO, levelCRC::RUINS_OF_EL_DORADO );
+	disableTransition( levelCRC::RUINS_OF_EL_DORADO, levelCRC::ANCIENT_EL_DORADO );
+	disableTransition( levelCRC::ANCIENT_EL_DORADO, levelCRC::GATES_OF_EL_DORADO );
 	// The Unused Beta Volcano Level is not randomized yet,
 	// but this can absolutely be randomized later at some point.
 	// It will require some special code though.
-	disableTransition( levels_t::BETA_VOLCANO, levels_t::JUNGLE_CANYON );
-	disableTransition( levels_t::BETA_VOLCANO, levels_t::PLANE_COCKPIT );
+	disableTransition( levelCRC::BETA_VOLCANO, levelCRC::JUNGLE_CANYON );
+	disableTransition( levelCRC::BETA_VOLCANO, levelCRC::PLANE_COCKPIT );
 }
 
 static void set_corrected_transitions()
@@ -153,8 +155,8 @@ static void set_corrected_transitions()
 	// Dark cave connecting Jungle Trail to Flooded Courtyard.
 	//correctedTransitionsFrom.emplace( Transition(levels_t::FLOODED_COURTYARD, levels_t::JUNGLE_TRAIL), 0x402D3708 );
 	//correctedTransitionsFrom.emplace( Transition(levels_t::JUNGLE_TRAIL, levels_t::FLOODED_COURTYARD), 0x1AAF2535 );
-	correctedTransitionsFrom.emplace( Transition(0x5CC8D550, levels_t::JUNGLE_TRAIL), 0x402D3708 );
-	correctedTransitionsFrom.emplace( Transition(0x5CC8D550, levels_t::FLOODED_COURTYARD), 0x1AAF2535 ); /*0x5F29C550*/
+	correctedTransitionsFrom.emplace( Transition(0x5CC8D550, levelCRC::JUNGLE_TRAIL), 0x402D3708 );
+	correctedTransitionsFrom.emplace( Transition(0x5CC8D550, levelCRC::FLOODED_COURTYARD), 0x1AAF2535 ); /*0x5F29C550*/
 }
 
 bool is_area_excluded( uint32_t levelID )
@@ -217,9 +219,9 @@ void load_config()
 			srand( rando_config.seed );
 		}
 		else if ( option == "startingArea" ) {
-			uint32_t areaID = level_get_by_crc( parse_hex(value) );
-			if ( areaID != -1 ) {
-				rando_config.startingArea = areaID;
+			uint32_t areaCRC = parse_hex( value );
+			if ( areaCRC != 0 ) {
+				rando_config.startingArea = areaCRC;
 				overridenStartArea = true;
 			}
 		}
@@ -267,7 +269,7 @@ void rando_init()
 	log_printf( "Rando config :\n" );
 	log_printf( "- Legacy : %s\n", bool_to_str(rando_config.legacy) );
 	log_printf( "- Seed : %d\n", rando_config.seed );
-	log_printf( "- Starting area : %s (0x%.8X)\n", level_get_name(rando_config.startingArea), level_get_crc(rando_config.startingArea) );
+	log_printf( "- Starting area : %s (0x%.8X)\n",  level_get_name(level_get_by_crc(rando_config.startingArea)), rando_config.startingArea );
 	log_printf( "- Randomize shaman shop : %s\n",   bool_to_str(rando_config.randomizeShamanShop) );
 	log_printf( "- Skip Jaguar 2 : %s\n",           bool_to_str(rando_config.skipJaguar2) );
 	log_printf( "- Skip water levels : %s\n",       bool_to_str(rando_config.skipWaterLevels) );
@@ -298,13 +300,12 @@ static void vector_remove( std::vector<T>& v, const T& val )
 static uint32_t find_original_exit_to( uint32_t cur, uint32_t dst )
 {
 	for ( const Exit& exit : level_infos[cur]->exits ) {
-		uint32_t destID = level_get_by_crc( exit.areaCRC );
-
-		if ( rando_map.getTransitionsMap().at(Transition(cur, destID)).areaToID == dst ) {
-			return destID;
+		auto it = rando_map.getTransitionsMap().find( Transition(cur, exit.areaCRC) );
+		if ( it != rando_map.getTransitionsMap().end() && it->second.areaToID == dst ) {
+			return exit.areaCRC;
 		}
 	}
-	return -1;
+	return 0;
 }
 
 static void remove_line_level( uint32_t level, uint32_t exitA, uint32_t exitB )
@@ -346,7 +347,8 @@ void RandoMap::generateLinkedTransitions()
 		}
 
 		for ( const Exit& exit : area->exits ) {
-			uint32_t levelTo = level_get_by_crc( exit.areaCRC );
+			uint32_t levelTo = exit.areaCRC;
+
 			Transition actual( levelFrom, levelTo );
 			Transition reverse = actual.mirror();
 
@@ -375,11 +377,6 @@ void RandoMap::generateLinkedTransitions()
 		}
 	}
 
-	// Manually specify duplicate exits.
-	/*for ( auto& p : correctedTransitionsFrom ) {
-		availablePorts[p.first.areaFromID].push_back( p.first.areaToID );
-	}*/
-
 	// Get rid of any area with no exits to process.
 	std::vector<uint32_t> purgeList;
 	for ( auto& p : availablePorts ) {
@@ -393,7 +390,6 @@ void RandoMap::generateLinkedTransitions()
 		availablePorts.erase( i );
 	}
 
-	//std::vector<uint32_t> accessibleAreas;   // List of all reachable areas (TODO : save somewhere for graphml gen).
 	std::vector<uint32_t> strictAvail;       // "Strictly available" areas. These areas don't have all of their exits assigned and are reachable.
 	std::vector<uint32_t> availNotMaster;    // "Non-attached available" areas. These areas don't have all of their exits assigned and are NOT reachable.
 
@@ -410,7 +406,7 @@ void RandoMap::generateLinkedTransitions()
 	// Process.
 	while ( !strictAvail.empty() || !availNotMaster.empty() ) {
 		int levelFrom, levelTo;
-		uint32_t levelFromID, levelToID;
+		uint32_t levelFromCRC, levelToCRC;
 
 		if ( strictAvail.size() == 0 && availNotMaster.size() > 0 ) {
 			log_printf( "GENERATION ERROR : Reachable map has no more ports left, but some areas are still unassigned.\n" );
@@ -425,7 +421,7 @@ void RandoMap::generateLinkedTransitions()
 			// Prevent level from looping onto itself.
 			if ( levelFrom == levelTo ) {
 				if ( strictAvail.size() == 1 ) {
-					log_printf( "WARN : %s will loop onto itself!\n", level_get_name(strictAvail[0]) );
+					log_printf( "WARN : %s will loop onto itself!\n", level_get_name(level_get_by_crc(strictAvail[0])) );
 				}
 				else {
 					if ( levelFrom == 0 ) levelFrom++;
@@ -433,8 +429,8 @@ void RandoMap::generateLinkedTransitions()
 				}
 			}
 
-			levelFromID = strictAvail[levelFrom];
-			levelToID = strictAvail[levelTo];
+			levelFromCRC = strictAvail[levelFrom];
+			levelToCRC = strictAvail[levelTo];
 		}
 		else {
 			levelFrom = rand() % strictAvail.size();
@@ -452,47 +448,51 @@ void RandoMap::generateLinkedTransitions()
 				else levelFrom--;
 			}*/
 
-			levelFromID = strictAvail[levelFrom];
-			levelToID = availNotMaster[levelTo];
+			levelFromCRC = strictAvail[levelFrom];
+			levelToCRC = availNotMaster[levelTo];
 
-			if ( levelFromID == levelToID ) {
-				log_printf( "WARN : %s is going to connect with itself!\n", level_get_name(levelFromID) );
+			if ( levelFromCRC == levelToCRC ) {
+				log_printf( "WARN : %s is going to connect with itself!\n", level_get_name(level_get_by_crc(levelToCRC)) );
 			}
 		}
 
 		int fromExit = 0;
 		int toEntrance = 0;
 
+		//log_printf( "%s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
+
 		// Form linked transition.
-		Transition original( levelFromID, availablePorts[levelFromID][fromExit] );
-		Transition redirect( availablePorts[levelToID][toEntrance], levelToID );
+		Transition original( levelFromCRC, availablePorts[levelFromCRC][fromExit] );
+		Transition redirect( availablePorts[levelToCRC][toEntrance], levelToCRC );
 		m_transitionsMap[original] = redirect;
 		m_transitionsMap[mirror(redirect)] = mirror(original);
 
 		// We've just made this area reachable.
-		if ( std::find(strictAvail.begin(), strictAvail.end(), levelToID) == strictAvail.end() && m_accessibleAreas.find(levelToID) == m_accessibleAreas.end() ) {
-			strictAvail.push_back( levelToID );
-			m_accessibleAreas.insert( levelToID );
-			vector_remove( availNotMaster, levelToID );
+		if ( std::find(strictAvail.begin(), strictAvail.end(), levelToCRC) == strictAvail.end() && m_accessibleAreas.find(levelToCRC) == m_accessibleAreas.end() ) {
+			strictAvail.push_back( levelToCRC );
+			m_accessibleAreas.insert( levelToCRC );
+			vector_remove( availNotMaster, levelToCRC );
 		}
 
 		// Mark exits as used.
-		vector_removeAt( availablePorts[levelFromID], fromExit );
-		vector_removeAt( availablePorts[levelToID], toEntrance );
+		vector_removeAt( availablePorts[levelFromCRC], fromExit );
+		vector_removeAt( availablePorts[levelToCRC], toEntrance );
 
 		// Remove filled up areas from available list.
-		if ( availablePorts[levelFromID].empty() ) {
-			availablePorts.erase( levelFromID );
-			vector_remove( strictAvail, levelFromID );
+		if ( availablePorts[levelFromCRC].empty() ) {
+			availablePorts.erase( levelFromCRC );
+			vector_remove( strictAvail, levelFromCRC );
 		}
-		if ( availablePorts[levelToID].empty() ) {
-			availablePorts.erase( levelToID );
-			vector_remove( strictAvail, levelToID );
+		if ( availablePorts[levelToCRC].empty() ) {
+			availablePorts.erase( levelToCRC );
+			vector_remove( strictAvail, levelToCRC );
 		}
 	}
 
+	log_printf( "Main process done.\n" );
+
 	if ( strictAvail.size() == 1 && availNotMaster.empty() ) {
-		log_printf( "GENERATION ERROR : This area wasn't processed correctly : %s\n", level_get_name(strictAvail[0]) );
+		log_printf( "GENERATION ERROR : This area wasn't processed correctly : %s\n", level_get_name(level_get_by_crc(strictAvail[0])) );
 		//log_printf( "        Level has %d unconnected exits!\n", accessibleAreas[0] );
 	}
 
@@ -505,8 +505,8 @@ void RandoMap::generateLinkedTransitions()
 		if ( availablePorts.size() == 1 ) {
 			auto& p = *availablePorts.begin();
 
-			Transition original( p.first, availablePorts[p.first][0] );
-			Transition redirect( availablePorts[p.first][1], p.first );
+			const Transition original( p.first, availablePorts[p.first][0] );
+			const Transition redirect( availablePorts[p.first][1], p.first );
 			m_transitionsMap[original] = redirect;
 			m_transitionsMap[mirror(redirect)] = mirror(original);
 
@@ -515,28 +515,38 @@ void RandoMap::generateLinkedTransitions()
 	}
 
 	// Add these manually since at least one unrandomized zone is reachable from them.
-	m_accessibleAreas.insert( levels_t::MOUNTAIN_SLED_RUN );
-	m_accessibleAreas.insert( levels_t::APU_ILLAPU_SHRINE );
-	m_accessibleAreas.insert( levels_t::CRASH_SITE );
-	m_accessibleAreas.insert( levels_t::TELEPORT );
+	m_accessibleAreas.insert( levelCRC::MOUNTAIN_SLED_RUN );
+	m_accessibleAreas.insert( levelCRC::APU_ILLAPU_SHRINE );
+	m_accessibleAreas.insert( levelCRC::CRASH_SITE );
+	m_accessibleAreas.insert( levelCRC::TELEPORT );
 
 	// Redirect the auto-travel to BB camp after Altar of Ages cutscene.
-	Transition altarRedirect = m_transitionsMap[Transition(levels_t::ALTAR_OF_AGES, levels_t::MYSTERIOUS_TEMPLE)];
-	m_transitionsMap[Transition(levels_t::ALTAR_OF_AGES, levels_t::BITTENBINDER_CAMP)] = altarRedirect;
+	{
+		const Transition altarRedirect = m_transitionsMap[Transition(levelCRC::ALTAR_OF_AGES, levelCRC::MYSTERIOUS_TEMPLE)];
+		m_transitionsMap[Transition(levelCRC::MYSTERIOUS_TEMPLE, levelCRC::BITTENBINDER_CAMP)] = altarRedirect;
+	}
 
 	// Remove water levels.
 	// We do it after generation to avoid changing the random seed.
 	if ( rando_config.skipWaterLevels ) {
-		remove_line_level( levels_t::FLOODED_CAVE, levels_t::BITTENBINDER_CAMP, levels_t::RENEGADE_FORT );
-		remove_line_level( levels_t::MYSTERIOUS_TEMPLE, levels_t::BITTENBINDER_CAMP, levels_t::ALTAR_OF_AGES );
+		log_printf( "Skipping water levels...\n" );
 
-		m_accessibleAreas.erase( levels_t::FLOODED_CAVE );
-		m_accessibleAreas.erase( levels_t::MYSTERIOUS_TEMPLE );
+		remove_line_level( levelCRC::FLOODED_CAVE,      levelCRC::BITTENBINDER_CAMP, levelCRC::RENEGADE_FORT );
+		remove_line_level( levelCRC::MYSTERIOUS_TEMPLE, levelCRC::BITTENBINDER_CAMP, levelCRC::ALTAR_OF_AGES );
+		//remove_line_level( levels_t::TWIN_OUTPOSTS_UNDERWATER, levels_t::TWIN_OUTPOSTS, levels_t::TWIN_OUTPOSTS );
+
+		m_accessibleAreas.erase( levelCRC::FLOODED_CAVE );
+		m_accessibleAreas.erase( levelCRC::MYSTERIOUS_TEMPLE );
+		//m_accessibleAreas.erase( level_get_crc(levels_t::TWIN_OUTPOSTS_UNDERWATER) );
 	}
 
-	// Force skip Jag 2.
-	m_transitionsMap[Transition(levels_t::GATES_OF_EL_DORADO, levels_t::RUINS_OF_EL_DORADO)]
-		= Transition(levels_t::GATES_OF_EL_DORADO, levels_t::ANCIENT_EL_DORADO);
+	// Skip Jag 2 : Warp straight to the Pusca fight.
+	if ( rando_config.skipJaguar2 ) {
+		const Transition puscaRedirect = Transition(levelCRC::GATES_OF_EL_DORADO, levelCRC::ANCIENT_EL_DORADO);
+		m_transitionsMap[Transition(levelCRC::GATES_OF_EL_DORADO, levelCRC::RUINS_OF_EL_DORADO)] = puscaRedirect;
+	}
+
+	log_printf( "Ended.\n" );
 }
 
 
@@ -622,8 +632,8 @@ bool RandoMap::spoofTransition( Transition& o )
 	original = o;
 
 	// Skip Viracocha cutscene entirely (then proceed with regular hijacking).
-	if ( original.areaToID == levels_t::VIRACOCHA_MONOLITHS_CUTSCENE ) {
-		original.areaToID = levels_t::VIRACOCHA_MONOLITHS;
+	if ( original.areaToID == levelCRC::VIRACOCHA_MONOLITHS_CUTSCENE ) {
+		original.areaToID = levelCRC::VIRACOCHA_MONOLITHS;
 	}
 
 	auto it = m_transitionsMap.find( original );
@@ -666,8 +676,8 @@ static bool can_escape_apu_illapu()
 		items[3].m_unlocked ||   // TNT.
 		items[4].m_unlocked ||   // Shield.
 		items[6].m_unlocked ||   // Gas Mask.
-		items[7].m_unlocked ||   // Canteen.
-		items[8].m_unlocked      // Stink Bombs.
+		items[7].m_unlocked   // Canteen.
+		//items[8].m_unlocked      // Stink Bombs.
 	)) {
 		return true;
 	}
@@ -678,10 +688,9 @@ static bool can_escape_apu_illapu()
 void prevent_transition_softlock()
 {
 	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
-	uint32_t currentAreaID = level_get_by_crc( currentAreaCRC );
 	EIHarry* harry = *((EIHarry**) 0x917034);
 
-	if ( currentAreaID == levels_t::APU_ILLAPU_SHRINE ) {
+	if ( currentAreaCRC == levelCRC::APU_ILLAPU_SHRINE ) {
 		if ( !can_escape_apu_illapu() ) {
 			log_printf( "Missing requirements to complete Apu Illapu Shrine. Kicking you out!\n" );
 			harry->m_collisionFilter = 0;
@@ -689,15 +698,18 @@ void prevent_transition_softlock()
 			harry->m_position.y =  38.0F;
 			harry->m_position.z =  20.0F;
 		}
+		else {
+			log_printf( "Player can escape Apu Illapu on their own.\n" );
+		}
 	}
 	else {
-		Transition t( rando_redirect_transition.areaFromID, currentAreaID );
+		Transition t( rando_redirect_transition.areaFromID, currentAreaCRC );
 
 		if ( softlockableTransitions.find(t) != softlockableTransitions.end() ) {
 			log_printf( "Detected softlockable transition!\n" );
 
 			EIHarry* harry = *((EIHarry**) 0x917034);
-			harry->m_position.z += 12.0F;
+			harry->m_position.z += 16.0F;
 		}
 	}
 }

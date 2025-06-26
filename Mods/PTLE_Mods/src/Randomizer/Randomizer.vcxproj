@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="rando\menu_patcher.cpp" />
     <ClCompile Include="rando\graphml.cpp" />
     <ClCompile Include="rando\rando.cpp" />
     <ClCompile Include="rando\shaman_shop.cpp" />
@@ -90,6 +91,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="rando\menu_patcher.h" />
     <ClInclude Include="rando\rando.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

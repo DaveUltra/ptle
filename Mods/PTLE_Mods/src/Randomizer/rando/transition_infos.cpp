@@ -1,7 +1,5 @@
 #include "rando/rando.h"
 
-#include "ptle/levels/level_info.h"
-
 #include "json/json.h"
 #include "utils/log.h"
 
@@ -69,7 +67,7 @@ bool load_transition_infos()
 
 			Area* a = new Area( parse_int_hex(areaObj["area_id"]), areaObj["area_name"], parse_int_hex(areaObj["default_entrance"]) );
 			areas.push_back( a );
-			level_infos.emplace( level_get_by_crc(a->areaCRC), a );
+			level_infos.emplace( a->areaCRC, a );
 
 			// Area exits.
 			json::JSONField& exits = areaObj["exits"];
@@ -79,8 +77,14 @@ bool load_transition_infos()
 				if ( exit.Type() != json::JSON_OBJECT ) continue;
 				json::JSONObject& exitObj = exit.GetObjectValue();
 
-				a->exits.push_back( Exit( parse_int_hex(exitObj["area_id"]), exitObj["area_name"] ) );
+				a->exits.push_back( Exit( a->areaCRC, parse_int_hex(exitObj["area_id"]), exitObj["area_name"] ) );
 				Exit& e = a->exits.back();
+
+				// Special previous area CRC.
+				json::JSONField* prev = exitObj.FindField( "prev_id" );
+				if ( !prev->IsUndefined() ) {
+					e.prevCRC = parse_int_hex(*prev);
+				}
 
 				// Exit requirements.
 				json::JSONField& requires = exitObj["requires"];
