@@ -1,0 +1,10 @@
+[RandomizerPC]
+legacy=false
+seed=0
+startingArea=
+randomizeShamanShop=true
+skipJaguar2=true
+skipWaterLevels=true
+immediateSpiritFights=false
+itemRandoInventory=false
+itemRandoIdols=false

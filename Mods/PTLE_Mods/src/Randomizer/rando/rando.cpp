@@ -34,6 +34,7 @@ RandoConfig::RandoConfig()
 	, skipWaterLevels( false )
 	, immediateSpiritFights( false )
 	, itemRandoInventory( false )
+	, itemRandoIdols( false )
 {
 
 }
@@ -254,6 +255,9 @@ void load_config()
 		else if ( option == "itemRandoInventory" ) {
 			rando_config.itemRandoInventory = (value == "true");
 		}
+		else if ( option == "itemRandoIdols" ) {
+			rando_config.itemRandoIdols = (value == "true");
+		}
 	}
 
 	cfg.close();
@@ -264,6 +268,9 @@ void load_config()
 // in transition_infos.cpp.
 bool load_transition_infos();
 
+// in idols_infos.cpp.
+bool load_idols_infos();
+
 static inline const char* bool_to_str(bool b)
 {
 	return b ? "true" : "false";
@@ -272,6 +279,9 @@ static inline const char* bool_to_str(bool b)
 void rando_init()
 {
 	if ( !load_transition_infos() ) {
+		return;
+	}
+	if ( !load_idols_infos() ) {
 		return;
 	}
 

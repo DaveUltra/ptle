@@ -80,6 +80,17 @@ inline bool operator==( const Transition& t0, const Transition& t1 )
 }
 
 
+// Idol locations.
+struct Idol
+{
+	uint32_t m_levelCRC;
+	uint32_t m_uniqueID;
+	bool m_duplicate;
+};
+
+typedef std::map<uint32_t, std::vector<Idol>> IdolsList;
+
+
 // Config.
 struct RandoConfig
 {
@@ -94,6 +105,7 @@ struct RandoConfig
 	bool immediateSpiritFights;   // Transform Harry into the spirit immediately upon entering the temple.
 
 	bool itemRandoInventory;      // Shuffle unlockable items as part of item rando.
+	bool itemRandoIdols;          // Shuffle idols and explorers.
 
 	RandoConfig();
 };
@@ -130,6 +142,9 @@ extern RandoMap rando_map;
 
 // Levels & transitions, loaded from "transition_infos.json".
 extern MajorAreas transition_infos;
+
+// Idols locations.
+extern IdolsList idols_info;
 
 // Area info for each level ID.
 extern std::map<uint32_t, Area*> level_infos;

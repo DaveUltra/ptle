@@ -38,6 +38,8 @@
 
 #include <Windows.h>
 
+#include "PitfallPlugin.h"
+
 #include "ptle/types/types.h"
 #include "ptle/levels/level_info.h"
 
@@ -312,65 +314,55 @@ void Script_QueueDialogHint_hijack( EScriptContext* context )
 
 
 
-void InitMod()
+class RandomizerPlugin : public PitfallPlugin
 {
-	log_printf( "PTLE Randomizer : Starting...\n" );
+public:
 
-	register_types();
+	virtual const char* getName() const { return "PTLE Randomizer"; }
 
-	rando_init();
-
-	rando_map.generateMap();
-
-	if ( rando_config.randomizeShamanShop ) {
-		randomize_shaman_shop();
-	}
-
-	// TODO : Load world call (new game).
-
-	// Load world call (level transition).
-	//injector::MakeCALL( 0x5ECC70, read_transition_ptr );
-	injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
-
-	// TODO : What happens when you die????
-
-	// Hijack new game starting area.
-	uint32_t startCRC = rando_config.startingArea;
-	injector::WriteMemory( 0x5EB9E6, startCRC );
-
-	// End of level load routine, we clear an otherwise unused debug log function call
-	// and place our Harry up-teleport function on top of it.
-	injector::MakeNOP( 0x5EC167, 13 );
-	injector::MakeCALL( 0x5EC167, prevent_transition_softlock );
-
-	// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
-	injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
-
-	// Patch this script function, to display the actual (randomized) destination level name when approaching
-	// an entrance.
-	injector::WriteMemory( 0x8F04EC, &Script_QueueDialogHint_hijack );
-
-	// Item rando.
-	item_rando_init();
-
-	// Menu patcher. Replaces "NEW GAME".
-	init_menu_patcher();
-
-	log_printf( "PTLE Randomizer : Mod started.\n" );
-}
-
-
-
-BOOL WINAPI DllMain( HINSTANCE hinstace, DWORD reason, LPVOID )
-{
-	switch ( reason )
+	virtual void onEnable()
 	{
-	case DLL_PROCESS_ATTACH:
-		InitMod();
-		break;
-	default:
-		break;
-	}
+		register_types();
 
-	return true;
-}
+		rando_init();
+
+		rando_map.generateMap();
+
+		if ( rando_config.randomizeShamanShop ) {
+			randomize_shaman_shop();
+		}
+
+		// TODO : Load world call (new game).
+
+		// Load world call (level transition).
+		//injector::MakeCALL( 0x5ECC70, read_transition_ptr );
+		injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
+
+		// TODO : What happens when you die????
+
+		// Hijack new game starting area.
+		uint32_t startCRC = rando_config.startingArea;
+		injector::WriteMemory( 0x5EB9E6, startCRC );
+
+		// End of level load routine, we clear an otherwise unused debug log function call
+		// and place our Harry up-teleport function on top of it.
+		// TODO : Currently broken, Harry does not move up at all...
+		//injector::MakeNOP( 0x5EC167, 13 );
+		//injector::MakeCALL( 0x5EC167, prevent_transition_softlock );
+
+		// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
+		injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
+
+		// Patch this script function, to display the actual (randomized) destination level name when approaching
+		// an entrance.
+		injector::WriteMemory( 0x8F04EC, &Script_QueueDialogHint_hijack );
+
+		// Item rando.
+		item_rando_init();
+
+		// Menu patcher. Replaces "NEW GAME".
+		init_menu_patcher();
+	}
+};
+
+DECLARE_PLUGIN( RandomizerPlugin );

@@ -5,6 +5,7 @@
     <ClCompile Include="ptle\levels\level_info.cpp" />
     <ClCompile Include="utils\log.cpp" />
     <ClCompile Include="ptle\types\types.cpp" />
+    <ClCompile Include="PitfallPlugin.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -80,5 +81,8 @@
     <ClInclude Include="ptle\EUIObjectNode.h" />
     <ClInclude Include="ptle\EUIIcon.h" />
     <ClInclude Include="ptle\EUITextIcon.h" />
+    <ClInclude Include="PitfallPlugin.h" />
+    <ClInclude Include="event\LoadLevelEvent.h" />
+    <ClInclude Include="event\Event.h" />
   </ItemGroup>
 </Project>

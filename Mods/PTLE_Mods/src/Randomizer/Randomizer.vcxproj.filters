@@ -8,6 +8,7 @@
     <ClCompile Include="rando\rando.cpp" />
     <ClCompile Include="rando\menu_patcher.cpp" />
     <ClCompile Include="rando\item_rando.cpp" />
+    <ClCompile Include="rando\idols_infos.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="rando\rando.h" />

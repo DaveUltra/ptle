@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="rando\idols_infos.cpp" />
     <ClCompile Include="rando\item_rando.cpp" />
     <ClCompile Include="rando\menu_patcher.cpp" />
     <ClCompile Include="rando\graphml.cpp" />
