@@ -1,5 +1,6 @@
 [RandomizerPC]
 legacy=false
+entranceRando=true
 seed=0
 startingArea=
 randomizeShamanShop=true

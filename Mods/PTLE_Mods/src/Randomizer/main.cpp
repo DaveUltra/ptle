@@ -326,7 +326,9 @@ public:
 
 		rando_init();
 
-		rando_map.generateMap();
+		if ( rando_config.entranceRando ) {
+			rando_map.generateMap();
+		}
 
 		if ( rando_config.randomizeShamanShop ) {
 			randomize_shaman_shop();

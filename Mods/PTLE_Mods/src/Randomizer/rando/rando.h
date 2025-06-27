@@ -98,6 +98,7 @@ struct RandoConfig
 	uint32_t startingArea;        // Starting level CRC.
 
 	bool legacy;                  // Legacy map generation, no linked entrances.
+	bool entranceRando;
 
 	bool randomizeShamanShop;     // Shuffle shaman prices.
 	bool skipJaguar2;             // Warp straight to Pusca.

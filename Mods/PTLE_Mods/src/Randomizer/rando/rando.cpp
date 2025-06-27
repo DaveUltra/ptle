@@ -31,6 +31,7 @@ RandoConfig::RandoConfig()
 	: seed( 0 )
 	, startingArea( levelCRC::FLOODED_COURTYARD )
 	, legacy( true )
+	, entranceRando( true )
 	, randomizeShamanShop( true )
 	, skipJaguar2( false )
 	, skipWaterLevels( false )
@@ -229,6 +230,9 @@ void load_config()
 
 		if ( option == "legacy" ) {
 			rando_config.legacy = (value == "true");
+		}
+		else if ( option == "entranceRando" ) {
+			rando_config.entranceRando = (value == "true");
 		}
 		else if ( option == "seed" ) {
 			rando_config.seed = atoi( value.c_str() );
