@@ -2,6 +2,8 @@
 
 #include "rando.h"
 
+#include "PitfallPlugin.h"
+
 #include "ptle/EIHarry.h"
 #include "ptle/EScriptContext.h"
 #include "ptle/EITreasureIdol.h"
@@ -23,11 +25,32 @@
 
 GET_METHOD( 0x506170, void, UnlockItem, void*, uint32_t );
 GET_FUNC( 0x5E34A0, void, AddCollectedIdols, uint32_t, int );
+GET_METHOD( 0x597400, void, EITreasureIdol_InitValues, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );
+
 GET_FUNC( 0x4E9EC0, void, Script_HarryIsInInventory, EScriptContext* );
 GET_FUNC( 0x65BDF0, int*, PopScriptVariable_Int, EScriptContext* );
 GET_FUNC( 0x65C880, int*, GetOutVariable, EScriptContext* );
 
 static ItemStruct* _get_item_by_hash( uint32_t itemHash );
+
+enum ItemModelsCRC
+{
+	SLING    = 0x34F68DDD,
+	TORCH    = 0xA101D16E,
+	PICKAXES = 0x914C77EA,
+	TNT      = 0xB79DE8BD,
+	SHIELD   = 0xC02A375A,
+	RAFT     = 0x5DA0408B,
+	GAS_MASK = 0x85B90335,
+	CANTEEN  = 0xAF6C8584,
+
+	ARTIFACT_MONKEY    = 0x1EB77F70,
+	ARTIFACT_SCORPION  = 0x87BE2ECA,
+	ARTIFACT_PENGUIN   = 0xF0B91E5C,
+	ARTIFACT_CHAMELEON = 0x6EDD8BFF,
+
+	IDOL_SILVER = 0x816D97BF,
+};
 
 enum UnlockableType
 {
@@ -104,6 +127,35 @@ struct less : public std::less<Unlockable*> {
 };
 static std::map<Unlockable*, Unlockable*, less> g_unlockablesMap;
 
+static const Idol* get_idol( uint32_t levelCRC, uint32_t uniqueID )
+{
+	auto it = idols_info.find( levelCRC );
+	if ( it == idols_info.end() ) return 0;
+
+	for ( const Idol& i : it->second ) {
+		if ( i.m_uniqueID == uniqueID ) {
+			return &i;
+		}
+	}
+	return 0;
+}
+
+static uint32_t get_item_model_crc( uint32_t itemHash )
+{
+	switch ( itemHash )
+	{
+	case 0x915AA574: return ItemModelsCRC::SLING;
+	case 0x04ADF9C7: return ItemModelsCRC::TORCH;
+	case 0xC024157C: return ItemModelsCRC::PICKAXES;
+	case 0x9608A818: return ItemModelsCRC::TNT;
+	case 0xEE6B156E: return ItemModelsCRC::SHIELD;
+	case 0xFB3D82AC: return ItemModelsCRC::RAFT;
+	case 0xCFC909C3: return ItemModelsCRC::GAS_MASK;
+	case 0xE51C8F72: return ItemModelsCRC::CANTEEN;
+	default: return 0;
+	}
+}
+
 
 
 //
@@ -151,16 +203,10 @@ MAKE_THISCALL_WRAPPER( UnlockItem_custom, _UnlockItem_custom );
 // In the process, we override "levelCRC" and "amount", but their values are always known.
 static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, int amount )
 {
-	levelCRC = *((uint32_t*) 0x917088);
+	levelCRC = PitfallPlugin::getCurrentLevelCRC();
 
 	// Find override.
-	const Idol* idol = 0;
-	for ( const Idol& i : idols_info[levelCRC] ) {
-		if ( i.m_uniqueID == self->m_uniqueID ) {
-			idol = &i;
-			break;
-		}
-	}
+	const Idol* idol = get_idol( levelCRC, self->m_uniqueID );
 	if ( idol == 0 ) {
 		log_printf( "No idol found! Was idols_infos.json loaded correctly?\n" );
 	}
@@ -177,6 +223,26 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 	it->second->grant();
 }
 MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
+
+static void _EITreasureIdol_InitValues_custom( EITreasureIdol* self, Vector3f* pos, Vector4f* rot, uint32_t modelCRC, uint32_t particleCRC, uint32_t soundCRC )
+{
+	uint32_t areaCRC = PitfallPlugin::getCurrentLevelCRC();
+	const Idol* idol = get_idol( areaCRC, self->m_uniqueID );
+
+	Unlockable u = { IDOL_SINGLE, (uint32_t) idol };
+	auto it = g_unlockablesMap.find( &u );
+
+	// Replace with item model.
+	if ( it != g_unlockablesMap.end() ) {
+		Unlockable* u = it->second;
+		if ( u->m_type == INVENTORY_ITEM ) {
+			modelCRC = get_item_model_crc( u->m_itemHash );
+		}
+	}
+
+	EITreasureIdol_InitValues( self, pos, rot, modelCRC, particleCRC, soundCRC );
+}
+MAKE_THISCALL_WRAPPER( EITreasureIdol_InitValues_custom, _EITreasureIdol_InitValues_custom );
 
 static void Script_HarryIsInInventory_custom( EScriptContext* context )
 {
@@ -257,6 +323,7 @@ void item_rando_init()
 	injector::MakeCALL( 0x598004, AddCollectedIdols_custom ); // Intercept idol grab.
 	injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
 	injector::MakeNOP( 0x598009, 3 );
+	injector::MakeCALL( 0x5973E9, EITreasureIdol_InitValues_custom ); // Set correct model on EITreasureIdol instances (item rando).
 	injector::MakeRangedNOP( 0x4E9D6F, 0x4E9D83 );            // Remove hotbar autoset for the first 4 items.
 	injector::WriteMemory( 0x8EF35C, Script_HarryIsInInventory_custom );   // Disable Plane Cockpit's check for canteen.
 }

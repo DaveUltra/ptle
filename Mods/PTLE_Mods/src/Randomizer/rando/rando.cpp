@@ -3,6 +3,8 @@
 #include "ptle/levels/level_info.h"
 #include "ptle/containers/TreeMap/TreeMap.h"
 
+#include "PitfallPlugin.h"
+
 #include "ptle/EIHarry.h"
 
 #include "utils/log.h"
@@ -558,11 +560,9 @@ void RandoMap::generateLinkedTransitions()
 
 		remove_line_level( levelCRC::FLOODED_CAVE,      levelCRC::BITTENBINDER_CAMP, levelCRC::RENEGADE_FORT );
 		remove_line_level( levelCRC::MYSTERIOUS_TEMPLE, levelCRC::BITTENBINDER_CAMP, levelCRC::ALTAR_OF_AGES );
-		//remove_line_level( levels_t::TWIN_OUTPOSTS_UNDERWATER, levels_t::TWIN_OUTPOSTS, levels_t::TWIN_OUTPOSTS );
 
 		m_accessibleAreas.erase( levelCRC::FLOODED_CAVE );
 		m_accessibleAreas.erase( levelCRC::MYSTERIOUS_TEMPLE );
-		//m_accessibleAreas.erase( level_get_crc(levels_t::TWIN_OUTPOSTS_UNDERWATER) );
 	}
 
 	// Skip Jag 2 : Warp straight to the Pusca fight.
@@ -710,7 +710,7 @@ Transition rando_redirect_transition;
 static bool can_escape_apu_illapu()
 {
 	ItemStruct* items = (ItemStruct*) 0x8EEB90;
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = PitfallPlugin::getHarry();
 
 	// Can finish fight?
 	if (
@@ -745,14 +745,13 @@ static bool can_escape_apu_illapu()
 GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
 void prevent_transition_softlock()
 {
-	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	uint32_t currentAreaCRC = PitfallPlugin::getCurrentLevelCRC();
+	EIHarry* harry = PitfallPlugin::getHarry();
 
 	if ( currentAreaCRC == levelCRC::APU_ILLAPU_SHRINE ) {
 		if ( !can_escape_apu_illapu() ) {
 			log_printf( "Missing requirements to complete Apu Illapu Shrine. Kicking you out!\n" );
 
-			EIHarry* harry = *((EIHarry**) 0x917034);
 			Matrix4f m = harry->m_transformMatrix;
 			m.data[3][0] = -24.0F;
 			m.data[3][1] =  38.0F;
@@ -769,7 +768,6 @@ void prevent_transition_softlock()
 		if ( softlockableTransitions.find(t) != softlockableTransitions.end() ) {
 			log_printf( "Detected softlockable transition!\n" );
 
-			EIHarry* harry = *((EIHarry**) 0x917034);
 			Matrix4f m = harry->m_transformMatrix;
 			m.data[3][2] += 14.0F;
 			EIHarry_Teleport( harry, &m, true, 1.0F );
