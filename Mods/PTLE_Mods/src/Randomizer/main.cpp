@@ -115,13 +115,13 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 
 
 	// Override transition.
+	extern Transition rando_redirect_transition;
 	Transition redirect = original;
 	if ( rando_map.spoofTransition(redirect) ) {
 		log_printf( "Redirection is \"%s\" (0x%X) to \"%s\" (0x%X).\n",
 			level_get_name(level_get_by_crc(redirect.areaFromID)), redirect.areaFromID,
 			level_get_name(level_get_by_crc(redirect.areaToID)), redirect.areaToID );
 
-		extern Transition rando_redirect_transition;
 		rando_redirect_transition = redirect;
 
 		// Legacy has to patch teleporters to work. For now, the teleporter transitions are not randomized, so no need.
@@ -163,6 +163,8 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 		}
 	}
 	else {
+		rando_redirect_transition = redirect;
+
 		log_printf( "Transition has no override, we'll proceed like normal.\n" );
 	}
 

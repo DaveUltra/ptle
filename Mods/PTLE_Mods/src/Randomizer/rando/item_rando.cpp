@@ -176,9 +176,9 @@ static ItemStruct* _get_item_by_hash( uint32_t itemHash )
 
 static void _UnlockItem_custom( void* self, uint32_t itemHash )
 {
-	// St.Claire night time : Don't randomize items!
+	// St.Claire's Camp : Don't randomize items!
 	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
-	if ( currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT ) {
+	if ( currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT || currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY ) {
 		UnlockItem( self, itemHash );
 		return;
 	}
