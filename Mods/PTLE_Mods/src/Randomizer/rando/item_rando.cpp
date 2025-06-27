@@ -145,6 +145,13 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 
 		*out = 0;
 	}
+	// Native Village's shield cutscene will be gone if we enter with shield already.
+	else if ( currentAreaCRC == levelCRC::NATIVE_VILLAGE ) {
+		PopScriptVariable_Int( context );
+		int* out = GetOutVariable( context );
+
+		*out = 0;
+	}
 	else {
 		Script_HarryIsInInventory( context );
 	}
