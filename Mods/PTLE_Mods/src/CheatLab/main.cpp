@@ -2,6 +2,7 @@
 
 #include "command_palette.h"
 #include "utils/log.h"
+#include "injector/injector.hpp"
 
 #include "ptle/types/types.h"
 
@@ -12,6 +13,7 @@ unsigned long __stdcall Thread( void* );
 void InitMod()
 {
 	AllocConsole();
+	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
 
 	register_types();
 
