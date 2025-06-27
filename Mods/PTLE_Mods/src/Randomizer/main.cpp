@@ -346,9 +346,8 @@ public:
 
 		// End of level load routine, we clear an otherwise unused debug log function call
 		// and place our Harry up-teleport function on top of it.
-		// TODO : Currently broken, Harry does not move up at all...
-		//injector::MakeNOP( 0x5EC167, 13 );
-		//injector::MakeCALL( 0x5EC167, prevent_transition_softlock );
+		injector::MakeNOP( 0x5EC167, 13 );
+		injector::MakeCALL( 0x5EC167, prevent_transition_softlock );
 
 		// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
 		injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );

@@ -742,6 +742,7 @@ static bool can_escape_apu_illapu()
 	return false;
 }
 
+GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
 void prevent_transition_softlock()
 {
 	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
@@ -750,10 +751,13 @@ void prevent_transition_softlock()
 	if ( currentAreaCRC == levelCRC::APU_ILLAPU_SHRINE ) {
 		if ( !can_escape_apu_illapu() ) {
 			log_printf( "Missing requirements to complete Apu Illapu Shrine. Kicking you out!\n" );
-			harry->m_collisionFilter = 0;
-			harry->m_position.x = -24.0F;
-			harry->m_position.y =  38.0F;
-			harry->m_position.z =  20.0F;
+
+			EIHarry* harry = *((EIHarry**) 0x917034);
+			Matrix4f m = harry->m_transformMatrix;
+			m.data[3][0] = -24.0F;
+			m.data[3][1] =  38.0F;
+			m.data[3][2] =  20.0F;
+			EIHarry_Teleport( harry, &m, true, 1.0F );
 		}
 		else {
 			log_printf( "Player can escape Apu Illapu on their own.\n" );
@@ -766,7 +770,9 @@ void prevent_transition_softlock()
 			log_printf( "Detected softlockable transition!\n" );
 
 			EIHarry* harry = *((EIHarry**) 0x917034);
-			harry->m_position.z += 16.0F;
+			Matrix4f m = harry->m_transformMatrix;
+			m.data[3][2] += 14.0F;
+			EIHarry_Teleport( harry, &m, true, 1.0F );
 		}
 	}
 }
