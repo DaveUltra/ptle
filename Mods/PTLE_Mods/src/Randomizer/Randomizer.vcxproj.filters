@@ -15,4 +15,25 @@
     <ClInclude Include="rando\menu_patcher.h" />
     <ClInclude Include="rando\item_rando.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Filter Include="cfg">
+      <UniqueIdentifier>{75edabb2-a9ad-4a64-9e89-fbea13f761b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="cfg\Randomizer">
+      <UniqueIdentifier>{b73e8dd9-eee5-41ef-b87a-8e68cf37b9f3}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="cfg\Randomizer\config.txt">
+      <Filter>cfg\Randomizer</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cfg\Randomizer\idols_infos.json">
+      <Filter>cfg\Randomizer</Filter>
+    </None>
+    <None Include="cfg\Randomizer\transition_infos.json">
+      <Filter>cfg\Randomizer</Filter>
+    </None>
+  </ItemGroup>
 </Project>

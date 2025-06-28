@@ -98,6 +98,19 @@
     <ClInclude Include="rando\rando.h" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="cfg\Randomizer\config.txt">
+      <DeploymentContent>true</DeploymentContent>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="cfg\Randomizer\idols_infos.json">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="cfg\Randomizer\transition_infos.json">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="cfg\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
