@@ -315,7 +315,7 @@ void item_rando_init()
 		const UnlockableType ogType = original[i]->m_type, shType = shuffled[i]->m_type;
 
 		// Show items (and their location, if obtainable from idols).
-		if ( ogType == IDOL_SINGLE || ogType == INVENTORY_ITEM ) {
+		if ( ogType == INVENTORY_ITEM || (ogType == IDOL_SINGLE && shType != IDOL_SINGLE) ) {
 			log_printf( "- %s  -->  %s\n", original[i]->m_displayName, shuffled[i]->m_displayName );
 		}
 		if ( ogType == IDOL_SINGLE && shType == INVENTORY_ITEM ) {

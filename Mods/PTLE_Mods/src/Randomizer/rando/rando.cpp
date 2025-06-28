@@ -42,7 +42,6 @@ RandoConfig::RandoConfig()
 
 }
 
-RandoConfig rando_config;
 RandoMap rando_map;
 
 
@@ -188,99 +187,13 @@ bool is_transition_disabled( const Transition& t )
 
 
 
-static uint32_t parse_hex( const std::string& s )
-{
-	uint32_t v = 0;
-	for ( char c : s ) {
-		v *= 16;
-		if ( c >= '0' && c <= '9' ) {
-			v += (c - '0');
-		}
-		else if ( c >= 'a' && c <= 'f' ) {
-			v += (c - 'a' + 10);
-		}
-		else if ( c >= 'A' && c <= 'F' ) {
-			v += (c - 'A' + 10);
-		}
-	}
-	return v;
-}
-
-void load_config()
-{
-	bool overridenStartArea = false;
-
-	std::ifstream cfg( "cfg/Randomizer/config.txt" );
-
-	std::string line;
-	std::getline(cfg, line);
-	if ( line != "[RandomizerPC]" ) return;
-
-	while ( std::getline(cfg, line) ) {
-		size_t eq = line.find( '=' );
-		if ( line.empty() || eq == std::string::npos ) {
-			continue;
-		}
-
-		std::string option = line.substr( 0, eq );
-		std::string value = line.substr( eq + 1 );
-		if ( value.empty() ) {
-			continue;
-		}
-
-		if ( option == "legacy" ) {
-			rando_config.legacy = (value == "true");
-		}
-		else if ( option == "entranceRando" ) {
-			rando_config.entranceRando = (value == "true");
-		}
-		else if ( option == "seed" ) {
-			rando_config.seed = atoi( value.c_str() );
-			srand( rando_config.seed );
-		}
-		else if ( option == "startingArea" ) {
-			uint32_t areaCRC = parse_hex( value );
-			if ( areaCRC != 0 ) {
-				rando_config.startingArea = areaCRC;
-				overridenStartArea = true;
-			}
-		}
-		else if ( option == "randomizeShamanShop" ) {
-			rando_config.randomizeShamanShop = (value == "true");
-		}
-		else if ( option == "skipJaguar2" ) {
-			rando_config.skipJaguar2 = (value == "true");
-		}
-		else if ( option == "skipWaterLevels" ) {
-			rando_config.skipWaterLevels = (value == "true");
-		}
-		else if ( option == "immediateSpiritFights" ) {
-			rando_config.immediateSpiritFights = (value == "true");
-		}
-
-		else if ( option == "itemRandoInventory" ) {
-			rando_config.itemRandoInventory = (value == "true");
-		}
-		else if ( option == "itemRandoIdols" ) {
-			rando_config.itemRandoIdols = (value == "true");
-		}
-	}
-
-	cfg.close();
-}
-
-
-
 // in transition_infos.cpp.
 bool load_transition_infos();
 
 // in idols_infos.cpp.
 bool load_idols_infos();
 
-static inline const char* bool_to_str(bool b)
-{
-	return b ? "true" : "false";
-}
+
 
 void rando_init()
 {
@@ -292,19 +205,13 @@ void rando_init()
 	}
 
 	load_config();
+	display_config();
+
+	srand( rando_config.seed );
 
 	set_excluded_levels();
 	set_disabled_transitions();
 	set_corrected_transitions();
-
-	log_printf( "Rando config :\n" );
-	log_printf( "- Legacy : %s\n", bool_to_str(rando_config.legacy) );
-	log_printf( "- Seed : %d\n", rando_config.seed );
-	log_printf( "- Starting area : %s (0x%.8X)\n",  level_get_name(level_get_by_crc(rando_config.startingArea)), rando_config.startingArea );
-	log_printf( "- Randomize shaman shop : %s\n",   bool_to_str(rando_config.randomizeShamanShop) );
-	log_printf( "- Skip Jaguar 2 : %s\n",           bool_to_str(rando_config.skipJaguar2) );
-	log_printf( "- Skip water levels : %s\n",       bool_to_str(rando_config.skipWaterLevels) );
-	log_printf( "- Immediate spirit fights : %s\n", bool_to_str(rando_config.immediateSpiritFights) );
 }
 
 static Transition mirror( const Transition& t )
@@ -474,10 +381,10 @@ void RandoMap::generateLinkedTransitions()
 			}
 
 			// Prevent level from looping onto itself.
-			/*if ( levelFrom == levelTo ) {
+			if ( strictAvail[levelFrom] == availNotMaster[levelTo] ) {
 				if ( levelFrom == 0 ) levelFrom++;
 				else levelFrom--;
-			}*/
+			}
 
 			levelFromCRC = strictAvail[levelFrom];
 			levelToCRC = availNotMaster[levelTo];
@@ -489,6 +396,9 @@ void RandoMap::generateLinkedTransitions()
 
 		int fromExit = 0;
 		int toEntrance = 0;
+		if ( levelFromCRC == levelToCRC ) { // TODO : Temporary, levels shouldn't loop onto themselves.
+			toEntrance = 1;
+		}
 
 		//log_printf( "%s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
 
@@ -506,8 +416,13 @@ void RandoMap::generateLinkedTransitions()
 		}
 
 		// Mark exits as used.
-		vector_removeAt( availablePorts[levelFromCRC], fromExit );
-		vector_removeAt( availablePorts[levelToCRC], toEntrance );
+		if ( levelFromCRC == levelToCRC ) { // TODO : Temporary, levels shouldn't loop onto themselves.
+			vector_removeAt( availablePorts[levelFromCRC], 0 );
+			vector_removeAt( availablePorts[levelFromCRC], 0 );
+		} else {
+			vector_removeAt( availablePorts[levelFromCRC], fromExit );
+			vector_removeAt( availablePorts[levelToCRC], toEntrance );
+		}
 
 		// Remove filled up areas from available list.
 		if ( availablePorts[levelFromCRC].empty() ) {
@@ -528,34 +443,18 @@ void RandoMap::generateLinkedTransitions()
 	}
 
 	if ( !availablePorts.empty() ) {
-		log_printf( "WARN : Some exits are still not connected!\n" );
+		log_printf( "GENERATION ERROR : Some exits are still not connected!\n" );
 		for ( auto& p : availablePorts ) {
-			log_printf( "- %s : %d exits\n", level_get_name(p.first), p.second.size() );
-		}
-
-		if ( availablePorts.size() == 1 ) {
-			auto& p = *availablePorts.begin();
-
-			const Transition original( p.first, availablePorts[p.first][0] );
-			const Transition redirect( availablePorts[p.first][1], p.first );
-			m_transitionsMap[original] = redirect;
-			m_transitionsMap[mirror(redirect)] = mirror(original);
-
-			log_printf( "- connected those exits together. The level will loop onto itself.\n" );
+			log_printf( "- %s : %d exits\n", level_get_name(level_get_by_crc(p.first)), p.second.size() );
 		}
 	}
+
 
 	// Add these manually since at least one unrandomized zone is reachable from them.
 	m_accessibleAreas.insert( levelCRC::MOUNTAIN_SLED_RUN );
 	m_accessibleAreas.insert( levelCRC::APU_ILLAPU_SHRINE );
 	m_accessibleAreas.insert( levelCRC::CRASH_SITE );
 	m_accessibleAreas.insert( levelCRC::TELEPORT );
-
-	// Redirect the auto-travel to BB camp after Altar of Ages cutscene.
-	{
-		const Transition altarRedirect = m_transitionsMap[Transition(levelCRC::ALTAR_OF_AGES, levelCRC::MYSTERIOUS_TEMPLE)];
-		m_transitionsMap[Transition(levelCRC::MYSTERIOUS_TEMPLE, levelCRC::BITTENBINDER_CAMP)] = altarRedirect;
-	}
 
 	// Remove water levels.
 	// We do it after generation to avoid changing the random seed.
@@ -575,7 +474,7 @@ void RandoMap::generateLinkedTransitions()
 		m_transitionsMap[Transition(levelCRC::GATES_OF_EL_DORADO, levelCRC::RUINS_OF_EL_DORADO)] = puscaRedirect;
 	}
 
-	log_printf( "Ended.\n" );
+	log_printf( "Generation ended.\n" );
 }
 
 

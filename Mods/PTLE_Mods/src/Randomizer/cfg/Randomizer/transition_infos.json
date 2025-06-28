@@ -285,11 +285,6 @@
           "area_id": "0x099BF148",
           "area_name": "Mysterious Temple",
           "requires": []
-        },
-        {
-          "area_id": "0x0EF63551",
-          "area_name": "Bittenbinder's Camp",
-          "requires": []
         }
       ]
     },

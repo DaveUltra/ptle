@@ -83,6 +83,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="rando\config\config.cpp" />
     <ClCompile Include="rando\idols_infos.cpp" />
     <ClCompile Include="rando\item_rando.cpp" />
     <ClCompile Include="rando\menu_patcher.cpp" />
@@ -93,6 +94,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="rando\config\config.h" />
     <ClInclude Include="rando\item_rando.h" />
     <ClInclude Include="rando\menu_patcher.h" />
     <ClInclude Include="rando\rando.h" />

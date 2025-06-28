@@ -80,8 +80,7 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 		return;
 	}
 
-	//uint32_t* currentAreaPtr = ((uint32_t*) 0x917088);
-	//uint32_t currentAreaCRC = *currentAreaPtr;
+	uint32_t currentAreaCRC = PitfallPlugin::getCurrentLevelCRC();
 	uint32_t prevAreaCRC = *prevAreaPtr;
 	uint32_t targetAreaID = level_get_by_crc( targetAreaCRC );
 	uint32_t prevAreaID = level_get_by_crc( prevAreaCRC );
@@ -92,6 +91,14 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 	case 0x402D3708: prevAreaCRC = levelCRC::FLOODED_COURTYARD; break;  // Flooded Courtyard to Jungle Trail (to cave).
 	case 0x83A6748F: prevAreaCRC = levelCRC::JUNGLE_TRAIL;      break;  // Jungle Trail to Flooded Courtyard (by ice wall).
 	//case 0xF3ACDE92:   // Apu Illapu to White Valley.
+	}
+
+	// Altar of Ages cutscene redirects to (Mysterious Temple -> BB Camp).
+	// But technically, we're going back from Altar.
+	if ( prevAreaCRC == levelCRC::MYSTERIOUS_TEMPLE && targetAreaCRC == levelCRC::BITTENBINDER_CAMP && currentAreaCRC == levelCRC::ALTAR_OF_AGES ) {
+		prevAreaCRC = levelCRC::ALTAR_OF_AGES;
+		targetAreaCRC = levelCRC::MYSTERIOUS_TEMPLE;
+		// Fall through to spoof_transition().
 	}
 
 

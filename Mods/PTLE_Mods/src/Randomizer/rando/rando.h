@@ -6,6 +6,9 @@
 #include <set>
 #include <stdint.h>
 
+#include "rando/config/config.h"
+
+
 
 // Level exit, used to build transitions.
 struct Exit
@@ -89,29 +92,6 @@ struct Idol
 };
 
 typedef std::map<uint32_t, std::vector<Idol>> IdolsList;
-
-
-// Config.
-struct RandoConfig
-{
-	uint32_t seed;                // Seed for random generation.
-	uint32_t startingArea;        // Starting level CRC.
-
-	bool legacy;                  // Legacy map generation, no linked entrances.
-	bool entranceRando;
-
-	bool randomizeShamanShop;     // Shuffle shaman prices.
-	bool skipJaguar2;             // Warp straight to Pusca.
-	bool skipWaterLevels;         // Remove Mysterious Temple, Flooded Cave and Twin Outposts cave.
-	bool immediateSpiritFights;   // Transform Harry into the spirit immediately upon entering the temple.
-
-	bool itemRandoInventory;      // Shuffle unlockable items as part of item rando.
-	bool itemRandoIdols;          // Shuffle idols and explorers.
-
-	RandoConfig();
-};
-
-extern RandoConfig rando_config;
 
 
 
