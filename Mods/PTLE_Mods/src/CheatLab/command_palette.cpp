@@ -861,13 +861,14 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 					y += 30;
 				}
 			}
+			y += 20;
 			previous_area_label = CreateWindow("STATIC", "Previous Area: ",
 				WS_CHILD | WS_VISIBLE,
-				10, y, 200, 20,
+				10, y, 300, 20,
 				hwnd, nullptr, nullptr, nullptr);
 
-			// Set a UI refresh timer at 60 FPS
-			SetTimer(hwnd, REFRESH_TIMER_ID, 1000 / 60, NULL);
+			// Set a UI refresh timer at 30 FPS
+			SetTimer(hwnd, REFRESH_TIMER_ID, 1000 / 30, NULL);
 		}
 		break;
 
@@ -875,12 +876,14 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 		if (wparam == REFRESH_TIMER_ID) {
 			uint32_t* prevAreaPtr = find_previous_area_memory();
 			const char* prefix = "Previous Area: ";
-			char buffer[32];
+			char buffer[64];
 
-			if (!prevAreaPtr)
-				sprintf(buffer, "%sNot found", prefix);
-			else
-				sprintf(buffer, "%s0x%X", prefix, *prevAreaPtr);
+			if (!prevAreaPtr) {
+				sprintf_s(buffer, "%sNot found", prefix);
+			}
+			else {
+				sprintf_s(buffer, "%s0x%.8X (%s)", prefix, *prevAreaPtr, level_get_name(level_get_by_crc(*prevAreaPtr)));
+			}
 
 			SetWindowText(previous_area_label, buffer);
 		}
