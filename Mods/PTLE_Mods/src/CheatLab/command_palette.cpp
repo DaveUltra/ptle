@@ -90,6 +90,47 @@ static void _heal()
 
 
 // --------------------------------------------------------------------------------
+// Remove all items, skills and upgrades, useful for testing conditions.
+// --------------------------------------------------------------------------------
+static void _remove_stuff()
+{
+	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
+	if ( !harry || !harry->m_itemHotbar ) {
+		log_printf( "Harry's not spawned yet.\n" );
+		return;
+	}
+
+	// All abilities.
+	harry->m_risingStrike = 0;
+	harry->m_superSling = 0;
+	harry->m_heroicDash = 0;
+	harry->m_heroicDive = 0;
+	harry->m_smashStrike = 0;
+	harry->m_breakdance = 0;
+
+	// Health.
+	harry->m_healthMax = 5;
+	harry->m_healthValue = 5;
+
+	// Clear hotbar contents.
+	harry->m_itemHotbar[0] = 0;
+	harry->m_itemHotbar[1] = 0;
+	harry->m_itemHotbar[2] = 0;
+	harry->m_itemHotbar[3] = 0;
+
+	// Remove all items.
+	ItemStruct* items = (ItemStruct*) 0x8EEB90;
+	for ( int i = 0; i < 8; i++ ) {
+		items[i].m_unlocked = 0;
+	}
+
+	// Item swap (true = no swap, false = swap enabled).
+	bool* itemSwapPtr = (bool*) 0x9106A2;
+	*itemSwapPtr = true;
+}
+
+
+// --------------------------------------------------------------------------------
 // Kill Harry.
 // --------------------------------------------------------------------------------
 static void _die()
@@ -679,7 +720,7 @@ const command_t commands[] =
 	/* Name,                  On Enable */
 	{ "Give Stuff",           _give_stuff },
 	{ "Heal",                 _heal },
-	{ "",                     _empty },
+	{ "Remove Stuff",         _remove_stuff },
 	{ "Die",                  _die },
 	{ "Spawn Evil Harry",     _spawn_evilharry },
 	{ "Spawn Idol",           _idol_spawn },
@@ -699,6 +740,43 @@ const int NUM_COMMANDS = sizeof(commands) / sizeof(command_t);
 static bool cheat_states[NUM_CHEATS] = { false, };
 
 
+
+//
+// Go to...
+//
+
+#include <vector>
+
+std::vector<level_info_t> gotoLevels;
+std::vector<level_info_t> regularLevels, nativeGamesLevels;
+
+static void goto_init()
+{
+	// Sort levels by category.
+	for ( int i = 0; i < levels_game.count; i++ ) {
+		uint32_t crc = levels_game.levels[i].crc;
+		switch ( crc )
+		{
+		case levelCRC::KABOOM:
+		case levelCRC::PICKAXE_RACE:
+		case levelCRC::RAFT_BOWLING:
+		case levelCRC::TUCO_SHOOT:
+		case levelCRC::WHACK_A_TUCO:
+			nativeGamesLevels.push_back( levels_game.levels[i] );
+			break;
+
+		default:
+			regularLevels.push_back( levels_game.levels[i] );
+			break;
+		}
+	}
+}
+
+
+
+//
+// Save slots (not really working yet).
+//
 
 savepoint_t save_slots[10] = { {-1, }, };
 
@@ -741,6 +819,8 @@ static char className[] = "PaletteWindow";
 
 #define ID_CHEATS   100
 #define ID_COMMANDS 200
+
+#define ID_LEVELS   400
 
 #define ID_ITEMS    600
 #define ID_ITEMSWAP (ID_ITEMS+9)
@@ -827,11 +907,8 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 				const command_t* cmd = &commands[id - ID_COMMANDS];
 				cmd->func();
 			}
-			else if ( id >= 400 && id < 400 + levels_game.count ) {
-				ScheduleWorldLoad( (void*) 0x917028, levels_game.levels[id - 400].crc, false );
-			}
-			else if ( id >= 500 && id < 500 + levels_beta.count ) {
-				ScheduleWorldLoad( (void*) 0x917028, levels_beta.levels[id - 500].crc, false );
+			else if ( id >= ID_LEVELS && id < ID_LEVELS + gotoLevels.size() ) {
+				ScheduleWorldLoad( (void*) 0x917028, gotoLevels[id - ID_LEVELS].crc, false );
 			}
 			else if ( id >= ID_ITEMS && id < ID_ITEMS+9 ) {
 				ItemStruct* items = (ItemStruct*) 0x8EEB90;
@@ -914,24 +991,44 @@ static HMENU create_menu()
 	HMENU menu = CreateMenu();
 
 	HMENU goTo = CreateMenu(); {
+		goto_init();
+		UINT_PTR id = ID_LEVELS;
+
 		HMENU beta = CreateMenu(); {
 			for ( int i = 0; i < levels_beta.count; i++ ) {
-				AppendMenu( beta, MF_STRING, 500 + i, levels_beta.levels[i].displayName );
+				AppendMenu( beta, MF_STRING, id + i, levels_beta.levels[i].displayName );
+				gotoLevels.push_back( levels_beta.levels[i] );
 			}
+			id += levels_beta.count;
 
 			AppendMenu( goTo, MF_POPUP, (UINT_PTR) beta, "Beta" );
 		}
 
-		const int rows = 18;
-		for ( int i = 0; i < levels_game.count; i++ ) {
-			UINT flags = MF_STRING;
-			if      ( i == 0 )        flags |= MF_MENUBARBREAK;
-			else if ( i % rows == 0 ) flags |= MF_MENUBREAK;
+		HMENU nativeGames = CreateMenu(); {
+			for ( int i = 0; i < nativeGamesLevels.size(); i++ ) {
+				AppendMenu( nativeGames, MF_STRING, id + i, nativeGamesLevels[i].displayName );
+				gotoLevels.push_back( nativeGamesLevels[i] );
+			}
+			id += nativeGamesLevels.size();
 
-			AppendMenu( goTo, flags, 400 + i, levels_game.levels[i].displayName );
+			AppendMenu( goTo, MF_POPUP, (UINT_PTR) nativeGames, "Native Games" );
 		}
 
-		AppendMenu( menu, MF_POPUP, (UINT_PTR) goTo, "Go to" );
+		{
+			const int rows = 18;
+			auto it = regularLevels.begin();
+			for ( int i = 0; i < regularLevels.size(); i++, it++ ) {
+				UINT flags = MF_STRING;
+				if      ( i == 0 )        flags |= MF_MENUBARBREAK;
+				else if ( i % rows == 0 ) flags |= MF_MENUBREAK;
+
+				AppendMenu( goTo, flags, id + i, regularLevels[i].displayName );
+				gotoLevels.push_back( regularLevels[i] );
+			}
+			id += regularLevels.size();
+
+			AppendMenu( menu, MF_POPUP, (UINT_PTR) goTo, "Go to" );
+		}
 	}
 
 	HMENU items = CreateMenu(); {
