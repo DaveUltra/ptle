@@ -1,7 +1,6 @@
 #include "rando/rando.h"
 
 #include "ptle/levels/level_info.h"
-#include "ptle/containers/TreeMap/TreeMap.h"
 
 #include "PitfallPlugin.h"
 
@@ -675,31 +674,5 @@ void prevent_transition_softlock()
 			m.data[3][2] += 14.0F;
 			EIHarry_Teleport( harry, &m, true, 1.0F );
 		}
-	}
-}
-
-uint32_t* find_previous_area_memory()
-{
-	// This tree map contains a node which points to the previous area value...
-	TreeMap* map = ((TreeMap*) 0x91FE2C);
-
-	// ... and this is the ID of said node.
-	const uint32_t targetNodeID = 0x174CD628;
-
-	// Look for it.
-	// TODO : Binary search might be a good idea for performance.
-	TreeMapNode* node = map->m_iterateFirst;
-	while ( node && node->m_hash != targetNodeID ) {
-		node = node->m_iterateNext;
-	}
-
-	if ( node ) {
-		// This should be a pointer to and ESDInt.
-		// Its value is at offset +0x08.
-		uint32_t* scriptInt = (uint32_t*) node->m_ptr;
-		return scriptInt + 2;
-	}
-	else {
-		return 0;
 	}
 }

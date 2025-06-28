@@ -147,5 +147,3 @@ void patch_shaman_shop();
 void prevent_transition_softlock();
 
 void write_graphml();
-
-uint32_t* find_previous_area_memory();

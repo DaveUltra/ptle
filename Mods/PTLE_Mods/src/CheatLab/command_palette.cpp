@@ -18,7 +18,6 @@
 #include "utils/func.h"
 
 
-
 GET_METHOD( 0x5EBA90, void, ScheduleWorldLoad, void*, uint32_t, bool );
 
 GET_FUNC( 0x557840, EIProjectile*, EIProjectile_Create, uint32_t );
@@ -833,6 +832,8 @@ static char className[] = "PaletteWindow";
 static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
 	int y = 0;
+	static HWND previous_area_label = nullptr;
+	static const int REFRESH_TIMER_ID = 1;
 
 	switch ( msg )
 	{
@@ -860,6 +861,31 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 					y += 30;
 				}
 			}
+			y += 20;
+			previous_area_label = CreateWindow("STATIC", "Previous Area: ",
+				WS_CHILD | WS_VISIBLE,
+				10, y, 300, 20,
+				hwnd, nullptr, nullptr, nullptr);
+
+			// Set a UI refresh timer at 30 FPS
+			SetTimer(hwnd, REFRESH_TIMER_ID, 1000 / 30, NULL);
+		}
+		break;
+
+	case WM_TIMER: 
+		if (wparam == REFRESH_TIMER_ID) {
+			uint32_t* prevAreaPtr = find_previous_area_memory();
+			const char* prefix = "Previous Area: ";
+			char buffer[64];
+
+			if (!prevAreaPtr) {
+				sprintf_s(buffer, "%sNot found", prefix);
+			}
+			else {
+				sprintf_s(buffer, "%s0x%.8X (%s)", prefix, *prevAreaPtr, level_get_name(level_get_by_crc(*prevAreaPtr)));
+			}
+
+			SetWindowText(previous_area_label, buffer);
 		}
 		break;
 

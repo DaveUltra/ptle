@@ -1,5 +1,6 @@
 /bin
 /tmp
+.vs
 *.vcxproj.user
 *.sdf
 *.opensdf
