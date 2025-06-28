@@ -60,6 +60,22 @@ static inline const char* bool_to_str(bool b)
 }
 
 
+
+RandoConfig::RandoConfig()
+	: seed( 0 )
+	, startingArea( 0 )
+	, legacy( false )
+	, entranceRando( true )
+	, randomizeShamanShop( true )
+	, skipJaguar2( false )
+	, skipWaterLevels( false )
+	, immediateSpiritFights( false )
+	, itemRandoInventory( false )
+	, itemRandoIdols( false )
+{
+
+}
+
 void load_config()
 {
 	std::ifstream cfg( "cfg/Randomizer/config.txt" );
@@ -93,15 +109,15 @@ void load_config()
 		switch ( it->second->m_type )
 		{
 		case config_field_type_t::BOOLEAN:
-			((bool*) ((char*) &rando_config) + it->second->m_offset)[0] = (value == "true");
+			((bool*) (((char*) &rando_config) + it->second->m_offset))[0] = (value == "true");
 			break;
 
 		case config_field_type_t::INT:
-			((int*) ((char*) &rando_config) + it->second->m_offset)[0] = atoi(value.c_str());
+			((int*) (((char*) &rando_config) + it->second->m_offset))[0] = atoi(value.c_str());
 			break;
 
 		case config_field_type_t::LEVEL_CRC:
-			((uint32_t*) ((char*) &rando_config) + it->second->m_offset)[0] = parse_hex(value);
+			((uint32_t*) (((char*) &rando_config) + it->second->m_offset))[0] = parse_hex(value);
 			break;
 		}
 	}

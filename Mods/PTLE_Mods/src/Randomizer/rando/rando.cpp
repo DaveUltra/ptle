@@ -25,22 +25,6 @@ enum TwinOutpostsWaterExits
 };
 
 
-// Config.
-RandoConfig::RandoConfig()
-	: seed( 0 )
-	, startingArea( levelCRC::FLOODED_COURTYARD )
-	, legacy( true )
-	, entranceRando( true )
-	, randomizeShamanShop( true )
-	, skipJaguar2( false )
-	, skipWaterLevels( false )
-	, immediateSpiritFights( false )
-	, itemRandoInventory( false )
-	, itemRandoIdols( false )
-{
-
-}
-
 RandoMap rando_map;
 
 
@@ -74,11 +58,14 @@ static const Transition SOFTLOCKABLE_TRANSITIONS[] = {
 };
 const std::set<Transition> softlockableTransitions( SOFTLOCKABLE_TRANSITIONS, SOFTLOCKABLE_TRANSITIONS+_countof(SOFTLOCKABLE_TRANSITIONS) );
 
+
 std::map<Transition, uint32_t> correctedTransitionsFrom;
 
 // Putting levels in this list will make the randomizer ignore them as starting areas
 // and not randomize them, if their transitions haven't been excluded yet.
 std::set<uint32_t> excludedLevels;
+
+std::vector<uint32_t> startingAreas;
 
 
 bool completed_monkey_temple   = false;
@@ -165,6 +152,46 @@ static void set_disabled_transitions()
 	disableTransition( levelCRC::BETA_VOLCANO, levelCRC::PLANE_COCKPIT );
 }
 
+static void set_starting_areas()
+{
+	for ( const auto& p : level_infos ) {
+		switch ( p.first )
+		{
+		case levelCRC::APU_ILLAPU_SHRINE:                // You'll get kicked out by softlock prevention anyway.
+
+		// Gives too much progression.
+		case levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY:    // Gives TNT.
+		case levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT:  // Gives all items + access to El Dorado.
+		case levelCRC::RUINS_OF_EL_DORADO:               // Supai fight.
+		case levelCRC::ANCIENT_EL_DORADO:                // Pusca fight.
+
+		// Temples.
+		case levelCRC::MONKEY_TEMPLE: case levelCRC::MONKEY_SPIRIT:
+		case levelCRC::SCORPION_TEMPLE: case levelCRC::SCORPION_SPIRIT:
+		case levelCRC::PENGUIN_TEMPLE: case levelCRC::PENGUIN_SPIRIT:
+
+		// Native Games.
+		case levelCRC::KABOOM:
+		case levelCRC::PICKAXE_RACE:
+		case levelCRC::RAFT_BOWLING:
+		case levelCRC::TUCO_SHOOT:
+		case levelCRC::WHACK_A_TUCO:
+
+		// Cutscenes.
+		case levelCRC::PLANE_CUTSCENE:
+		case levelCRC::VIRACOCHA_MONOLITHS_CUTSCENE:
+
+		// Beta levels (unrandomized for now).
+		case levelCRC::BETA_VOLCANO:
+			break;
+
+		default:
+			startingAreas.push_back( p.first );
+			break;
+		}
+	}
+}
+
 static void set_corrected_transitions()
 {
 	// Dark cave connecting Jungle Trail to Flooded Courtyard.
@@ -203,14 +230,24 @@ void rando_init()
 		return;
 	}
 
-	load_config();
-	display_config();
-
-	srand( rando_config.seed );
-
 	set_excluded_levels();
 	set_disabled_transitions();
+	set_starting_areas();
 	set_corrected_transitions();
+
+	// Choose random seed and starting area by default.
+	rando_config.seed = time(0);
+
+	// Config.
+	load_config();
+
+	// Set seed and starting area if unspecified by the config.
+	srand( rando_config.seed );
+	if ( rando_config.startingArea == 0 ) {
+		rando_config.startingArea = startingAreas[rand() % startingAreas.size()];
+	}
+
+	display_config();
 }
 
 static Transition mirror( const Transition& t )

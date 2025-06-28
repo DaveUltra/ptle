@@ -41,6 +41,7 @@ struct RandoConfig
 	bool itemRandoInventory;      // Shuffle unlockable items as part of item rando.
 	bool itemRandoIdols;          // Shuffle idols and explorers.
 
+	// Default values.
 	RandoConfig();
 };
 
