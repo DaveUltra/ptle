@@ -178,10 +178,16 @@ static ItemStruct* _get_item_by_hash( uint32_t itemHash )
 
 static void _UnlockItem_custom( void* self, uint32_t itemHash )
 {
+	uint32_t currentAreaCRC = PitfallPlugin::getCurrentLevelCRC();
+
 	// St.Claire's Camp : Don't randomize items!
-	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
 	if ( currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT || currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY ) {
 		UnlockItem( self, itemHash );
+		return;
+	}
+
+	// Getting Sling from Gates of El Dorado cutscene.
+	if ( currentAreaCRC == levelCRC::GATES_OF_EL_DORADO ) {
 		return;
 	}
 
@@ -333,4 +339,8 @@ void item_rando_init()
 	injector::MakeCALL( 0x5973E9, EITreasureIdol_InitValues_custom ); // Set correct model on EITreasureIdol instances (item rando).
 	injector::MakeRangedNOP( 0x4E9D6F, 0x4E9D83 );            // Remove hotbar autoset for the first 4 items.
 	injector::WriteMemory( 0x8EF35C, Script_HarryIsInInventory_custom );   // Disable Plane Cockpit's check for canteen.
+
+	// Getting Raft from unintended locations.
+	injector::MakeRangedNOP( 0x4E2EDE, 0x4E2EF4 );   // Cavern Lake to Jungle Canyon.
+	injector::MakeRangedNOP( 0x4E3C33, 0x4E3C49 );   // Mountain Sled Run.
 }
