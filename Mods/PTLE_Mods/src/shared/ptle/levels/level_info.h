@@ -168,3 +168,5 @@ const level_info_t* level_get_info( uint32_t id );
 #include "utils/func.h"
 
 GET_FUNC( 0x6F8EC0, uint32_t, level_HashString, char* );
+
+uint32_t* find_previous_area_memory();
