@@ -77,11 +77,13 @@ struct Unlockable
 		switch ( m_type )
 		{
 		case INVENTORY_ITEM:
-			harry = *((EIHarry**) 0x917034);
+			harry = PitfallPlugin::getHarry();
 			UnlockItem( harry->m_itemHotbar, m_itemHash );
+			log_printf( "Collected %s!\n", m_displayName );
 			break;
 		case IDOL_SINGLE:
 			AddCollectedIdols( m_idol->m_levelCRC, 1 );
+			log_printf( "Collected an idol!\n" );
 			break;
 		}
 	}
@@ -310,8 +312,13 @@ void item_rando_init()
 	for ( int i = 0; i < shuffled.size(); i++ ) {
 		g_unlockablesMap.emplace( original[i], shuffled[i] );
 
-		log_printf( "- %s  -->  %s\n", original[i]->m_displayName, shuffled[i]->m_displayName );
-		if ( shuffled[i]->m_type == INVENTORY_ITEM && original[i]->m_type == IDOL_SINGLE ) {
+		const UnlockableType ogType = original[i]->m_type, shType = shuffled[i]->m_type;
+
+		// Show items (and their location, if obtainable from idols).
+		if ( ogType == IDOL_SINGLE || ogType == INVENTORY_ITEM ) {
+			log_printf( "- %s  -->  %s\n", original[i]->m_displayName, shuffled[i]->m_displayName );
+		}
+		if ( ogType == IDOL_SINGLE && shType == INVENTORY_ITEM ) {
 			log_printf( "  - In %s\n", level_get_name(level_get_by_crc(original[i]->m_idol->m_levelCRC)) );
 		}
 	}
