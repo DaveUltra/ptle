@@ -700,6 +700,24 @@ static void _effector_debug_draw( bool enable )
 }
 
 
+bool g_invulnerable;
+bool g_infiniteJumps;
+
+static void _invulnerable( bool enable )
+{
+	g_invulnerable = enable;
+	if ( !enable ) {
+		bool* inv = (bool*) (0x917059);
+		*inv = false;
+	}
+}
+
+static void _infinite_jump( bool enable )
+{
+	g_infiniteJumps = enable;
+}
+
+
 
 //
 // List of available commands / cheats.
@@ -709,6 +727,8 @@ const cheat_t cheats[] =
 {
 	{ "Auto Skip Cutscene",  _auto_skip_cutscenes },
 	{ "Effector Debug Draw", _effector_debug_draw },
+	{ "Invulnerable",        _invulnerable },
+	{ "Infinite Jump",       _infinite_jump },
 	{ "TNT Rain",            _tnt_rain },
 	{ "All TNT",             _all_tnt },
 	{ "Crack Native",        _fast_native },
@@ -815,8 +835,13 @@ void save_saveslot( int i )
 static HWND hwndPalette;
 static char className[] = "PaletteWindow";
 
-#define BUTTON_WIDTH 150
+// Geometry.
+#define BUTTON_WIDTH   150
+#define MARGIN_WIDTH   10
+#define WINDOW_WIDTH   (BUTTON_WIDTH*2 + MARGIN_WIDTH*3)
+#define WINDOW_HEIGHT  500
 
+// Identifiers.
 #define ID_CHEATS   100
 #define ID_COMMANDS 200
 
@@ -831,6 +856,7 @@ static char className[] = "PaletteWindow";
 
 static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
+	int id = wparam;
 	int y = 0;
 	static HWND previous_area_label = nullptr;
 	static const int REFRESH_TIMER_ID = 1;
@@ -897,96 +923,84 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 		return 0;
 
 	case WM_COMMAND:
-		{
-			int id = wparam;
-
-			if ( id >= ID_CHEATS && id < ID_CHEATS + NUM_CHEATS ) {
-				int i = id - ID_CHEATS;
-				const cheat_t* cmd = &cheats[i];
-				cheat_states[i] = !cheat_states[i];
-				cmd->func( cheat_states[i] );
-			}
-			else if ( id >= ID_COMMANDS && id < ID_COMMANDS + NUM_COMMANDS ) {
-				const command_t* cmd = &commands[id - ID_COMMANDS];
-				cmd->func();
-			}
-			else if ( id >= ID_LEVELS && id < ID_LEVELS + gotoLevels.size() ) {
-				ScheduleWorldLoad( (void*) 0x917028, gotoLevels[id - ID_LEVELS].crc, false );
-			}
-			else if ( id >= ID_ITEMS && id < ID_ITEMS+9 ) {
-				ItemStruct* items = (ItemStruct*) 0x8EEB90;
-				items[id - ID_ITEMS].m_unlocked = !items[id - ID_ITEMS].m_unlocked;
-			}
-			else if ( id == ID_ITEMSWAP ) {
-				bool* itemSwapPtr = (bool*) 0x9106A2;
-				(*itemSwapPtr) = !(*itemSwapPtr);
-			}
-			else if ( id >= ID_SKILLS && id < ID_SKILLS+6 ) {
-				EIHarry* harry = *((EIHarry**) 0x917034);
-				if ( harry ) {
-					switch ( id ) {
-					case ID_SKILLS:   harry->m_risingStrike = !harry->m_risingStrike; break;
-					case ID_SKILLS+1: harry->m_smashStrike  = !harry->m_smashStrike;  break;
-					case ID_SKILLS+2: harry->m_heroicDash   = !harry->m_heroicDash;   break;
-					case ID_SKILLS+3: harry->m_heroicDive   = !harry->m_heroicDive;   break;
-					case ID_SKILLS+4: harry->m_superSling   = !harry->m_superSling;   break;
-					case ID_SKILLS+5: harry->m_breakdance   = !harry->m_breakdance;   break;
-					}
+		if ( id >= ID_CHEATS && id < ID_CHEATS + NUM_CHEATS ) {
+			int i = id - ID_CHEATS;
+			const cheat_t* cmd = &cheats[i];
+			cheat_states[i] = !cheat_states[i];
+			cmd->func( cheat_states[i] );
+		}
+		else if ( id >= ID_COMMANDS && id < ID_COMMANDS + NUM_COMMANDS ) {
+			const command_t* cmd = &commands[id - ID_COMMANDS];
+			cmd->func();
+		}
+		else if ( id >= ID_LEVELS && id < ID_LEVELS + gotoLevels.size() ) {
+			ScheduleWorldLoad( (void*) 0x917028, gotoLevels[id - ID_LEVELS].crc, false );
+		}
+		else if ( id >= ID_ITEMS && id < ID_ITEMS+9 ) {
+			ItemStruct* items = (ItemStruct*) 0x8EEB90;
+			items[id - ID_ITEMS].m_unlocked = !items[id - ID_ITEMS].m_unlocked;
+		}
+		else if ( id == ID_ITEMSWAP ) {
+			bool* itemSwapPtr = (bool*) 0x9106A2;
+			(*itemSwapPtr) = !(*itemSwapPtr);
+		}
+		else if ( id >= ID_SKILLS && id < ID_SKILLS+6 ) {
+			EIHarry* harry = *((EIHarry**) 0x917034);
+			if ( harry ) {
+				switch ( id ) {
+				case ID_SKILLS:   harry->m_risingStrike = !harry->m_risingStrike; break;
+				case ID_SKILLS+1: harry->m_smashStrike  = !harry->m_smashStrike;  break;
+				case ID_SKILLS+2: harry->m_heroicDash   = !harry->m_heroicDash;   break;
+				case ID_SKILLS+3: harry->m_heroicDive   = !harry->m_heroicDive;   break;
+				case ID_SKILLS+4: harry->m_superSling   = !harry->m_superSling;   break;
+				case ID_SKILLS+5: harry->m_breakdance   = !harry->m_breakdance;   break;
 				}
 			}
-			else if ( id >= ID_SAVESLOT_LOAD && id < ID_SAVESLOT_LOAD+10 ) {
-				if ( load_saveslot(id-ID_SAVESLOT_LOAD) ) {
-					log_printf( "Loaded save state.\n" );
-				}
-				else {
-					log_printf( "Failed to load state (slot might be unused).\n" );
-				}
+		}
+		else if ( id >= ID_SAVESLOT_LOAD && id < ID_SAVESLOT_LOAD+10 ) {
+			if ( load_saveslot(id-ID_SAVESLOT_LOAD) ) {
+				log_printf( "Loaded save state.\n" );
 			}
-			else if ( id >= ID_SAVESLOT_SAVE && id < ID_SAVESLOT_SAVE+10 ) {
-				save_saveslot( id-ID_SAVESLOT_SAVE );
-				log_printf( "Saved state.\n" );
+			else {
+				log_printf( "Failed to load state (slot might be unused).\n" );
 			}
+		}
+		else if ( id >= ID_SAVESLOT_SAVE && id < ID_SAVESLOT_SAVE+10 ) {
+			save_saveslot( id-ID_SAVESLOT_SAVE );
+			log_printf( "Saved state.\n" );
 		}
 		break;
 
 	case WM_MENUSELECT:
-		{
-			if ( HIWORD( wparam ) & MF_POPUP ) {
-				EIHarry* harry = *((EIHarry**) 0x917034);
-				ItemStruct* items = (ItemStruct*) 0x8EEB90;
-				HMENU subMenu = GetSubMenu( (HMENU) lparam, LOWORD(wparam) );
+		if ( HIWORD( wparam ) & MF_POPUP ) {
+			EIHarry* harry = *((EIHarry**) 0x917034);
+			ItemStruct* items = (ItemStruct*) 0x8EEB90;
+			HMENU subMenu = GetSubMenu( (HMENU) lparam, LOWORD(wparam) );
 
-				switch ( LOWORD( wparam ) ) {
-				case 1:
-					for ( int i = 0; i < 9; i++ ) {
-						CheckMenuItem( subMenu, ID_ITEMS + i, (items[i].m_unlocked) ? MF_CHECKED : MF_UNCHECKED );
-					}
-					CheckMenuItem( subMenu, ID_ITEMSWAP, *((bool*) 0x9106A2) ? MF_UNCHECKED : MF_CHECKED );
-					break;
-				case 2:
-					for ( int i = 0; i < 6; i++ ) {
-						EnableMenuItem( subMenu, ID_SKILLS + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
-					}
-					CheckMenuItem( subMenu, ID_SKILLS,   (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, ID_SKILLS+1, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, ID_SKILLS+2, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
-					CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
-					break;
+			switch ( LOWORD( wparam ) ) {
+			case 1:
+				for ( int i = 0; i < 9; i++ ) {
+					CheckMenuItem( subMenu, ID_ITEMS + i, (items[i].m_unlocked) ? MF_CHECKED : MF_UNCHECKED );
 				}
+				CheckMenuItem( subMenu, ID_ITEMSWAP, *((bool*) 0x9106A2) ? MF_UNCHECKED : MF_CHECKED );
+				break;
+			case 2:
+				for ( int i = 0; i < 6; i++ ) {
+					EnableMenuItem( subMenu, ID_SKILLS + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
+				}
+				CheckMenuItem( subMenu, ID_SKILLS,   (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
+				CheckMenuItem( subMenu, ID_SKILLS+1, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
+				CheckMenuItem( subMenu, ID_SKILLS+2, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
+				CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
+				CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
+				CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
+				break;
 			}
 		}
 		break;
 	}
 
 	return DefWindowProc( hwnd, msg, wparam, lparam );
-}
-
-static BOOL CALLBACK SetFontToAll( HWND hwnd, LPARAM lparam )
-{
-	SendMessage( hwnd, WM_SETFONT, lparam, 0 );
-	return true;
 }
 
 static HMENU create_menu()
@@ -1018,7 +1032,7 @@ static HMENU create_menu()
 		}
 
 		{
-			const int rows = 18;
+			const int rows = 19;
 			auto it = regularLevels.begin();
 			for ( int i = 0; i < regularLevels.size(); i++, it++ ) {
 				UINT flags = MF_STRING;
@@ -1101,8 +1115,7 @@ void command_create_window()
 
 	RegisterClassEx( &wcex );
 
-	// Space for two columns + 3x margin.
-	RECT rect = { 0, 0, BUTTON_WIDTH*2 + 3*10, 500 };
+	RECT rect = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
 	DWORD style = WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX);
 
 	AdjustWindowRect( &rect, style, false );
@@ -1113,8 +1126,12 @@ void command_create_window()
 		rect.right - rect.left, rect.bottom - rect.top,
 		0, menu, GetModuleHandle(0), 0 );
 
+	// Create & set font recursively.
 	HFONT font = CreateFont( 16, 0, 0, 0, FW_NORMAL, false, false, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH, "Segoe UI" );
-	EnumChildWindows( hwndPalette, SetFontToAll, (LPARAM) font );
+	EnumChildWindows( hwndPalette, [](HWND hwnd, LPARAM p) -> BOOL {
+		SendMessage( hwnd, WM_SETFONT, p, 0 );
+		return true;
+	}, (LPARAM) font );
 
 	ShowWindow( hwndPalette, SW_SHOW );
 }
