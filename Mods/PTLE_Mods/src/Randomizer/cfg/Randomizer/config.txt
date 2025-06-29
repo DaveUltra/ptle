@@ -9,3 +9,4 @@ skipWaterLevels=true
 immediateSpiritFights=false
 itemRandoInventory=false
 itemRandoIdols=false
+itemRandoExplorers=false

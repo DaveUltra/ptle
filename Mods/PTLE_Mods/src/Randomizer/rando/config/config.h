@@ -39,7 +39,8 @@ struct RandoConfig
 	bool immediateSpiritFights;   // Transform Harry into the spirit immediately upon entering the temple.
 
 	bool itemRandoInventory;      // Shuffle unlockable items as part of item rando.
-	bool itemRandoIdols;          // Shuffle idols and explorers.
+	bool itemRandoIdols;          // Shuffle idols.
+	bool itemRandoExplorers;      // Shuffle explorers.
 
 	// Default values.
 	RandoConfig();

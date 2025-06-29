@@ -48,12 +48,19 @@
         {
           "unique_id": "0xCA86F633",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": []
+		}
       ]
     },
     {
       "area_id": "0xDEDA69BC",
       "area_name": "Jungle Canyon",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0xBD81C6A5",
@@ -81,12 +88,19 @@
         {
           "unique_id": "0x54E26390",
           "requires": ["Mystery item"]
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": ["torch"]
+		}
       ]
     },
     {
       "area_id": "0x4A3E4058",
       "area_name": "Plane Cockpit",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": []
     },
     {
@@ -102,6 +116,9 @@
     {
       "area_id": "0x70EBFCA3",
       "area_name": "Altar of Huitaca",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0xF6FD4063",
@@ -116,6 +133,9 @@
     {
       "area_id": "0x3292B6C9",
       "area_name": "The Great Tree",
+	  "shaman": {
+	    "requires": [["gas mask"], ["pickaxes"]]
+	  },
       "idols": [
         {
           "unique_id": "0x2488971F",
@@ -174,6 +194,9 @@
     {
       "area_id": "0x69F0CDE2",
       "area_name": "Battered Bridge",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0x2488971F",
@@ -184,6 +207,9 @@
     {
       "area_id": "0x07ECCC35",
       "area_name": "Mama-Oullo Tower",
+	  "shaman": {
+	    "requires": ["smash strike"]
+	  },
       "idols": [
         {
           "unique_id": "0x14A47E46",
@@ -202,7 +228,11 @@
         {
           "unique_id": "0xCDEB322A",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": []
+		}
       ]
     },
     {
@@ -217,7 +247,11 @@
         {
           "unique_id": "0x2488971F",
           "requires": [["roll"], ["pickaxes"]]
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": ["tnt"]
+		}
       ]
     },
     {
@@ -235,6 +269,9 @@
     {
       "area_id": "0xECC9D759",
       "area_name": "Flooded Courtyard",
+	  "shaman": {
+	    "requires": [["shield"], ["tnt"]]
+	  },
       "idols": [
         {
           "unique_id": "0x2488971F",
@@ -243,7 +280,11 @@
         {
           "unique_id": "0xCA86F633",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": []
+		}
       ]
     },
     {
@@ -262,7 +303,11 @@
         {
           "unique_id": "0xB764087D",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": []
+		}
       ]
     },
     {
@@ -273,6 +318,9 @@
     {
       "area_id": "0x239A2165",
       "area_name": "Turtle Monument",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0x54E26390",
@@ -281,7 +329,11 @@
         {
           "unique_id": "0xBD81C6A5",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": []
+		}
       ]
     },
     {
@@ -292,6 +344,9 @@
     {
       "area_id": "0xCD944049",
       "area_name": "Butterfly Glade",
+	  "shaman": {
+	    "requires": [["glitches"], ["gas mask"], ["tnt"]]
+	  },
       "idols": [
         {
           "unique_id": "0xBD81C6A5",
@@ -302,21 +357,35 @@
     {
       "area_id": "0x0C1C3E47",
       "area_name": "Renegade Fort",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0x2488971F",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": []
+		}
       ]
     },
     {
       "area_id": "0x1CB1432D",
       "area_name": "Renegade Headquarters",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0xBAEC02BC",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": [["pickaxes"], ["tnt"]]
+		}
       ]
     },
     {
@@ -346,7 +415,11 @@
           "unique_id": "0x2488971F",
           "duplicate": true,
           "requires": ["pickaxes"]
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": []
+		}
       ]
     }
   ],
@@ -354,11 +427,14 @@
     {
       "area_id": "0x9D6149E1",
       "area_name": "Underground Dam",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0x2488971F",
           "requires": ["roll"]
-        }
+        },
         {
           "unique_id": "0xBD81C6A5",
           "requires": ["roll"]
@@ -372,16 +448,23 @@
         {
           "unique_id": "0x2488971F",
           "requires": []
-        }
+        },
         {
           "unique_id": "0xBD81C6A5",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": [["smash strike"]]
+		}
       ]
     },
     {
       "area_id": "0x0DDE5470",
       "area_name": "Crystal Cavern",
+	  "shaman": {
+	    "requires": [["pickaxes"], ["tnt"]]
+	  },
       "idols": [
         {
           "unique_id": "0x2488971F",
@@ -429,6 +512,9 @@
     {
       "area_id": "0x62548B77",
       "area_name": "White Valley",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0xCDEB322A",
@@ -437,13 +523,25 @@
         {
           "unique_id": "0xBAEC02BC",
           "requires": [["smash strike"], ["pickaxes"]]
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": [["glitches"], ["raft"]]
+		}
       ]
     },
     {
       "area_id": "0x8B372E42",
       "area_name": "Cavern Lake",
-      "idols": []
+	  "shaman": {
+	    "requires": ["raft"]
+	  },
+      "idols": [
+		{
+		  "explorer": true,
+		  "requires": [["raft"], ["pickaxes"]]
+		}
+	  ]
     },
     {
       "area_id": "0x7652BAFC",
@@ -462,6 +560,9 @@
     {
       "area_id": "0x6F498BBD",
       "area_name": "Viracocha Monoliths",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0x2488971F",
@@ -507,12 +608,19 @@
         {
           "unique_id": "0xCDEB322A",
           "requires": []
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": ["pickaxes"]
+		}
       ]
     },
     {
       "area_id": "0x1B8833D3",
       "area_name": "Mountain Sled Run",
+	  "shaman": {
+	    "requires": []
+	  },
       "idols": [
         {
           "unique_id": "0x2488971F",
@@ -529,6 +637,9 @@
     {
       "area_id": "0x3E7EE822",
       "area_name": "Ekkeko Ice Cavern",
+	  "shaman": {
+	    "requires": ["roll"]
+	  },
       "idols": [
         {
           "unique_id": "0xBD81C6A5",
@@ -557,7 +668,11 @@
         {
           "unique_id": "0xCDEB322A",
           "requires": ["roll"]
-        }
+        },
+		{
+		  "explorer": true,
+		  "requires": []
+		}
       ]
     }
   ],

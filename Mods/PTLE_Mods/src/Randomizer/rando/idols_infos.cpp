@@ -5,6 +5,8 @@
 
 
 IdolsList idols_info;
+ExplorerList explorer_info;
+ShamanList shaman_info;
 
 
 static uint32_t parse_int_hex( const std::string& str )
@@ -63,6 +65,15 @@ bool load_idols_infos()
 			const uint32_t areaCRC = parse_int_hex(areaObj["area_id"]);
 			std::vector<Idol>& idolsByArea = idols_info.emplace( areaCRC, std::vector<Idol>() ).first->second;
 
+			// Shaman.
+			json::JSONField& shaman = areaObj["shaman"];
+			if ( !shaman.IsUndefined() && shaman.Type() == json::JSON_OBJECT ) {
+				json::JSONObject& shamanObj = shaman->GetObjectValue();
+
+				ShamanInfo shamanInfo = { areaCRC };
+				shaman_info.emplace( areaCRC, shamanInfo );
+			}
+
 			// Idols.
 			json::JSONField& idols = areaObj["idols"];
 			if ( idols.IsUndefined() || idols.Type() != json::JSON_ARRAY ) continue;
@@ -71,11 +82,20 @@ bool load_idols_infos()
 				if ( idol.Type() != json::JSON_OBJECT ) continue;
 				json::JSONObject& idolObj = idol.GetObjectValue();
 
-				Idol data = { areaCRC, parse_int_hex(idolObj["unique_id"]), false };
+				// Idol data.
+				Idol data = { areaCRC, 0, false };
 				if ( !idolObj["duplicate"].IsUndefined() ) {
 					data.m_duplicate = (idolObj["duplicate"].operator std::string() == "true");
 				}
-				idolsByArea.push_back( data );
+
+				if ( idolObj["explorer"].IsUndefined() ) {
+					data.m_uniqueID = parse_int_hex(idolObj["unique_id"]);
+					idolsByArea.push_back( data );
+				}
+				else {
+					data.initAsExplorer();
+					explorer_info.emplace( areaCRC, data );
+				}
 
 				// Requirements.
 				/*json::JSONField& requires = exitObj["requires"];

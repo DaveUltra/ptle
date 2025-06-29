@@ -12,8 +12,9 @@ public:
 	Vector3f m_bodyRotation;
 	Vector3f m_bodyTargetRotation;
 
-	char padding10[0x734];
+	char padding10[0x730];
 
+	int m_idolsCollected;
 	int m_risingStrike;
 	int unused4;
 	int m_superSling;

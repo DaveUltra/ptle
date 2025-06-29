@@ -89,9 +89,27 @@ struct Idol
 	uint32_t m_levelCRC;
 	uint32_t m_uniqueID;
 	bool m_duplicate;
+
+	inline void initAsExplorer()
+	{
+		m_uniqueID = 0x412B274;
+	}
+
+	inline bool isExplorerIdol() const
+	{
+		return m_uniqueID == 0x412B274;
+	}
+};
+
+struct ShamanInfo
+{
+	uint32_t m_levelCRC;
+	// TODO : requirements.
 };
 
 typedef std::map<uint32_t, std::vector<Idol>> IdolsList;
+typedef std::map<uint32_t, Idol> ExplorerList;
+typedef std::map<uint32_t, ShamanInfo> ShamanList;
 
 
 
@@ -126,6 +144,8 @@ extern MajorAreas transition_infos;
 
 // Idols locations.
 extern IdolsList idols_info;
+extern ExplorerList explorer_info;
+extern ShamanList shaman_info;
 
 // Area info for each level ID.
 extern std::map<uint32_t, Area*> level_infos;

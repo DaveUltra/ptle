@@ -32,6 +32,7 @@ static const config_field_t fields[] =
 	// Item randomizer.
 	CONFIG_FIELD( itemRandoInventory,    config_field_type_t::BOOLEAN )
 	CONFIG_FIELD( itemRandoIdols,        config_field_type_t::BOOLEAN )
+	CONFIG_FIELD( itemRandoExplorers,    config_field_type_t::BOOLEAN )
 };
 
 
@@ -72,6 +73,7 @@ RandoConfig::RandoConfig()
 	, immediateSpiritFights( false )
 	, itemRandoInventory( false )
 	, itemRandoIdols( false )
+	, itemRandoExplorers( false )
 {
 
 }
