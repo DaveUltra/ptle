@@ -199,6 +199,12 @@ static void _UnlockItem_custom( void* self, uint32_t itemHash )
 {
 	uint32_t currentAreaCRC = PitfallPlugin::getCurrentLevelCRC();
 
+	// St.Claire's Camp : Don't randomize items!
+	if ( currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT || currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY ) {
+		UnlockItem( self, itemHash );
+		return;
+	}
+
 	// Getting Sling from Gates of El Dorado cutscene.
 	if ( currentAreaCRC == levelCRC::GATES_OF_EL_DORADO ) {
 		return;
