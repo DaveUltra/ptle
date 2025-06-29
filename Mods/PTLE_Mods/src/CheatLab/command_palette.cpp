@@ -859,6 +859,7 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 	int id = wparam;
 	int y = 0;
 	static HWND previous_area_label = nullptr;
+	static HWND idol_count_label = nullptr;
 	static const int REFRESH_TIMER_ID = 1;
 
 	switch ( msg )
@@ -892,6 +893,11 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 				WS_CHILD | WS_VISIBLE,
 				10, y, 300, 20,
 				hwnd, nullptr, nullptr, nullptr);
+			y += 20;
+			idol_count_label = CreateWindow("STATIC", "Idols: ",
+				WS_CHILD | WS_VISIBLE,
+				10, y, 300, 20,
+				hwnd, nullptr, nullptr, nullptr);
 
 			// Set a UI refresh timer at 30 FPS
 			SetTimer(hwnd, REFRESH_TIMER_ID, 1000 / 30, NULL);
@@ -900,10 +906,10 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 
 	case WM_TIMER: 
 		if (wparam == REFRESH_TIMER_ID) {
-			uint32_t* prevAreaPtr = find_previous_area_memory();
-			const char* prefix = "Previous Area: ";
 			char buffer[64];
 
+			uint32_t* prevAreaPtr = find_previous_area_memory();
+			const char* prefix = "Previous Area: ";
 			if (!prevAreaPtr) {
 				sprintf_s(buffer, "%sNot found", prefix);
 			}
@@ -912,6 +918,13 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 			}
 
 			SetWindowText(previous_area_label, buffer);
+
+			EIHarry* harry = *((EIHarry**) 0x917034);
+			if ( harry ) {
+				sprintf_s(buffer, "Idols: %d", harry->m_idolsCollected);
+
+				SetWindowText(idol_count_label, buffer);
+			}
 		}
 		break;
 
