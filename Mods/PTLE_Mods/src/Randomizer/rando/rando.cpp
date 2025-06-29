@@ -250,23 +250,29 @@ void rando_init()
 	display_config();
 }
 
-static Transition mirror( const Transition& t )
+
+
+//
+// Helpers & shortcut functions.
+//
+
+static inline Transition mirror( const Transition& t )
 {
 	return Transition( t.areaToID, t.areaFromID );
 }
 
 template<typename T>
-static void vector_removeAt( std::vector<T>& v, int p )
+static inline void vector_removeAt( std::vector<T>& v, int p )
 {
 	v.erase( v.begin() + p );
 }
 
 template<typename T>
-static void vector_remove( std::vector<T>& v, const T& val )
+static inline void vector_remove( std::vector<T>& v, const T& val )
 {
 	auto it = std::remove(v.begin(), v.end(), val);
 	if ( it != v.end() )
-	v.erase( it );
+		v.erase( it );
 }
 
 
@@ -279,16 +285,25 @@ static uint32_t find_original_exit_to( uint32_t cur, uint32_t dst )
 			return exit.areaCRC;
 		}
 	}
-	return 0;
+	return dst;
 }
 
+// Removes a level with two exits ("line" level) by connecting its randomized destinations to each other.
 static void remove_line_level( uint32_t level, uint32_t exitA, uint32_t exitB )
 {
+	auto& map = rando_map.getTransitionsMap();
+
 	// Get which zones have been mapped to the exits of the level we want to nuke.
-	Transition normalTransitionA( level, exitA );
-	Transition normalTransitionB( level, exitB );
-	uint32_t levelA = rando_map.getTransitionsMap().at(normalTransitionA).areaToID;
-	uint32_t levelB = rando_map.getTransitionsMap().at(normalTransitionB).areaToID;
+	uint32_t levelA = exitA, levelB = exitB;
+
+	auto itA = map.find( Transition(level, exitA) );
+	if ( itA != map.end() ) {
+		levelA = itA->second.areaToID;
+	}
+	auto itB = map.find( Transition(level, exitB) );
+	if ( itB != map.end() ) {
+		levelB = itB->second.areaToID;
+	}
 
 	// Find which exit to take within those two levels to get to the removed level.
 	uint32_t origExitA = find_original_exit_to( levelA, level );
@@ -359,6 +374,7 @@ void RandoMap::generateLinkedTransitions()
 			continue;
 		}
 	}
+	log_printf( "- %d levels purged (no exits)\n", purgeList.size() );
 	for ( uint32_t i : purgeList ) {
 		knownAreas.erase( i );
 		availablePorts.erase( i );
@@ -370,12 +386,11 @@ void RandoMap::generateLinkedTransitions()
 	// Mark starting area as accessible (duh).
 	m_accessibleAreas.insert( rando_config.startingArea );
 	strictAvail.push_back( rando_config.startingArea );
+
 	// List all other zones as non-reachable.
-	for ( uint32_t id : knownAreas ) {
-		if ( id != rando_config.startingArea ) {
-			availNotMaster.push_back( id );
-		}
-	}
+	log_printf( "- %d known areas.\n", knownAreas.size() );
+	knownAreas.erase( rando_config.startingArea );
+	availNotMaster.insert( availNotMaster.begin(), knownAreas.begin(), knownAreas.end() );
 
 	// Process.
 	while ( !strictAvail.empty() || !availNotMaster.empty() ) {
@@ -410,10 +425,16 @@ void RandoMap::generateLinkedTransitions()
 			levelFrom = rand() % strictAvail.size();
 			levelTo = rand() % availNotMaster.size();
 
-			// Favor areas with more than one exit remaining.
-			if ( availablePorts[availNotMaster[levelTo]].size() == 1 && availNotMaster.size() > 1 ) {
-				if ( levelTo == 0 ) levelTo++;
-				else levelTo--;
+			// Favor remaining areas with more than one exit.
+			if ( availNotMaster.size() > 1 ) {
+				bool onlyDeadEnds = true;
+				for ( int i = 0; i < availNotMaster.size(); i++ ) {
+					if ( availablePorts[availNotMaster[i]].size() != 1 ) {
+						onlyDeadEnds = false;
+						levelTo = i;
+						break;
+					}
+				}
 			}
 
 			// Prevent level from looping onto itself.
@@ -436,7 +457,7 @@ void RandoMap::generateLinkedTransitions()
 			toEntrance = 1;
 		}
 
-		//log_printf( "%s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
+		log_printf( "- %s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
 
 		// Form linked transition.
 		Transition original( levelFromCRC, availablePorts[levelFromCRC][fromExit] );
@@ -471,7 +492,7 @@ void RandoMap::generateLinkedTransitions()
 		}
 	}
 
-	log_printf( "Main process done.\n" );
+	log_printf( "- Main process done.\n" );
 
 	if ( strictAvail.size() == 1 && availNotMaster.empty() ) {
 		log_printf( "GENERATION ERROR : This area wasn't processed correctly : %s\n", level_get_name(level_get_by_crc(strictAvail[0])) );
@@ -483,6 +504,7 @@ void RandoMap::generateLinkedTransitions()
 		for ( auto& p : availablePorts ) {
 			log_printf( "- %s : %d exits\n", level_get_name(level_get_by_crc(p.first)), p.second.size() );
 		}
+		//return;
 	}
 
 
@@ -495,7 +517,7 @@ void RandoMap::generateLinkedTransitions()
 	// Remove water levels.
 	// We do it after generation to avoid changing the random seed.
 	if ( rando_config.skipWaterLevels ) {
-		log_printf( "Skipping water levels...\n" );
+		log_printf( "- Skipping water levels...\n" );
 
 		remove_line_level( levelCRC::FLOODED_CAVE,      levelCRC::BITTENBINDER_CAMP, levelCRC::RENEGADE_FORT );
 		remove_line_level( levelCRC::MYSTERIOUS_TEMPLE, levelCRC::BITTENBINDER_CAMP, levelCRC::ALTAR_OF_AGES );
@@ -510,7 +532,7 @@ void RandoMap::generateLinkedTransitions()
 		m_transitionsMap[Transition(levelCRC::GATES_OF_EL_DORADO, levelCRC::RUINS_OF_EL_DORADO)] = puscaRedirect;
 	}
 
-	log_printf( "Generation ended.\n" );
+	log_printf( "- Generation ended.\n" );
 }
 
 
@@ -580,6 +602,8 @@ void RandoMap::generateLegacy()
 
 void RandoMap::generateMap()
 {
+	log_printf( "Entrance Randomizer :\n" );
+
 	if ( rando_config.legacy ) {
 		generateLegacy();
 	}
