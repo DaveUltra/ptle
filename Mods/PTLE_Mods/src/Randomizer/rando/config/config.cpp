@@ -99,7 +99,7 @@ void load_config()
 		}
 
 		size_t eq = line.find( '=' );
-		if ( line.empty() || eq == std::string::npos || line[0] == ';' || line[0] == '#' ) {
+		if ( line.empty() || eq == std::string::npos ) {
 			continue;
 		}
 
