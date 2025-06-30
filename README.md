@@ -2,8 +2,6 @@
 
 I dump random stuff, mods and research data on the game.
 
-
-
 ## Contents
 
 - `/Memory Research` : Everything regarding reverse engineering on the game, knowledge base
@@ -11,10 +9,7 @@ I dump random stuff, mods and research data on the game.
 	- `/PC/PitFall - The Lost Expedition.CT` : Cheat Engine table.
 	- `/PC/Virtual tables.txt` : Known virtual tables of objects that the game manages. These can be used in Cheat Engine memory searches to quickly find instances of one given type of object.
 - `/Mods/PTLE_Mods` : Mods for PC & SDK for making your own!
-	- `/mods` : Pre-compiled mods
 	- `/src` : Source code for mods & utilities
-
-
 
 ## Various Goals
 
