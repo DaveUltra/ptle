@@ -21,6 +21,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Randomizer", "src\Randomize
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "json", "src\json\json.vcxproj", "{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModLoader", "src\ModLoader\ModLoader.vcxproj", "{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -47,6 +49,10 @@ Global
 		{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}.Debug|Win32.Build.0 = Debug|Win32
 		{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}.Release|Win32.ActiveCfg = Release|Win32
 		{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}.Release|Win32.Build.0 = Release|Win32
+		{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}.Debug|Win32.ActiveCfg = Release|Win32
+		{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}.Debug|Win32.Build.0 = Release|Win32
+		{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}.Release|Win32.ActiveCfg = Release|Win32
+		{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

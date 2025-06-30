@@ -1,4 +1,4 @@
-IF EXIST binkw32.mod.dll (
-    ren "binkw32.dll" "binkw32Hooked.dll"
-    ren "binkw32.mod.dll" "binkw32.dll"
+IF EXIST binkw32.mod (
+    ren "binkw32.dll" "binkw32_o.dll"
+    ren "binkw32.mod" "binkw32.dll"
 )

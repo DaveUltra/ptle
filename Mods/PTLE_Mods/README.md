@@ -15,7 +15,7 @@ To set up the mod loader, you only need three steps :
 - Copy the contents of the repository's `patch` directory into the `Game` directory. Don't worry about overwriting the existing `binkw32.dll`, a backed up copy is provided.
 - Remove `KBhook.dll` to avoid the game stealing focus from other programs. The game will use the default system DLL.
 
-Then, you are ready to use mods. You can find pre-built versions of the mods in this repository under `mods`. To enable a mod, simply copy the `.asi` file into the `Game` directory with the rest of the patch files. The next time you open the game, any `.asi` file that the mod loader finds will be automatically loaded.
+Then, you are ready to use mods. You can find pre-built versions of the mods in this repository under `mods`. To enable a mod, simply copy the `.asi` file into the `Game/mods/` directory. If it doesn't exist yet, you can create it. The next time you open the game, any `.asi` file that the mod loader finds will be automatically loaded.
 
 **Note :** You might be aware of PC's version many flaws : the taskbar gets locked, the game constantly steals focus, responds to any input even outside of its window, and freezes on Alt+Tabs. DxWnd does allow playing in windowed mode, but it does not address any of the other issues. It is recommended to use the `WindowedMode.asi` mod to counter all of these effects and be able to multitask.
 
@@ -23,7 +23,7 @@ Then, you are ready to use mods. You can find pre-built versions of the mods in 
 
 By default, the mod loader will be on. If you wish to toggle between playing with or without mods, you can use the two batch files `enable_mod.bat` and `disable_mod.bat`.
 
-To disable a specific mod, delete or move its `.asi` file out of the game's install directory.
+To disable a specific mod : delete, move, or change the extension of its `.asi` file.
 
 ## Building the mods
 
