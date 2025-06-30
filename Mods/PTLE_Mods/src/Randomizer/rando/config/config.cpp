@@ -80,7 +80,7 @@ RandoConfig::RandoConfig()
 
 void load_config()
 {
-	std::ifstream cfg( "cfg/Randomizer/config.txt" );
+	std::ifstream cfg( "cfg/Randomizer/config.ini" );
 
 	std::string line;
 	std::getline(cfg, line);
@@ -93,7 +93,7 @@ void load_config()
 
 	while ( std::getline(cfg, line) ) {
 		size_t eq = line.find( '=' );
-		if ( line.empty() || eq == std::string::npos ) {
+		if ( line.empty() || eq == std::string::npos || line[0] == ';' || line[0] == '#' ) {
 			continue;
 		}
 
