@@ -261,6 +261,15 @@ static void _UnlockItem_custom( void* self, uint32_t itemHash )
 		return;
 	}
 
+	// Native Village cutscene gives shield twice.
+	if ( currentAreaCRC == levelCRC::NATIVE_VILLAGE ) {
+		static bool unlockedShield = false;
+		if ( unlockedShield ) {
+			return;
+		}
+		unlockedShield = true;
+	}
+
 	// Find override.
 	Unlockable u = { INVENTORY_ITEM, itemHash };
 	auto it = g_unlockablesMap.find( &u );
