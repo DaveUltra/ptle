@@ -92,6 +92,12 @@ void load_config()
 	}
 
 	while ( std::getline(cfg, line) ) {
+		// Strip comment.
+		size_t comment = line.find_first_of( '#' );
+		if ( comment != std::string::npos ) {
+			line = line.substr( 0, comment );
+		}
+
 		size_t eq = line.find( '=' );
 		if ( line.empty() || eq == std::string::npos ) {
 			continue;
