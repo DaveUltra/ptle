@@ -337,7 +337,8 @@ class RandomizerPlugin : public PitfallPlugin
 {
 public:
 
-	virtual const char* getName() const { return "PTLE Randomizer"; }
+	virtual const char* getDisplayName() const override { return "PTLE Randomizer"; }
+	virtual const char* getSystemName() const override { return "Randomizer"; }
 
 	virtual void onEnable()
 	{

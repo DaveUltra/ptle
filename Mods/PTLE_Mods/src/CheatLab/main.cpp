@@ -31,7 +31,6 @@ unsigned long __stdcall Thread( void* );
 
 void InitMod()
 {
-	AllocConsole();
 	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
 
 	injector::MakeCALL( 0x4B2DE1, EIPlayerTick_custom );

@@ -434,13 +434,13 @@ void item_rando_init()
 			g_itemLocations.emplace( shuffled[i]->m_itemHash, original[i]->getDefaultLocationCRC() );
 		}
 
-		if ( ogType != shType || (ogType == INVENTORY_ITEM) ) {
-			//log_printf( "- %s  -->  %s", original[i]->m_displayName, shuffled[i]->m_displayName );
+		/*if ( ogType != shType || (ogType == INVENTORY_ITEM) ) {
+			log_printf( "- %s  -->  %s", original[i]->m_displayName, shuffled[i]->m_displayName );
 			if ( ogType == IDOL_SINGLE || ogType == IDOL_EXPLORER ) {
-				//log_printf( " (%s)", level_get_name(level_get_by_crc(original[i]->m_idol->m_levelCRC)) );
+				log_printf( " (%s)", level_get_name(level_get_by_crc(original[i]->m_idol->m_levelCRC)) );
 			}
-			//log_printf( "\n" );
-		}
+			log_printf( "\n" );
+		}*/
 	}
 
 
@@ -462,7 +462,7 @@ void item_rando_init()
 	injector::MakeRangedNOP( 0x4E2EDE, 0x4E2EF4 );   // Cavern Lake to Jungle Canyon.
 	injector::MakeRangedNOP( 0x4E3C33, 0x4E3C49 );   // Mountain Sled Run.
 
-	log_printf( "Initialized item rando.\n" );
+	PitfallPlugin::getInstance()->log_printf( "Initialized item rando.\n" );
 }
 
 

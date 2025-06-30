@@ -26,16 +26,16 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="cfg\Randomizer\config.ini">
+    <None Include="config\Randomizer\idols_infos.json">
       <Filter>cfg\Randomizer</Filter>
-    </Text>
+    </None>
+    <None Include="config\Randomizer\transition_infos.json">
+      <Filter>cfg\Randomizer</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cfg\Randomizer\idols_infos.json">
+    <Text Include="config\Randomizer\config.ini">
       <Filter>cfg\Randomizer</Filter>
-    </None>
-    <None Include="cfg\Randomizer\transition_infos.json">
-      <Filter>cfg\Randomizer</Filter>
-    </None>
+    </Text>
   </ItemGroup>
 </Project>

@@ -1,5 +1,6 @@
 #include "rando/config/config.h"
 
+#include "PitfallPlugin.h"
 #include "utils/log.h"
 #include "ptle/levels/level_info.h"
 
@@ -80,7 +81,8 @@ RandoConfig::RandoConfig()
 
 void load_config()
 {
-	std::ifstream cfg( "cfg/Randomizer/config.ini" );
+	std::wstring configDir = PitfallPlugin::getInstance()->getConfigDirectory();
+	std::ifstream cfg( configDir + L"/config.ini" );
 
 	std::string line;
 	std::getline(cfg, line);
@@ -135,21 +137,22 @@ void load_config()
 
 void display_config()
 {
-	log_printf( "Rando config :\n" );
+	PitfallPlugin* p = PitfallPlugin::getInstance();
+	p->log_printf( "Rando config :\n" );
 	for ( int i = 0; i < _countof(fields); i++ ) {
 		switch ( fields[i].m_type )
 		{
 		case config_field_type_t::BOOLEAN:
-			log_printf( "- %s = %s\n", fields[i].m_name, bool_to_str(((bool*) (((char*) &rando_config) + fields[i].m_offset))[0]) );
+			p->log_printf( "- %s = %s\n", fields[i].m_name, bool_to_str(((bool*) (((char*) &rando_config) + fields[i].m_offset))[0]) );
 			break;
 
 		case config_field_type_t::INT:
-			log_printf( "- %s = %d\n", fields[i].m_name, ((int*) (((char*) &rando_config) + fields[i].m_offset))[0] );
+			p->log_printf( "- %s = %d\n", fields[i].m_name, ((int*) (((char*) &rando_config) + fields[i].m_offset))[0] );
 			break;
 
 		case config_field_type_t::LEVEL_CRC: {
 			uint32_t crc = ((uint32_t*) (((char*) &rando_config) + fields[i].m_offset))[0];
-			log_printf( "- %s = %s (0x%.8X)\n", fields[i].m_name, level_get_name(level_get_by_crc(crc)), crc );
+			p->log_printf( "- %s = %s (0x%.8X)\n", fields[i].m_name, level_get_name(level_get_by_crc(crc)), crc );
 			}
 			break;
 		}

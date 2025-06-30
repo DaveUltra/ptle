@@ -1,3 +1,5 @@
+#include "PitfallPlugin.h"
+
 #include "rando.h"
 #include "utils/log.h"
 #include "utils/func.h"
@@ -106,7 +108,7 @@ void randomize_shaman_shop()
 	std::qsort( shaman_shop_prices,     5, sizeof(int), sort_compare );
 	std::qsort( shaman_shop_prices + 5, 5, sizeof(int), sort_compare );
 
-	log_printf( "Initialized shaman prices.\n" );
+	PitfallPlugin::getInstance()->log_printf( "Initialized shaman prices.\n" );
 }
 
 // Applies the custom prices to the actual in-memory shaman shop.

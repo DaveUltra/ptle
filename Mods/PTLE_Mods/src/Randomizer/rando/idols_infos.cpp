@@ -42,7 +42,7 @@ static uint32_t parse_int_hex( const std::string& str )
 bool load_idols_infos()
 {
 	json::JSONDocument doc;
-	doc.LoadFile( "cfg/Randomizer/idols_infos.json" );
+	doc.LoadFile( "config/Randomizer/idols_infos.json" );
 
 	if ( !doc.IsValid() ) {
 		log_printf( "ERROR : idols_infos.json not found!\n" );
