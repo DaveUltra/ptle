@@ -131,8 +131,6 @@ static void write_edges( ofstream& os, const std::map<Transition, Transition>& p
 
 		os << "<edge id=\"" << edgeID << "\" source=\"" << t.areaFromID << "\" target=\"" << t.areaToID << "\" isDirect=\"false\" ";
 
-		log_printf( "%s -> %s\n", level_get_name(level_get_by_crc(aToB.areaFromID)), level_get_name(level_get_by_crc(aToB.areaToID)) );
-
 		bool lockedDoor = (softlockableTransitions.find(aToB) != softlockableTransitions.end()) || (softlockableTransitions.find(bToA) != softlockableTransitions.end());
 		if ( lockedDoor ) {
 			write_edgeStyle( os, CLOSED_DOOR_EDGE_COLOR, false );
