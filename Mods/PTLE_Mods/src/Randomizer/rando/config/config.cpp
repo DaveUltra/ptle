@@ -80,7 +80,7 @@ RandoConfig::RandoConfig()
 
 void load_config()
 {
-	std::ifstream cfg( "cfg/Randomizer/config.txt" );
+	std::ifstream cfg( "cfg/Randomizer/config.ini" );
 
 	std::string line;
 	std::getline(cfg, line);
