@@ -341,9 +341,7 @@ public:
 
 		rando_init();
 
-		if ( rando_config.entranceRando ) {
-			rando_map.generateMap();
-		}
+		rando_map.generateMap();
 
 		if ( rando_config.randomizeShamanShop ) {
 			randomize_shaman_shop();
@@ -377,6 +375,10 @@ public:
 
 		// Item rando.
 		item_rando_init();
+
+		// Generate graph.
+		write_graphml();
+
 
 		// Menu patcher. Replaces "NEW GAME".
 		init_menu_patcher();

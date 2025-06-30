@@ -1,5 +1,7 @@
 #include "rando/rando.h"
 
+#include "item_rando.h"
+
 #include "ptle/levels/level_info.h"
 
 #include <iostream>
@@ -17,16 +19,7 @@ using namespace std;
 
 
 static const uint32_t UPGRADE_AREAS[] = {
-	levelCRC::PLANE_COCKPIT,          // Canteen
-	levelCRC::BITTENBINDER_CAMP,      // Sling + Rising Strike
-	levelCRC::MOUTH_OF_INTI,          // Torch
-	levelCRC::SCORPION_TEMPLE,        // Torch, temporary due to the current Scorpion Temple anti-softlock
-	levelCRC::NATIVE_VILLAGE,         // Shield
-	levelCRC::RENEGADE_HEADQUARTERS,  // Gas Mask
-	levelCRC::CAVERN_LAKE,            // Raft
-	levelCRC::MOUNTAIN_SLED_RUN,      // Raft
-	levelCRC::MOUNTAIN_OVERLOOK,      // Pickaxes
-	levelCRC::APU_ILLAPU_SHRINE,      // TNT
+	levelCRC::BITTENBINDER_CAMP,      // Rising Strike
 	levelCRC::FLOODED_COURTYARD,      // Dash
 	levelCRC::TURTLE_MONUMENT,        // Dive
 };
@@ -74,8 +67,14 @@ static void write_edgeStyle( ofstream& os, const char* color, bool dashed )
 static void write_vertices( ofstream& os, const std::set<uint32_t>& accessibleAreas )
 {
 	// TODO : Tell me with a straight face that the STL isn't stupid.
-	const std::set<uint32_t> upgradeAreas( UPGRADE_AREAS, UPGRADE_AREAS+_countof(UPGRADE_AREAS) );
+	std::set<uint32_t> upgradeAreas;
 	const std::set<uint32_t> importantStoryAreas( IMPORTANT_STORY_TRIGGER_AREAS, IMPORTANT_STORY_TRIGGER_AREAS+_countof(IMPORTANT_STORY_TRIGGER_AREAS) );
+
+	uint32_t itemLocations[8];
+	get_item_locations( itemLocations );
+	upgradeAreas.insert( itemLocations, itemLocations+_countof(itemLocations) );
+
+	upgradeAreas.insert( UPGRADE_AREAS, UPGRADE_AREAS+_countof(UPGRADE_AREAS) );
 
 	int px = 0;
 	for ( uint32_t levelID : accessibleAreas ) {
@@ -102,6 +101,7 @@ static void write_vertices( ofstream& os, const std::set<uint32_t>& accessibleAr
 	}
 }
 
+#include "utils/log.h"
 static void write_edges( ofstream& os, const std::map<Transition, Transition>& possibleTransitions )
 {
 	std::map<Transition, Transition> transitionsTwoWay;
@@ -126,11 +126,14 @@ static void write_edges( ofstream& os, const std::map<Transition, Transition>& p
 
 	for ( const auto& p : transitionsTwoWay ) {
 		const Transition& t = p.first;
-		Transition orig( p.first.areaFromID, p.second.areaToID );
+		Transition aToB( p.second.areaFromID, p.first.areaToID );
+		Transition bToA( p.second.areaToID, p.first.areaFromID );
 
 		os << "<edge id=\"" << edgeID << "\" source=\"" << t.areaFromID << "\" target=\"" << t.areaToID << "\" isDirect=\"false\" ";
 
-		bool lockedDoor = (softlockableTransitions.find(orig.mirror()) != softlockableTransitions.end());
+		log_printf( "%s -> %s\n", level_get_name(level_get_by_crc(aToB.areaFromID)), level_get_name(level_get_by_crc(aToB.areaToID)) );
+
+		bool lockedDoor = (softlockableTransitions.find(aToB) != softlockableTransitions.end()) || (softlockableTransitions.find(bToA) != softlockableTransitions.end());
 		if ( lockedDoor ) {
 			write_edgeStyle( os, CLOSED_DOOR_EDGE_COLOR, false );
 		}

@@ -608,7 +608,6 @@ void RandoMap::generateMap()
 	else {
 		generateLinkedTransitions();
 	}
-	write_graphml();
 }
 
 bool RandoMap::spoofTransition( Transition& o )

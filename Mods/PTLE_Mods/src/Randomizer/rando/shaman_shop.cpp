@@ -105,6 +105,8 @@ void randomize_shaman_shop()
 	// Sort health and canteen prices.
 	std::qsort( shaman_shop_prices,     5, sizeof(int), sort_compare );
 	std::qsort( shaman_shop_prices + 5, 5, sizeof(int), sort_compare );
+
+	log_printf( "Initialized shaman prices.\n" );
 }
 
 // Applies the custom prices to the actual in-memory shaman shop.

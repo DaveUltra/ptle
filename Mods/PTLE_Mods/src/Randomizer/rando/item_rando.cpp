@@ -452,6 +452,8 @@ void item_rando_init()
 	// Getting Raft from unintended locations.
 	injector::MakeRangedNOP( 0x4E2EDE, 0x4E2EF4 );   // Cavern Lake to Jungle Canyon.
 	injector::MakeRangedNOP( 0x4E3C33, 0x4E3C49 );   // Mountain Sled Run.
+
+	log_printf( "Initialized item rando.\n" );
 }
 
 
@@ -477,4 +479,18 @@ void log_item_rando( std::ostream& os )
 		}
 	}*/
 	os << '\n';
+}
+
+void get_item_locations( uint32_t (&out)[8] )
+{
+	if ( g_itemLocations.empty() ) {
+		for ( int i = 0; i < _countof(g_unlockableItems); i++ ) {
+			out[i] = get_item_default_location( g_unlockableItems[i].m_itemHash );
+		}
+	}
+	else {
+		for ( int i = 0; i < _countof(g_unlockableItems); i++ ) {
+			out[i] = g_itemLocations[g_unlockableItems[i].m_itemHash];
+		}
+	}
 }
