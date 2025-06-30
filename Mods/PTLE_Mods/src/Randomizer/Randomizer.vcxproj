@@ -100,7 +100,7 @@
     <ClInclude Include="rando\rando.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="cfg\Randomizer\config.txt">
+    <Text Include="cfg\Randomizer\config.ini">
       <DeploymentContent>true</DeploymentContent>
     </Text>
   </ItemGroup>

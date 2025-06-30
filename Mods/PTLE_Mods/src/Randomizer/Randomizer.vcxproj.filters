@@ -26,7 +26,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="cfg\Randomizer\config.txt">
+    <Text Include="cfg\Randomizer\config.ini">
       <Filter>cfg\Randomizer</Filter>
     </Text>
   </ItemGroup>
