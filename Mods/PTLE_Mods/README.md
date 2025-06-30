@@ -1,5 +1,10 @@
 # Pitfall : The Lost Expedition, PC Mods
 
+## Downloading
+
+You can also check out the [latest automated builds](/../../../../actions/workflows/build-mods.yml?query=event%3Apush+is%3Asuccess+branch%3Amaster) (requires a GitHub account)\
+(If you don't have a GitHub account, you can try [nightly.link](https://nightly.link/DaveUltra/ptle/workflows/build-mods/master))
+
 ## Installing / Using
 
 ### How to Setup
@@ -20,9 +25,8 @@ By default, the mod loader will be on. If you wish to toggle between playing wit
 
 To disable a specific mod, delete or move its `.asi` file out of the game's install directory.
 
-
 ## Building the mods
 
-You can edit and build the mods yourself using the Visual Studio solution. You'll need at least Visual Studio 2012. Older editions might work too, but have never been tested.
+You can edit and build the mods yourself using the Visual Studio solution. You'll need at least MSBuildTools v142 for C++ (as that's the targetted platform toolset, comes with Visual Studio 2019), which can be installed with the Visual Studio Installer.
 
-In Release, mods will be automatically saved under `mods/`, and in Debug, under `bin/Debug/`.
+Mods will be automatically saved under `$(SolutionDir)bin\$(Configuration)` (where `$(Configuration)` is `Release`|`Debug`). You only want the `.adsi` files and `cfg` folder.

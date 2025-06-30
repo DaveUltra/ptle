@@ -1,0 +1,37 @@
+# https://docs.github.com/en/actions/learn-github-actions/workflow-syntax-for-github-actions
+name: Build mods
+on:
+  workflow_dispatch: #  Allows manual builds for non-master branches
+  push:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/build-mods.yml"
+      - "Mods/PTLE_mods/**"
+  pull_request:
+    branches:
+      - master
+    paths:
+      - ".github/workflows/build-mods.yml"
+      - "Mods/PTLE_mods/**"
+
+jobs:
+  Build:
+    runs-on: windows-2022 # Oldest Windows still supported by GitHub
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add msbuild to PATH
+        uses: microsoft/setup-msbuild@v2
+
+      - run: msbuild Mods/PTLE_mods/PTLE_Mods.sln /property:Configuration=Release
+
+      - name: Upload Build Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PTLE_Mods
+          path: |
+            Mods/PTLE_Mods/bin/Release/*.asi
+            Mods/PTLE_Mods/bin/Release/cfg
+            Mods/PTLE_Mods/patch/*
+          if-no-files-found: error
