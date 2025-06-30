@@ -374,7 +374,7 @@ void RandoMap::generateLinkedTransitions()
 			continue;
 		}
 	}
-	log_printf( "- %d levels purged (no exits)\n", purgeList.size() );
+	log_printf( " - %d levels purged (no exits)\n", purgeList.size() );
 	for ( uint32_t i : purgeList ) {
 		knownAreas.erase( i );
 		availablePorts.erase( i );
@@ -388,7 +388,7 @@ void RandoMap::generateLinkedTransitions()
 	strictAvail.push_back( rando_config.startingArea );
 
 	// List all other zones as non-reachable.
-	log_printf( "- %d known areas.\n", knownAreas.size() );
+	log_printf( " - %d known areas.\n", knownAreas.size() );
 	knownAreas.erase( rando_config.startingArea );
 	availNotMaster.insert( availNotMaster.begin(), knownAreas.begin(), knownAreas.end() );
 
@@ -457,7 +457,7 @@ void RandoMap::generateLinkedTransitions()
 			toEntrance = 1;
 		}
 
-		log_printf( "- %s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
+		//log_printf( " - %s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
 
 		// Form linked transition.
 		Transition original( levelFromCRC, availablePorts[levelFromCRC][fromExit] );
@@ -492,7 +492,7 @@ void RandoMap::generateLinkedTransitions()
 		}
 	}
 
-	log_printf( "- Main process done.\n" );
+	log_printf( " - Main process done.\n" );
 
 	if ( strictAvail.size() == 1 && availNotMaster.empty() ) {
 		log_printf( "GENERATION ERROR : This area wasn't processed correctly : %s\n", level_get_name(level_get_by_crc(strictAvail[0])) );
@@ -502,7 +502,7 @@ void RandoMap::generateLinkedTransitions()
 	if ( !availablePorts.empty() ) {
 		log_printf( "GENERATION ERROR : Some exits are still not connected!\n" );
 		for ( auto& p : availablePorts ) {
-			log_printf( "- %s : %d exits\n", level_get_name(level_get_by_crc(p.first)), p.second.size() );
+			log_printf( " - %s : %d exits\n", level_get_name(level_get_by_crc(p.first)), p.second.size() );
 		}
 		//return;
 	}
@@ -517,7 +517,7 @@ void RandoMap::generateLinkedTransitions()
 	// Remove water levels.
 	// We do it after generation to avoid changing the random seed.
 	if ( rando_config.skipWaterLevels ) {
-		log_printf( "- Skipping water levels...\n" );
+		log_printf( " - Skipping water levels...\n" );
 
 		remove_line_level( levelCRC::FLOODED_CAVE,      levelCRC::BITTENBINDER_CAMP, levelCRC::RENEGADE_FORT );
 		remove_line_level( levelCRC::MYSTERIOUS_TEMPLE, levelCRC::BITTENBINDER_CAMP, levelCRC::ALTAR_OF_AGES );
@@ -532,7 +532,7 @@ void RandoMap::generateLinkedTransitions()
 		m_transitionsMap[Transition(levelCRC::GATES_OF_EL_DORADO, levelCRC::RUINS_OF_EL_DORADO)] = puscaRedirect;
 	}
 
-	log_printf( "- Generation ended.\n" );
+	log_printf( " - Generation ended.\n" );
 }
 
 
@@ -602,8 +602,6 @@ void RandoMap::generateLegacy()
 
 void RandoMap::generateMap()
 {
-	log_printf( "Entrance Randomizer :\n" );
-
 	if ( rando_config.legacy ) {
 		generateLegacy();
 	}

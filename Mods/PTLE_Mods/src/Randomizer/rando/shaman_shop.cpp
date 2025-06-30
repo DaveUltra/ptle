@@ -1,3 +1,4 @@
+#include "rando.h"
 #include "utils/log.h"
 #include "utils/func.h"
 
@@ -104,18 +105,6 @@ void randomize_shaman_shop()
 	// Sort health and canteen prices.
 	std::qsort( shaman_shop_prices,     5, sizeof(int), sort_compare );
 	std::qsort( shaman_shop_prices + 5, 5, sizeof(int), sort_compare );
-
-	log_printf( "Shaman prices :\n" );
-	log_printf( "- Health          : %d, %d, %d, %d, %d\n", shaman_shop_prices[0], shaman_shop_prices[1], shaman_shop_prices[2], shaman_shop_prices[3], shaman_shop_prices[4] );
-	log_printf( "- Canteen         : %d, %d, %d, %d, %d\n", shaman_shop_prices[5], shaman_shop_prices[6], shaman_shop_prices[7], shaman_shop_prices[8], shaman_shop_prices[9] );
-	log_printf( "- Smash Strike    : %d\n", shaman_shop_prices[10] );
-	log_printf( "- Super Sling     : %d\n", shaman_shop_prices[11] );
-	log_printf( "- Breakdance      : %d\n", shaman_shop_prices[12] );
-	log_printf( "- Jungle Notes    : %d\n", shaman_shop_prices[13] );
-	log_printf( "- Native Notes    : %d\n", shaman_shop_prices[14] );
-	log_printf( "- Caverns Notes   : %d\n", shaman_shop_prices[15] );
-	log_printf( "- Mountains Notes : %d\n", shaman_shop_prices[16] );
-	log_printf( "- Mystery Item    : %d\n", shaman_shop_prices[17] );
 }
 
 // Applies the custom prices to the actual in-memory shaman shop.
@@ -127,4 +116,22 @@ void patch_shaman_shop()
 	for ( int i = 0; i < NUM_PRICES; i++ ) {
 		pricesBuffer[PRICES_OFFSET[i]] = shaman_shop_prices[i];
 	}
+}
+
+void log_shaman_shop( std::ostream& os )
+{
+	if ( !rando_config.randomizeShamanShop ) return;
+
+	os << "Shaman prices :\n";
+	os << " - Health          : " << shaman_shop_prices[0] << ", " << shaman_shop_prices[1] << ", " << shaman_shop_prices[2] << ", " << shaman_shop_prices[3] << ", " << shaman_shop_prices[4] << '\n';
+	os << " - Canteen         : " << shaman_shop_prices[5] << ", " << shaman_shop_prices[6] << ", " << shaman_shop_prices[7] << ", " << shaman_shop_prices[8] << ", " << shaman_shop_prices[9] << '\n';
+	os << " - Smash Strike    : " << shaman_shop_prices[10] << '\n';
+	os << " - Super Sling     : " << shaman_shop_prices[11] << '\n';
+	os << " - Breakdance      : " << shaman_shop_prices[12] << '\n';
+	os << " - Jungle Notes    : " << shaman_shop_prices[13] << '\n';
+	os << " - Native Notes    : " << shaman_shop_prices[14] << '\n';
+	os << " - Caverns Notes   : " << shaman_shop_prices[15] << '\n';
+	os << " - Mountains Notes : " << shaman_shop_prices[16] << '\n';
+	os << " - Mystery Item    : " << shaman_shop_prices[17] << '\n';
+	os << '\n';
 }

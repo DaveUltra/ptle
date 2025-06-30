@@ -54,6 +54,8 @@
 #include "rando/item_rando.h"
 #include "rando/menu_patcher.h"
 
+#include <fstream>
+
 
 
 void ensure_item_swap()
@@ -252,8 +254,6 @@ char* get_patched_level_name( char* orig )
 	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
 	uint32_t destCRC = level_HashString( levelName );
 
-	log_printf( "Patching dialog string \"%s\" (0x%.8X)\n", levelName, destCRC );
-
 	Transition tr;
 	tr.areaFromID = currentAreaCRC;
 
@@ -279,7 +279,6 @@ char* get_patched_level_name( char* orig )
 
 	// Failed.
 	if ( !rando_map.spoofTransition( tr ) ) {
-		log_printf( "Failed.\n" );
 		return orig;
 	}
 
@@ -319,6 +318,13 @@ void Script_QueueDialogHint_hijack( EScriptContext* context )
 	else {
 		Script_QueueDialogHint_Original( context );
 	}
+}
+
+
+void generate_spoiler_logs( std::ostream& os )
+{
+	log_shaman_shop( os );
+	log_item_rando( os );
 }
 
 
@@ -365,13 +371,19 @@ public:
 
 		// Patch this script function, to display the actual (randomized) destination level name when approaching
 		// an entrance.
-		injector::WriteMemory( 0x8F04EC, &Script_QueueDialogHint_hijack );
+		if ( rando_config.entranceRando ) {
+			injector::WriteMemory( 0x8F04EC, &Script_QueueDialogHint_hijack );
+		}
 
 		// Item rando.
 		item_rando_init();
 
 		// Menu patcher. Replaces "NEW GAME".
 		init_menu_patcher();
+
+
+		std::ofstream spoilerLogFile( "cfg/Randomizer/spoiler.log" );
+		generate_spoiler_logs( spoilerLogFile );
 	}
 };
 

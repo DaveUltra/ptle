@@ -32,6 +32,7 @@ GET_FUNC( 0x65BDF0, int*, PopScriptVariable_Int, EScriptContext* );
 GET_FUNC( 0x65C880, int*, GetOutVariable, EScriptContext* );
 
 static ItemStruct* _get_item_by_hash( uint32_t itemHash );
+static uint32_t get_item_default_location( uint32_t itemHash );
 
 struct ItemModelsCRC
 {
@@ -106,6 +107,22 @@ struct Unlockable
 			break;
 		}
 	}
+
+	uint32_t getDefaultLocationCRC() const
+	{
+		switch ( m_type )
+		{
+		case INVENTORY_ITEM:
+			return get_item_default_location( m_itemHash );
+
+		case IDOL_SINGLE:
+		case IDOL_EXPLORER:
+			return m_idol->m_levelCRC;
+
+		default:
+			return 0;
+		}
+	}
 };
 
 
@@ -125,6 +142,8 @@ static Unlockable g_unlockableItems[] =
 // These serve as storage for Unlockables essentially.
 static std::vector<Unlockable> g_unlockableIdols;
 static std::vector<Unlockable> g_unlockableExplorers;
+
+static std::map<uint32_t, uint32_t> g_itemLocations;
 
 
 // Global item rando mapping.
@@ -161,6 +180,22 @@ static const Idol* get_idol( uint32_t levelCRC, uint32_t uniqueID )
 	return 0;
 }
 
+static const char* get_item_name( uint32_t itemHash )
+{
+	switch ( itemHash )
+	{
+	case 0x915AA574: return "Sling";
+	case 0x04ADF9C7: return "Torch";
+	case 0xC024157C: return "Pickaxes";
+	case 0x9608A818: return "TNT";
+	case 0xEE6B156E: return "Shield";
+	case 0xFB3D82AC: return "Raft";
+	case 0xCFC909C3: return "Gas Mask";
+	case 0xE51C8F72: return "Canteen";
+	default: return 0;
+	}
+}
+
 static uint32_t get_item_model_crc( uint32_t itemHash )
 {
 	switch ( itemHash )
@@ -173,6 +208,22 @@ static uint32_t get_item_model_crc( uint32_t itemHash )
 	case 0xFB3D82AC: return ItemModelsCRC::RAFT;
 	case 0xCFC909C3: return ItemModelsCRC::GAS_MASK;
 	case 0xE51C8F72: return ItemModelsCRC::CANTEEN;
+	default: return 0;
+	}
+}
+
+static uint32_t get_item_default_location( uint32_t itemHash )
+{
+	switch ( itemHash )
+	{
+	case 0x915AA574: return levelCRC::BITTENBINDER_CAMP;
+	case 0x04ADF9C7: return levelCRC::MOUTH_OF_INTI;
+	case 0xC024157C: return levelCRC::MOUNTAIN_OVERLOOK;
+	case 0x9608A818: return levelCRC::APU_ILLAPU_SHRINE;
+	case 0xEE6B156E: return levelCRC::NATIVE_VILLAGE;
+	case 0xFB3D82AC: return levelCRC::CAVERN_LAKE;
+	case 0xCFC909C3: return levelCRC::RENEGADE_HEADQUARTERS;
+	case 0xE51C8F72: return levelCRC::PLANE_COCKPIT;
 	default: return 0;
 	}
 }
@@ -365,18 +416,21 @@ void item_rando_init()
 	shuffled = original;
 	std::random_shuffle( shuffled.begin(), shuffled.end() );
 
-	log_printf( "Item Rando :\n" );
 	for ( int i = 0; i < shuffled.size(); i++ ) {
 		g_unlockablesMap.emplace( original[i], shuffled[i] );
 
 		const UnlockableType ogType = original[i]->m_type, shType = shuffled[i]->m_type;
 
+		if ( shType == INVENTORY_ITEM ) {
+			g_itemLocations.emplace( shuffled[i]->m_itemHash, original[i]->getDefaultLocationCRC() );
+		}
+
 		if ( ogType != shType || (ogType == INVENTORY_ITEM) ) {
-			log_printf( "- %s  -->  %s", original[i]->m_displayName, shuffled[i]->m_displayName );
+			//log_printf( "- %s  -->  %s", original[i]->m_displayName, shuffled[i]->m_displayName );
 			if ( ogType == IDOL_SINGLE || ogType == IDOL_EXPLORER ) {
-				log_printf( " (%s)", level_get_name(level_get_by_crc(original[i]->m_idol->m_levelCRC)) );
+				//log_printf( " (%s)", level_get_name(level_get_by_crc(original[i]->m_idol->m_levelCRC)) );
 			}
-			log_printf( "\n" );
+			//log_printf( "\n" );
 		}
 	}
 
@@ -398,4 +452,29 @@ void item_rando_init()
 	// Getting Raft from unintended locations.
 	injector::MakeRangedNOP( 0x4E2EDE, 0x4E2EF4 );   // Cavern Lake to Jungle Canyon.
 	injector::MakeRangedNOP( 0x4E3C33, 0x4E3C49 );   // Mountain Sled Run.
+}
+
+
+void log_item_rando( std::ostream& os )
+{
+	if ( g_unlockablesMap.empty() ) return;
+
+	os << "Item Rando :\n";
+	for ( const auto& p : g_itemLocations ) {
+		os << " - " << get_item_name(p.first) << " is in " << level_get_name(level_get_by_crc(p.second)) << ".\n";
+	}
+	/*for ( const auto& p : g_unlockablesMap ) {
+		Unlockable* original = p.first;
+		Unlockable* shuffled = p.second;
+		const UnlockableType ogType = original->m_type, shType = shuffled->m_type;
+
+		if ( ogType != shType || (ogType == INVENTORY_ITEM) ) {
+			os << " - " << original->m_displayName << "  -->  " << shuffled->m_displayName;
+			if ( ogType == IDOL_SINGLE || ogType == IDOL_EXPLORER ) {
+				os << " (" << level_get_name(level_get_by_crc(original->m_idol->m_levelCRC)) << ')';
+			}
+			os << '\n';
+		}
+	}*/
+	os << '\n';
 }

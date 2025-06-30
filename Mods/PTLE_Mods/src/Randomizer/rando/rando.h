@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <ostream>
 #include <stdint.h>
 
 #include "rando/config/config.h"
@@ -163,6 +164,7 @@ void rando_init();
 
 void randomize_shaman_shop();
 void patch_shaman_shop();
+void log_shaman_shop( std::ostream& os );
 
 void prevent_transition_softlock();
 
