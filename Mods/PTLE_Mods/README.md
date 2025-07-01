@@ -2,7 +2,7 @@
 
 ## Downloading
 
-You can also check out the [latest automated builds](/../../../../actions/workflows/build-mods.yml?query=event%3Apush+is%3Asuccess+branch%3Amaster) (requires a GitHub account)\
+You can also check out the [latest automated builds](/../../actions/workflows/build-mods.yml?query=event%3Apush+is%3Asuccess+branch%3Amaster) (requires a GitHub account)\
 (If you don't have a GitHub account, you can try [nightly.link](https://nightly.link/DaveUltra/ptle/workflows/build-mods/master))
 
 ## Installing / Using
