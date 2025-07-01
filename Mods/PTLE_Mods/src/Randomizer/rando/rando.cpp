@@ -185,6 +185,15 @@ static void set_starting_areas()
 		case levelCRC::BETA_VOLCANO:
 			break;
 
+		// Water levels.
+		case levelCRC::FLOODED_CAVE:
+		case levelCRC::MYSTERIOUS_TEMPLE:
+		case levelCRC::TWIN_OUTPOSTS_UNDERWATER:
+			if ( !rando_config.skipWaterLevels ) {
+				startingAreas.push_back( p.first );
+			}
+			break;
+
 		default:
 			startingAreas.push_back( p.first );
 			break;
@@ -232,7 +241,6 @@ void rando_init()
 
 	set_excluded_levels();
 	set_disabled_transitions();
-	set_starting_areas();
 	set_corrected_transitions();
 
 	// Choose random seed and starting area by default.
@@ -240,6 +248,8 @@ void rando_init()
 
 	// Config.
 	load_config();
+
+	set_starting_areas();
 
 	// Set seed and starting area if unspecified by the config.
 	srand( rando_config.seed );
