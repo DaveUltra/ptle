@@ -68,12 +68,6 @@ GET_METHOD( 0x5EBA90, void, ScheduleWorldLoad, void*, uint32_t, bool );
 
 void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 {
-	ensure_item_swap();
-
-	if ( rando_config.randomizeShamanShop ) {
-		patch_shaman_shop();
-	}
-
 	// Find previous area CRC's location.
 	// Patching over this value will ensure that the player emerges from the correct entrance.
 	uint32_t* prevAreaPtr = find_previous_area_memory();
@@ -185,6 +179,16 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 }
 
 MAKE_THISCALL_WRAPPER( hijack_transition_ptr, hijack_transition );
+
+
+void on_level_loaded()
+{
+	ensure_item_swap();
+
+	if ( rando_config.randomizeShamanShop ) {
+		patch_shaman_shop();
+	}
+}
 
 
 void read_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
@@ -352,6 +356,10 @@ public:
 		// Load world call (level transition).
 		//injector::MakeCALL( 0x5ECC70, read_transition_ptr );
 		injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
+
+		// End of world load.
+		injector::MakeNOP( 0x5EC196, 8 );
+		injector::MakeCALL( 0x5EC196, on_level_loaded );
 
 		// TODO : What happens when you die????
 
