@@ -22,6 +22,11 @@ struct savepoint_t
 {
 	uint32_t levelID;
 	Matrix4f playerTransform;
+
+	savepoint_t()
+		: levelID(-1)
+	{
+	}
 };
 
 

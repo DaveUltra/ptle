@@ -2,8 +2,13 @@
 
 #include "injector/injector.hpp"
 
+#include "ptle/ERLevel.h"
 #include "ptle/EIHarry.h"
 #include "ptle/EIProjectile.h"
+#include "ptle/EIEvilHarryP.h"
+#include "ptle/EITreasureIdol.h"
+#include "ptle/EINative.h"
+#include "ptle/EINPCBeast.h"
 #include "ptle/math/Vector3f.h"
 #include "ptle/math/Vector4f.h"
 
@@ -18,6 +23,22 @@
 #include "utils/func.h"
 
 
+GET_METHOD( 0x626670, void, AddToWorld, ERLevel*, EInstance* );
+GET_METHOD( 0x6265A0, void, AddToWorldFancy, ERLevel*, EInstance*, EInstance*, bool );
+GET_METHOD( 0x6268D0, void, ERLevel_SetupEntity, ERLevel*, EInstance*, EInstance* );
+GET_METHOD( 0x597400, void, InitIdol, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );
+GET_METHOD( 0x547160, void, SetSomethingForHarry, EIHarry*, void* );
+GET_METHOD( 0x4AD5E0, void, HarryInit, EIHarry*, Vector3f*, float );
+
+
+GET_METHOD( 0x527ED0, void, EINPCBeast_Init, EINPCBeast* );
+
+GET_FUNC( 0x6F8EC0, uint32_t, HashPath, char* );
+
+GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
+GET_METHOD( 0x527E50, int,  EIBeast_Deserialize2, EIBeast* );
+
+
 GET_METHOD( 0x5EBA90, void, ScheduleWorldLoad, void*, uint32_t, bool );
 
 GET_FUNC( 0x557840, EIProjectile*, EIProjectile_Create, uint32_t );
@@ -25,12 +46,177 @@ GET_METHOD( 0x559640, void, EIProjectile_Spawn, EIProjectile*, Vector3f*, Vector
 
 
 
+// Stub functions for empty cheat slots.
 static void _empty()
 {
 }
 
 static void _empty_cheat( bool enable )
 {
+}
+
+
+
+#include "ptle/EScriptContext.h"
+GET_FUNC( 0x422910, void, Script_SetCurrentState_Original, EScriptContext* );
+void Script_SetCurrentState_Custom( EScriptContext* context )
+{
+	int* var = (int*) context->m_scriptStack[context->m_stackPointer - 2];
+	char** stateName = (char**) var+2;
+
+	log_printf( "Set State \"%s\"\n", *stateName );
+
+	bool cool = strncmp( *stateName, "native.", 7 ) == 0;
+	char* oldState = *stateName;
+	if ( cool ) {
+		*stateName = "native.fatal hit";
+	}
+
+	Script_SetCurrentState_Original( context );
+
+	if ( cool ) {
+		*stateName = oldState;
+	}
+}
+
+
+// --------------------------------------------------------------------------------
+// Auto skip cutscenes (breaks things very slightly, but remains playable).
+// --------------------------------------------------------------------------------
+static void _auto_skip_cutscenes( bool enable )
+{
+	static char orig_42FE93[5];
+	static float custom_skip_time = 0.1F;   // We need our own memory because the "two" used is referenced by other stuff, so changing it breaks everything.
+
+	if ( enable ) {
+		// Save original bytes.
+		for (int i = 0; i < 5; i++) orig_42FE93[i] = ((char*) 0x42FE93)[i];
+
+		injector::MakeJMP( 0x42FE93, 0x42FF45 );                // Jump straight to cutscene skip call when skip time is elapsed.
+		injector::WriteMemory( 0x42FE84, &custom_skip_time );   // Make the code load OUR float.
+		custom_skip_time = 0.1F;                                // Make cutscene skip time shorter (default = 2.0F = 0x40000000).
+
+		injector::WriteMemory( 0x8F099C, &Script_SetCurrentState_Custom );
+	}
+	else {
+		injector::WriteMemoryRaw( 0x42FE93, orig_42FE93, sizeof(orig_42FE93), true );
+		custom_skip_time = 2.0F;
+	}
+}
+
+
+// --------------------------------------------------------------------------------
+// Effectors debug drawing. This is a flag left in the game, showing trigger
+// volumes for level transitions, cutscenes, etc...
+// --------------------------------------------------------------------------------
+static void _effector_debug_draw( bool enable )
+{
+	bool* effectorDebugDraw = (bool*) (0x920F3C);
+	*effectorDebugDraw = enable;
+}
+
+
+// --------------------------------------------------------------------------------
+// Invulnerability & Infinite jumps.
+// TODO : invulnerable flag is actually a "in native games" flag, and also affects
+//        which pause menu is shown.
+// --------------------------------------------------------------------------------
+bool g_invulnerable;
+bool g_infiniteJumps;
+
+static void _invulnerable( bool enable )
+{
+	g_invulnerable = enable;
+	if ( !enable ) {
+		bool* inv = (bool*) (0x917059);
+		*inv = false;
+	}
+}
+
+static void _infinite_jump( bool enable )
+{
+	g_infiniteJumps = enable;
+}
+
+
+// --------------------------------------------------------------------------------
+// TNT rain.
+// --------------------------------------------------------------------------------
+static EIProjectile* _do_tnt_rain( uint32_t projectileType )
+{
+	Vector3f pos, dir;
+	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
+
+	for ( int i = -12; i <= 12; i++ ) {
+		for ( int j = -12; j <= 12; j++ ) {
+			dir.x = dir.y = dir.z = 0.0F;
+
+			pos.z = 70.0F;
+			pos.x = j * 16.0F;
+			pos.y = i * 16.0F;
+
+			EIProjectile* tnt = EIProjectile_Create( 0xBBCAC492 );
+			EIProjectile_Spawn( tnt, &pos, &dir, harry, 1.0F );
+		}
+	}
+
+	return EIProjectile_Create( projectileType );
+}
+
+static void _tnt_rain( bool enable )
+{
+	static char orig[5];
+	if ( enable ) {
+		// Save original bytes.
+		for (int i = 0; i < 5; i++) orig[i] = ((char*) 0x59540E)[i];
+
+		injector::MakeCALL( 0x59540E, _do_tnt_rain );
+	}
+	else {
+		injector::WriteMemoryRaw( 0x59540E, orig, sizeof(orig), true );
+	}
+}
+
+
+// --------------------------------------------------------------------------------
+// Every projectile is a TNT.
+// --------------------------------------------------------------------------------
+static void _all_tnt( bool enable )
+{
+	if ( enable ) {
+		// mov DWORD PTR [ebp+0x8], BBCAC492
+		uint8_t bytes[] = { 0xC7, 0x45, 0x08, 0x92, 0xC4, 0xCA, 0xBB };
+		injector::WriteMemoryRaw( 0x55784E, bytes, sizeof(bytes), true );
+	}
+	else {
+		injector::MakeNOP( 0x55784E, 7 );
+	}
+}
+
+
+// --------------------------------------------------------------------------------
+// Natives tick faster.
+// --------------------------------------------------------------------------------
+GET_METHOD( 0x414F80, void, EINative_Tick, EInstance* );
+
+void _native_tick_loop( EInstance* inst )
+{
+	for ( int i = 0; i < 3; i++ ) {
+		EINative_Tick( inst );
+	}
+}
+
+MAKE_THISCALL_WRAPPER( _native_func, _native_tick_loop );
+static void _fast_native( bool enable )
+{
+	if ( enable ) {
+		void* func = &_native_func;
+		injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
+	}
+	else {
+		void* func = (void*) 0x414F80;
+		injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
+	}
 }
 
 
@@ -143,97 +329,68 @@ static void _die()
 
 
 // --------------------------------------------------------------------------------
-// TNT rain.
+// Spawn Evil Harry (penguin temple).
 // --------------------------------------------------------------------------------
-static EIProjectile* _do_tnt_rain( uint32_t projectileType )
+static bool no()
 {
-	Vector3f pos, dir;
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
-
-	for ( int i = -12; i <= 12; i++ ) {
-		for ( int j = -12; j <= 12; j++ ) {
-			dir.x = dir.y = dir.z = 0.0F;
-
-			pos.z = 70.0F;
-			pos.x = j * 16.0F;
-			pos.y = i * 16.0F;
-
-			EIProjectile* tnt = EIProjectile_Create( 0xBBCAC492 );
-			EIProjectile_Spawn( tnt, &pos, &dir, harry, 1.0F );
-		}
-	}
-
-	return EIProjectile_Create( projectileType );
+	return false;
 }
 
-static void _tnt_rain( bool enable )
+static void _spawn_evilharry()
 {
-	static char orig[5];
-	if ( enable ) {
-		// Save original bytes.
-		for (int i = 0; i < 5; i++) orig[i] = ((char*) 0x59540E)[i];
+	EIHarry** harryPtr = ((EIHarry**) 0x917034);
+	EIHarry* harry = *harryPtr;
 
-		injector::MakeCALL( 0x59540E, _do_tnt_rain );
-	}
-	else {
-		injector::WriteMemoryRaw( 0x59540E, orig, sizeof(orig), true );
-	}
-}
+	const type_info_t* type = get_type_by_vtable( 0x875240 );
+	EIEvilHarryP* evilHarry = instantiate_object<EIEvilHarryP>( type );
 
+	evilHarry->m_position.x = harry->m_position.x;
+	evilHarry->m_position.y = harry->m_position.y + 15.0F;
+	evilHarry->m_position.z = harry->m_position.z;
 
-// --------------------------------------------------------------------------------
-// Every projectile is a TNT.
-// --------------------------------------------------------------------------------
-static void _all_tnt( bool enable )
-{
-	if ( enable ) {
-		// mov DWORD PTR [ebp+0x8], BBCAC492
-		uint8_t bytes[] = { 0xC7, 0x45, 0x08, 0x92, 0xC4, 0xCA, 0xBB };
-		injector::WriteMemoryRaw( 0x55784E, bytes, sizeof(bytes), true );
-	}
-	else {
-		injector::MakeNOP( 0x55784E, 7 );
-	}
-}
+	evilHarry->m_rotation.x = 0.0F;
+	evilHarry->m_rotation.y = 0.0F;
+	evilHarry->m_rotation.z = 0.0F;
+	evilHarry->m_rotation.w = 1.0F;
 
+	uint32_t hash = HashPath( "BEvilHarryP" );
+	evilHarry->m_beastTypeCRC = hash;
+	evilHarry->m_beastTypeName = "evil harry";
+	EIBeast_LoadBeastAsset( evilHarry );
 
-// --------------------------------------------------------------------------------
-// Natives tick faster.
-// --------------------------------------------------------------------------------
-GET_METHOD( 0x414F80, void, EINative_Tick, EInstance* );
+	// (This overrides our state machine modifications sadly).
+	evilHarry->DeserializePart2();
 
-void _native_tick_loop( EInstance* inst )
-{
-	for ( int i = 0; i < 3; i++ ) {
-		EINative_Tick( inst );
-	}
-}
+	// Patch the state machine.
+	{
+		EBeastStateMachine* evilHarryP = evilHarry->GetStateMachine();
 
-MAKE_THISCALL_WRAPPER( _native_func, _native_tick_loop );
-static void _fast_native( bool enable )
-{
-	if ( enable ) {
-		void* func = &_native_func;
-		injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
+		// Disable dancing on victory.
+		EBeastState* stateChase = evilHarryP->m_states + 3;
+		EBeastCondition* condNo = evilHarryP->m_conditions + 10;
+		condNo->m_func.m_func = (void(*)())no;
+		evilHarryP->m_transitions[1].m_condition = condNo;
+		evilHarryP->m_transitions[5].m_condition = condNo;
+		evilHarryP->m_transitions[56].m_condition = condNo;
+		evilHarryP->m_transitions[60].m_condition = condNo;
+		evilHarryP->m_transitions[64].m_condition = condNo;
 	}
-	else {
-		void* func = (void*) 0x414F80;
-		injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
-	}
+
+	AddToWorld( harry->m_world, evilHarry );
+
+	// WARN : The free at 0x412A32 crashes, since it tries to free static memory.
+	ERLevel_SetupEntity( harry->m_world, evilHarry, 0 );
+	evilHarry->Init();
+
+	// Force Evil Harry to chase us by default.
+	evilHarry->m_forceNextState = true;
+	evilHarry->m_nextState = 3;
 }
 
 
 // --------------------------------------------------------------------------------
 // Idol spawner.
 // --------------------------------------------------------------------------------
-#include "ptle/EITreasureIdol.h"
-#include "ptle/ERLevel.h"
-GET_METHOD( 0x626670, void, AddToWorld, ERLevel*, EInstance* );
-GET_METHOD( 0x6265A0, void, AddToWorldFancy, ERLevel*, EInstance*, EInstance*, bool );
-GET_METHOD( 0x6268D0, void, ERLevel_SetupEntity, ERLevel*, EInstance*, EInstance* );
-GET_METHOD( 0x597400, void, InitIdol, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );
-GET_METHOD( 0x547160, void, SetSomethingForHarry, EIHarry*, void* );
-GET_METHOD( 0x4AD5E0, void, HarryInit, EIHarry*, Vector3f*, float );
 static void _idol_spawn()
 {
 	const type_info_t* type = get_type_by_vtable( 0x89A2F8 );
@@ -297,11 +454,10 @@ static EIProjectile* _harry_spawn( uint32_t code )
 	return EIProjectile_Create( code );
 }
 
-#include "ptle/EINative.h"
-GET_FUNC( 0x6F8EC0, uint32_t, HashPath, char* );
 
-GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
-GET_METHOD( 0x527E50, int,  EIBeast_Deserialize2, EIBeast* );
+// --------------------------------------------------------------------------------
+// Spawn a native.
+// --------------------------------------------------------------------------------
 static void _netiv_spawn()
 {
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
@@ -338,68 +494,10 @@ static void _netiv_spawn()
 	native->Init();
 }
 
-#include "ptle/EIEvilHarryP.h"
 
-static bool no()
-{
-	return false;
-}
-
-static void _spawn_evilharry()
-{
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
-
-	const type_info_t* type = get_type_by_vtable( 0x875240 );
-	EIEvilHarryP* evilHarry = instantiate_object<EIEvilHarryP>( type );
-
-	evilHarry->m_position.x = harry->m_position.x;
-	evilHarry->m_position.y = harry->m_position.y + 15.0F;
-	evilHarry->m_position.z = harry->m_position.z;
-
-	evilHarry->m_rotation.x = 0.0F;
-	evilHarry->m_rotation.y = 0.0F;
-	evilHarry->m_rotation.z = 0.0F;
-	evilHarry->m_rotation.w = 1.0F;
-
-	uint32_t hash = HashPath( "BEvilHarryP" );
-	evilHarry->m_beastTypeCRC = hash;
-	evilHarry->m_beastTypeName = "evil harry";
-	EIBeast_LoadBeastAsset( evilHarry );
-
-	// (This overrides our state machine modifications sadly).
-	evilHarry->DeserializePart2();
-
-	// Patch the state machine.
-	{
-		EBeastStateMachine* evilHarryP = evilHarry->GetStateMachine();
-
-		// Disable dancing on victory.
-		EBeastState* stateChase = evilHarryP->m_states + 3;
-		EBeastCondition* condNo = evilHarryP->m_conditions + 10;
-		condNo->m_func.m_func = (void(*)())no;
-		evilHarryP->m_transitions[1].m_condition = condNo;
-		evilHarryP->m_transitions[5].m_condition = condNo;
-		evilHarryP->m_transitions[56].m_condition = condNo;
-		evilHarryP->m_transitions[60].m_condition = condNo;
-		evilHarryP->m_transitions[64].m_condition = condNo;
-	}
-
-	AddToWorld( harry->m_world, evilHarry );
-
-	// WARN : The free at 0x412A32 crashes, since it tries to free static memory.
-	ERLevel_SetupEntity( harry->m_world, evilHarry, 0 );
-	evilHarry->Init();
-
-	// Force Evil Harry to chase us by default.
-	evilHarry->m_forceNextState = true;
-	evilHarry->m_nextState = 3;
-}
-
-#include "ptle/EINPCBeast.h"
-
-GET_METHOD( 0x527ED0, void, EINPCBeast_Init, EINPCBeast* );
-
+// --------------------------------------------------------------------------------
+// Spawn Micay (or any NPC).
+// --------------------------------------------------------------------------------
 static void _micay_spawn()
 {
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
@@ -435,6 +533,9 @@ static void _micay_spawn()
 }
 
 
+// --------------------------------------------------------------------------------
+// AI state machine modification.
+// --------------------------------------------------------------------------------
 static void log_state_machine_info( EBeastStateMachine* sm )
 {
 	if ( !sm->m_states ) return;
@@ -650,75 +751,6 @@ static void _log_epausemain()
 
 
 
-#include "ptle/EScriptContext.h"
-GET_FUNC( 0x422910, void, Script_SetCurrentState_Original, EScriptContext* );
-void Script_SetCurrentState_Custom( EScriptContext* context )
-{
-	int* var = (int*) context->m_scriptStack[context->m_stackPointer - 2];
-	char** stateName = (char**) var+2;
-
-	log_printf( "Set State \"%s\"\n", *stateName );
-
-	bool cool = strncmp( *stateName, "native.", 7 ) == 0;
-	char* oldState = *stateName;
-	if ( cool ) {
-		*stateName = "native.fatal hit";
-	}
-
-	Script_SetCurrentState_Original( context );
-
-	if ( cool ) {
-		*stateName = oldState;
-	}
-}
-
-static void _auto_skip_cutscenes( bool enable )
-{
-	static char orig_42FE93[5];
-	static float custom_skip_time = 0.1F;   // We need our own memory because the "two" used is referenced by other stuff, so changing it breaks everything.
-
-	if ( enable ) {
-		// Save original bytes.
-		for (int i = 0; i < 5; i++) orig_42FE93[i] = ((char*) 0x42FE93)[i];
-
-		injector::MakeJMP( 0x42FE93, 0x42FF45 );                // Jump straight to cutscene skip call when skip time is elapsed.
-		injector::WriteMemory( 0x42FE84, &custom_skip_time );   // Make the code load OUR float.
-		custom_skip_time = 0.1F;                                // Make cutscene skip time shorter (default = 2.0F = 0x40000000).
-
-		injector::WriteMemory( 0x8F099C, &Script_SetCurrentState_Custom );
-	}
-	else {
-		injector::WriteMemoryRaw( 0x42FE93, orig_42FE93, sizeof(orig_42FE93), true );
-		custom_skip_time = 2.0F;
-	}
-}
-
-static void _effector_debug_draw( bool enable )
-{
-	bool* effectorDebugDraw = (bool*) (0x920F3C);
-	*effectorDebugDraw = enable;
-}
-
-
-bool g_invulnerable;
-bool g_infiniteJumps;
-
-static void _invulnerable( bool enable )
-{
-	g_invulnerable = enable;
-	if ( !enable ) {
-		bool* inv = (bool*) (0x917059);
-		*inv = false;
-	}
-}
-
-static void _infinite_jump( bool enable )
-{
-	g_infiniteJumps = enable;
-}
-
-
-
 //
 // List of available commands / cheats.
 //
@@ -770,7 +802,7 @@ static bool cheat_states[NUM_CHEATS] = { false, };
 std::vector<level_info_t> gotoLevels;
 std::vector<level_info_t> regularLevels, nativeGamesLevels;
 
-static void goto_init()
+static void init_gotolevels_list()
 {
 	// Sort levels by category.
 	for ( int i = 0; i < levels_game.count; i++ ) {
@@ -795,25 +827,31 @@ static void goto_init()
 
 
 //
-// Save slots (not really working yet).
+// Save slots.
+// 
+// These only save Harry's position and orientation, and restore them by teleporting him.
+// The camera doesn't follow yet. The player must move around, jump, or move the camera to
+// center it back.
 //
 
-savepoint_t save_slots[10] = { {-1, }, };
+savepoint_t save_slots[10];
 
 GET_METHOD( 0x60FEA0, void, EICharacter_SetPos, EICharacter*, Vector3f*, bool );
 GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
 
 bool load_saveslot( int i )
 {
-	/*if ( save_slots[i].levelID == -1 ) {
+	if ( save_slots[i].levelID == -1 ) {
+		log_printf( "Failed to load state %d (slot might be unused).\n", i );
 		return false;
-	}*/
+	}
 
 	//ScheduleWorldLoad( (void*) 0x917028, levels_game.levels[id - 400].crc, false );
 	EIHarry* harry = *((EIHarry**) 0x917034);
 
 	EIHarry_Teleport( harry, &save_slots[i].playerTransform, false, 1.0F );
 
+	log_printf( "Loaded save state %d.\n", i );
 	return true;
 }
 
@@ -822,6 +860,8 @@ void save_saveslot( int i )
 	EIHarry* harry = *((EIHarry**) 0x917034);
 
 	save_slots[i].playerTransform = harry->m_rigidBodyMatrix;
+
+	log_printf( "Saved state %d.\n", i );
 }
 
 
@@ -832,8 +872,14 @@ void save_saveslot( int i )
 
 #include <Windows.h>
 
+static struct palette_wnd_data_t
+{
+	HWND previous_area_label;
+	HWND idol_count_label;
+
+} paletteWndData;
 static HWND hwndPalette;
-static char className[] = "PaletteWindow";
+static const char className[] = "PaletteWindow";
 
 // Geometry.
 #define BUTTON_WIDTH   150
@@ -854,77 +900,155 @@ static char className[] = "PaletteWindow";
 #define ID_SAVESLOT_LOAD 620
 #define ID_SAVESLOT_SAVE 630
 
+
+static void PaletteCreate( HWND hwnd )
+{
+	int y = 10;
+	int i = 0;
+	for ( const cheat_t* cheat = cheats; cheat != cheats + NUM_CHEATS; cheat++, i++ ) {
+		CreateWindow( "BUTTON", cheat->name,
+			WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
+			10 + (i & 1) * (BUTTON_WIDTH+10), y,
+			BUTTON_WIDTH, 20, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
+		if ( i & 1 ) {
+			y += 30;
+		}
+	}
+	y += 20;
+	i = 0;
+	for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
+		CreateWindow( "BUTTON", cmd->name,
+			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
+			10 + (i & 1) * (BUTTON_WIDTH+10), y,
+			BUTTON_WIDTH, 20, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
+		if ( i & 1 ) {
+			y += 30;
+		}
+	}
+	y += 20;
+	paletteWndData.previous_area_label = CreateWindow("STATIC", "Previous Area: ",
+		WS_CHILD | WS_VISIBLE,
+		10, y, 300, 20,
+		hwnd, nullptr, nullptr, nullptr);
+	y += 20;
+	paletteWndData.idol_count_label = CreateWindow("STATIC", "Idols: ",
+		WS_CHILD | WS_VISIBLE,
+		10, y, 300, 20,
+		hwnd, nullptr, nullptr, nullptr);
+}
+
+static void PaletteRefreshInfo( HWND hwnd )
+{
+	char buffer[64];
+
+	uint32_t* prevAreaPtr = find_previous_area_memory();
+	const char* prefix = "Previous Area: ";
+	if (!prevAreaPtr) {
+		sprintf_s(buffer, "%sNot found", prefix);
+	}
+	else {
+		sprintf_s(buffer, "%s0x%.8X (%s)", prefix, *prevAreaPtr, level_get_name(level_get_by_crc(*prevAreaPtr)));
+	}
+
+	SetWindowText(paletteWndData.previous_area_label, buffer);
+
+	EIHarry* harry = *((EIHarry**) 0x917034);
+	if ( harry ) {
+		sprintf_s(buffer, "Idols: %d", harry->m_idolsCollected);
+
+		SetWindowText(paletteWndData.idol_count_label, buffer);
+	}
+}
+
+static void PaletteCommand( HWND hwnd, WPARAM id )
+{
+	if ( id >= ID_CHEATS && id < ID_CHEATS + NUM_CHEATS ) {
+		int i = id - ID_CHEATS;
+		const cheat_t* cmd = &cheats[i];
+		cheat_states[i] = !cheat_states[i];
+		cmd->func( cheat_states[i] );
+	}
+	else if ( id >= ID_COMMANDS && id < ID_COMMANDS + NUM_COMMANDS ) {
+		const command_t* cmd = &commands[id - ID_COMMANDS];
+		cmd->func();
+	}
+	else if ( id >= ID_LEVELS && id < ID_LEVELS + gotoLevels.size() ) {
+		ScheduleWorldLoad( (void*) 0x917028, gotoLevels[id - ID_LEVELS].crc, false );
+	}
+	else if ( id >= ID_ITEMS && id < ID_ITEMS+9 ) {
+		ItemStruct* items = (ItemStruct*) 0x8EEB90;
+		items[id - ID_ITEMS].m_unlocked = !items[id - ID_ITEMS].m_unlocked;
+	}
+	else if ( id == ID_ITEMSWAP ) {
+		bool* itemSwapPtr = (bool*) 0x9106A2;
+		(*itemSwapPtr) = !(*itemSwapPtr);
+	}
+	else if ( id >= ID_SKILLS && id < ID_SKILLS+6 ) {
+		EIHarry* harry = *((EIHarry**) 0x917034);
+		if ( harry ) {
+			switch ( id - ID_SKILLS ) {
+			case 0: harry->m_risingStrike = !harry->m_risingStrike; break;
+			case 1: harry->m_smashStrike  = !harry->m_smashStrike;  break;
+			case 2: harry->m_heroicDash   = !harry->m_heroicDash;   break;
+			case 3: harry->m_heroicDive   = !harry->m_heroicDive;   break;
+			case 4: harry->m_superSling   = !harry->m_superSling;   break;
+			case 5: harry->m_breakdance   = !harry->m_breakdance;   break;
+			}
+		}
+	}
+	else if ( id >= ID_SAVESLOT_LOAD && id < ID_SAVESLOT_LOAD+10 ) {
+		load_saveslot( id - ID_SAVESLOT_LOAD );
+	}
+	else if ( id >= ID_SAVESLOT_SAVE && id < ID_SAVESLOT_SAVE+10 ) {
+		save_saveslot( id - ID_SAVESLOT_SAVE );
+	}
+}
+
+static void PaletteUpdateMenuChecks( HWND hwnd, WPARAM wparam, LPARAM lparam )
+{
+	if ( HIWORD( wparam ) & MF_POPUP ) {
+		EIHarry* harry = *((EIHarry**) 0x917034);
+		ItemStruct* items = (ItemStruct*) 0x8EEB90;
+		HMENU subMenu = GetSubMenu( (HMENU) lparam, LOWORD(wparam) );
+
+		switch ( LOWORD( wparam ) ) {
+		case 1:
+			for ( int i = 0; i < 9; i++ ) {
+				CheckMenuItem( subMenu, ID_ITEMS + i, (items[i].m_unlocked) ? MF_CHECKED : MF_UNCHECKED );
+			}
+			CheckMenuItem( subMenu, ID_ITEMSWAP, *((bool*) 0x9106A2) ? MF_UNCHECKED : MF_CHECKED );
+			break;
+		case 2:
+			for ( int i = 0; i < 6; i++ ) {
+				EnableMenuItem( subMenu, ID_SKILLS + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
+			}
+			CheckMenuItem( subMenu, ID_SKILLS,   (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+1, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+2, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
+			break;
+		}
+	}
+}
+
 static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
-	int id = wparam;
-	int y = 0;
-	static HWND previous_area_label = nullptr;
-	static HWND idol_count_label = nullptr;
 	static const int REFRESH_TIMER_ID = 1;
 
 	switch ( msg )
 	{
 	case WM_CREATE:
-		{
-			y = 10;
-			int i = 0;
-			for ( const cheat_t* cheat = cheats; cheat != cheats + NUM_CHEATS; cheat++, i++ ) {
-				CreateWindow( "BUTTON", cheat->name,
-					WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
-					10 + (i & 1) * (BUTTON_WIDTH+10), y,
-					BUTTON_WIDTH, 20, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
-				if ( i & 1 ) {
-					y += 30;
-				}
-			}
-			y += 20;
-			i = 0;
-			for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
-				CreateWindow( "BUTTON", cmd->name,
-					WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
-					10 + (i & 1) * (BUTTON_WIDTH+10), y,
-					BUTTON_WIDTH, 20, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
-				if ( i & 1 ) {
-					y += 30;
-				}
-			}
-			y += 20;
-			previous_area_label = CreateWindow("STATIC", "Previous Area: ",
-				WS_CHILD | WS_VISIBLE,
-				10, y, 300, 20,
-				hwnd, nullptr, nullptr, nullptr);
-			y += 20;
-			idol_count_label = CreateWindow("STATIC", "Idols: ",
-				WS_CHILD | WS_VISIBLE,
-				10, y, 300, 20,
-				hwnd, nullptr, nullptr, nullptr);
+		PaletteCreate( hwnd );
 
-			// Set a UI refresh timer at 30 FPS
-			SetTimer(hwnd, REFRESH_TIMER_ID, 1000 / 30, NULL);
-		}
+		// Set a UI refresh timer at 30 FPS
+		SetTimer(hwnd, REFRESH_TIMER_ID, 1000 / 30, NULL);
 		break;
 
 	case WM_TIMER: 
 		if (wparam == REFRESH_TIMER_ID) {
-			char buffer[64];
-
-			uint32_t* prevAreaPtr = find_previous_area_memory();
-			const char* prefix = "Previous Area: ";
-			if (!prevAreaPtr) {
-				sprintf_s(buffer, "%sNot found", prefix);
-			}
-			else {
-				sprintf_s(buffer, "%s0x%.8X (%s)", prefix, *prevAreaPtr, level_get_name(level_get_by_crc(*prevAreaPtr)));
-			}
-
-			SetWindowText(previous_area_label, buffer);
-
-			EIHarry* harry = *((EIHarry**) 0x917034);
-			if ( harry ) {
-				sprintf_s(buffer, "Idols: %d", harry->m_idolsCollected);
-
-				SetWindowText(idol_count_label, buffer);
-			}
+			PaletteRefreshInfo( hwnd );
 		}
 		break;
 
@@ -936,80 +1060,11 @@ static LRESULT CALLBACK PaletteWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPAR
 		return 0;
 
 	case WM_COMMAND:
-		if ( id >= ID_CHEATS && id < ID_CHEATS + NUM_CHEATS ) {
-			int i = id - ID_CHEATS;
-			const cheat_t* cmd = &cheats[i];
-			cheat_states[i] = !cheat_states[i];
-			cmd->func( cheat_states[i] );
-		}
-		else if ( id >= ID_COMMANDS && id < ID_COMMANDS + NUM_COMMANDS ) {
-			const command_t* cmd = &commands[id - ID_COMMANDS];
-			cmd->func();
-		}
-		else if ( id >= ID_LEVELS && id < ID_LEVELS + gotoLevels.size() ) {
-			ScheduleWorldLoad( (void*) 0x917028, gotoLevels[id - ID_LEVELS].crc, false );
-		}
-		else if ( id >= ID_ITEMS && id < ID_ITEMS+9 ) {
-			ItemStruct* items = (ItemStruct*) 0x8EEB90;
-			items[id - ID_ITEMS].m_unlocked = !items[id - ID_ITEMS].m_unlocked;
-		}
-		else if ( id == ID_ITEMSWAP ) {
-			bool* itemSwapPtr = (bool*) 0x9106A2;
-			(*itemSwapPtr) = !(*itemSwapPtr);
-		}
-		else if ( id >= ID_SKILLS && id < ID_SKILLS+6 ) {
-			EIHarry* harry = *((EIHarry**) 0x917034);
-			if ( harry ) {
-				switch ( id ) {
-				case ID_SKILLS:   harry->m_risingStrike = !harry->m_risingStrike; break;
-				case ID_SKILLS+1: harry->m_smashStrike  = !harry->m_smashStrike;  break;
-				case ID_SKILLS+2: harry->m_heroicDash   = !harry->m_heroicDash;   break;
-				case ID_SKILLS+3: harry->m_heroicDive   = !harry->m_heroicDive;   break;
-				case ID_SKILLS+4: harry->m_superSling   = !harry->m_superSling;   break;
-				case ID_SKILLS+5: harry->m_breakdance   = !harry->m_breakdance;   break;
-				}
-			}
-		}
-		else if ( id >= ID_SAVESLOT_LOAD && id < ID_SAVESLOT_LOAD+10 ) {
-			if ( load_saveslot(id-ID_SAVESLOT_LOAD) ) {
-				log_printf( "Loaded save state.\n" );
-			}
-			else {
-				log_printf( "Failed to load state (slot might be unused).\n" );
-			}
-		}
-		else if ( id >= ID_SAVESLOT_SAVE && id < ID_SAVESLOT_SAVE+10 ) {
-			save_saveslot( id-ID_SAVESLOT_SAVE );
-			log_printf( "Saved state.\n" );
-		}
+		PaletteCommand( hwnd, wparam );
 		break;
 
 	case WM_MENUSELECT:
-		if ( HIWORD( wparam ) & MF_POPUP ) {
-			EIHarry* harry = *((EIHarry**) 0x917034);
-			ItemStruct* items = (ItemStruct*) 0x8EEB90;
-			HMENU subMenu = GetSubMenu( (HMENU) lparam, LOWORD(wparam) );
-
-			switch ( LOWORD( wparam ) ) {
-			case 1:
-				for ( int i = 0; i < 9; i++ ) {
-					CheckMenuItem( subMenu, ID_ITEMS + i, (items[i].m_unlocked) ? MF_CHECKED : MF_UNCHECKED );
-				}
-				CheckMenuItem( subMenu, ID_ITEMSWAP, *((bool*) 0x9106A2) ? MF_UNCHECKED : MF_CHECKED );
-				break;
-			case 2:
-				for ( int i = 0; i < 6; i++ ) {
-					EnableMenuItem( subMenu, ID_SKILLS + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
-				}
-				CheckMenuItem( subMenu, ID_SKILLS,   (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
-				CheckMenuItem( subMenu, ID_SKILLS+1, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
-				CheckMenuItem( subMenu, ID_SKILLS+2, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
-				CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
-				CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
-				CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
-				break;
-			}
-		}
+		PaletteUpdateMenuChecks( hwnd, wparam, lparam );
 		break;
 	}
 
@@ -1021,7 +1076,7 @@ static HMENU create_menu()
 	HMENU menu = CreateMenu();
 
 	HMENU goTo = CreateMenu(); {
-		goto_init();
+		init_gotolevels_list();
 		UINT_PTR id = ID_LEVELS;
 
 		HMENU beta = CreateMenu(); {
@@ -1115,6 +1170,12 @@ static HMENU create_menu()
 
 	return menu;
 }
+
+
+
+//
+// Public API.
+//
 
 void command_create_window()
 {
