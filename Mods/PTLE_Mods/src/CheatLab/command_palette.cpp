@@ -57,29 +57,6 @@ static void _empty_cheat( bool enable )
 
 
 
-#include "ptle/EScriptContext.h"
-GET_FUNC( 0x422910, void, Script_SetCurrentState_Original, EScriptContext* );
-void Script_SetCurrentState_Custom( EScriptContext* context )
-{
-	int* var = (int*) context->m_scriptStack[context->m_stackPointer - 2];
-	char** stateName = (char**) var+2;
-
-	log_printf( "Set State \"%s\"\n", *stateName );
-
-	bool cool = strncmp( *stateName, "native.", 7 ) == 0;
-	char* oldState = *stateName;
-	if ( cool ) {
-		*stateName = "native.fatal hit";
-	}
-
-	Script_SetCurrentState_Original( context );
-
-	if ( cool ) {
-		*stateName = oldState;
-	}
-}
-
-
 // --------------------------------------------------------------------------------
 // Auto skip cutscenes (breaks things very slightly, but remains playable).
 // --------------------------------------------------------------------------------
@@ -95,8 +72,6 @@ static void _auto_skip_cutscenes( bool enable )
 		injector::MakeJMP( 0x42FE93, 0x42FF45 );                // Jump straight to cutscene skip call when skip time is elapsed.
 		injector::WriteMemory( 0x42FE84, &custom_skip_time );   // Make the code load OUR float.
 		custom_skip_time = 0.1F;                                // Make cutscene skip time shorter (default = 2.0F = 0x40000000).
-
-		injector::WriteMemory( 0x8F099C, &Script_SetCurrentState_Custom );
 	}
 	else {
 		injector::WriteMemoryRaw( 0x42FE93, orig_42FE93, sizeof(orig_42FE93), true );
