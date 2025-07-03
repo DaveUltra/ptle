@@ -181,15 +181,6 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 MAKE_THISCALL_WRAPPER( hijack_transition_ptr, hijack_transition );
 
 
-void on_level_loaded()
-{
-	ensure_item_swap();
-
-	if ( rando_config.randomizeShamanShop ) {
-		patch_shaman_shop();
-	}
-}
-
 
 void read_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 {
@@ -333,12 +324,26 @@ void generate_spoiler_logs( std::ostream& os )
 
 
 
-class RandomizerPlugin : public PitfallPlugin
+#include "Pitfall.h"
+#include "event/LevelLoadedEvent.h"
+
+class RandomizerPlugin : public PitfallPlugin, public ILevelLoadedListener
 {
 public:
 
 	virtual const char* getDisplayName() const override { return "PTLE Randomizer"; }
 	virtual const char* getSystemName() const override { return "Randomizer"; }
+
+	virtual void onLevelLoaded( LevelLoadedEvent& event ) override
+	{
+		ensure_item_swap();
+
+		if ( rando_config.randomizeShamanShop ) {
+			patch_shaman_shop();
+		}
+
+		prevent_transition_softlock();
+	}
 
 	virtual void onEnable()
 	{
@@ -358,20 +363,13 @@ public:
 		//injector::MakeCALL( 0x5ECC70, read_transition_ptr );
 		injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
 
-		// End of world load.
-		injector::MakeNOP( 0x5EC196, 8 );
-		injector::MakeCALL( 0x5EC196, on_level_loaded );
+		Pitfall::getInstance()->getEventListener()->registerEvent<LevelLoadedEvent>( this );
 
 		// TODO : What happens when you die????
 
 		// Hijack new game starting area.
 		uint32_t startCRC = rando_config.startingArea;
 		injector::WriteMemory( 0x5EB9E6, startCRC );
-
-		// End of level load routine, we clear an otherwise unused debug log function call
-		// and place our Harry up-teleport function on top of it.
-		injector::MakeNOP( 0x5EC167, 13 );
-		injector::MakeCALL( 0x5EC167, prevent_transition_softlock );
 
 		// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
 		injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );

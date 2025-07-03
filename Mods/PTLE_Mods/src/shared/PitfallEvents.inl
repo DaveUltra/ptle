@@ -4,6 +4,7 @@
 
 
 PITFALL_EVENT( EntitySpawn )
+PITFALL_EVENT( LevelLoaded )
 PITFALL_EVENT( LoadLevel )
 
 

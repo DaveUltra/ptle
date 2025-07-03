@@ -29,7 +29,7 @@ typedef NTSTATUS(NTAPI* LdrAddRefDll_t)(ULONG, HMODULE);
 
 #include "Pitfall.h"
 
-extern "C" { extern Pitfall* pitfallInstance; }
+extern "C" { Pitfall* pitfallInstance; }
 
 static Pitfall g_pitfall;
 
@@ -288,18 +288,15 @@ size_t vccorlibData[vccorlibExportsNamesCount][Kernel32ExportsDataCount];
 #include "ptle/EInstance.h"
 
 #include "event/EntitySpawnEvent.h"
+#include "event/LevelLoadedEvent.h"
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
 	int step = *((int*) 0x91707C);
-	log_printf( "Spawned! %s\n", inst->GetTypeName() );
+	//log_printf( "Spawned! %s\n", inst->GetTypeName() );
 
 	EntitySpawnEvent event( inst );
-
-	auto list = EntitySpawnEvent::getCallbackList();
-	for ( IEntitySpawnListener* c : list ) {
-		c->onEntitySpawn( event );
-	}
+	g_pitfall.getEventListener()->invokeEvent<EntitySpawnEvent>( event );
 }
 
 static __declspec(naked) void _EntitySpawn()
@@ -312,9 +309,19 @@ static __declspec(naked) void _EntitySpawn()
 	__asm ret 0x4
 }
 
+static void LevelLoaded()
+{
+	LevelLoadedEvent event;
+	g_pitfall.getEventListener()->invokeEvent<LevelLoadedEvent>( event );
+}
+
 void InjectCode()
 {
 	injector::MakeJMP( 0x626747, _EntitySpawn );
+
+	// Level finished loading.
+	injector::MakeNOP( 0x5EC196, 8 );
+	injector::MakeCALL( 0x5EC196, LevelLoaded );
 }
 
 

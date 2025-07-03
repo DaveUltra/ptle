@@ -15,8 +15,7 @@ public:
 
 	static PitfallPlugin* getThisPlugin();
 
-	template<class T>
-	void registerEvent(  );
+	inline PitfallEvents* getEventListener() { return &m_events; }
 
 
 private:

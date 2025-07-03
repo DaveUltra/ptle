@@ -3,7 +3,7 @@
 #include "PitfallPlugin.h"
 
 
-extern "C" { extern Pitfall* pitfallInstance = 0; }
+extern "C" { extern Pitfall* pitfallInstance; }
 
 
 Pitfall::Pitfall()

@@ -1,8 +1,11 @@
 #pragma once
 
+#include "utils/log.h"
+
 #include "event/CollectExplorerEvent.h"
 #include "event/CollectIdolEvent.h"
 #include "event/EntitySpawnEvent.h"
+#include "event/LevelLoadedEvent.h"
 #include "event/LoadLevelEvent.h"
 
 
@@ -26,6 +29,19 @@ private:
 
 
 // Definitions for registerEvent() and invokeEvent().
+template<class EventType>
+inline void PitfallEvents::registerEvent( typename EventType::ICallbackType* cb )
+{
+	log_printf( "WARN: Undefined registerEvent() for this event type.\n" );
+}
+
+template<class EventType>
+inline void PitfallEvents::invokeEvent( EventType& event )
+{
+	log_printf( "WARN: Undefined invokeEvent() for this event type.\n" );
+}
+
+
 #define PITFALL_EVENT(name) \
 	template<> \
 	inline void PitfallEvents::registerEvent<name##Event>( typename name##Event::ICallbackType* cb ) \

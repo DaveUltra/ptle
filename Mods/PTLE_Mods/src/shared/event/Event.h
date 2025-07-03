@@ -22,6 +22,8 @@ public:
 	typedef std::vector<ICallbackType*> CallbackList;
 
 
+public:
+
 	Event() : m_cancel(false) {
 
 	}
@@ -29,16 +31,6 @@ public:
 	inline bool isCancelled() const { return m_cancel; }
 	inline void setCancelled( bool b ) { m_cancel = true; }
 
-	static inline void registerCallback( ICallbackType* t )
-	{
-		getCallbackList().push_back( t );
-	}
-
-	static CallbackList& getCallbackList()
-	{
-		static CallbackList m_callbackList;
-		return m_callbackList;
-	}
 
 private:
 
