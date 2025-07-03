@@ -18,20 +18,14 @@ To set up the mod loader, you only need three steps :
 ### Enabling-disabling the mods
 
 - To enable the mod loader: rename `binkw32.dll` to `binkw32_o.dll` then `binkw32.mod` to `binkw32.dll`.
-- To disable the mod loader: rename  `binkw32.dll` to `binkw32.mod` then  `binkw32_o.dll`to `binkw32.mod`.
+- To disable the mod loader: rename `binkw32.dll` to `binkw32.mod` then `binkw32_o.dll` to `binkw32.dll`.
 - `disable_mod.bat` and `enable_mod.bat` are provided for your convenience.
-- To disable individual mods, move the `.asi` file into the `Game/mods/` directory.
+- To disable individual mods, move or delete the `.asi` file out of the `Game/mods/` directory.
 
 **Note :** You might be aware of PC's version many flaws : the taskbar gets locked, the game constantly steals focus, responds to any input even outside of its window, and freezes on Alt+Tabs. DxWnd does allow playing in windowed mode, but it does not address any of the other issues. It is recommended to use the `WindowedMode.asi` mod to counter all of these effects and be able to multitask.
-
-### How to Operate
-
-By default, the mod loader will be on. If you wish to toggle between playing with or without mods, you can use the two batch files `enable_mod.bat` and `disable_mod.bat`.
-
-To disable a specific mod : delete, move, or change the extension of its `.asi` file.
 
 ## Building the mods
 
 You can edit and build the mods yourself using the Visual Studio solution. You'll need at least MSBuildTools v142 for C++ (as that's the targetted platform toolset, comes with Visual Studio 2019), which can be installed with the Visual Studio Installer.
 
-Mods will be automatically saved under `$(SolutionDir)bin\$(Configuration)` (where `$(Configuration)` is `Release`|`Debug`). You only want the `.adsi` files and `cfg` folder.
+Mods will be automatically saved under `$(SolutionDir)bin\$(Configuration)` (where `$(Configuration)` is `Release`|`Debug`). You only want the `.asi` files and `config` folder.
