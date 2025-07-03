@@ -69,7 +69,10 @@ private:
 
 #include <Windows.h>
 #define DECLARE_PLUGIN( className ) \
-	extern "C" { __declspec(dllexport) className globalInstance; } \
+	extern "C" { \
+		__declspec(dllexport) className globalInstance; \
+		__declspec(dllexport) class Pitfall* pitfallInstance = 0; \
+	} \
 	/* Stub function to avoid going around the mod loader. */ \
 	BOOL WINAPI DllMain( HINSTANCE hinstace, DWORD reason, LPVOID ) \
 	{ return true; }

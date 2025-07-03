@@ -23,84 +23,95 @@ typedef NTSTATUS(NTAPI* LdrAddRefDll_t)(ULONG, HMODULE);
 #define TARGET_DLL_BINKW32
 
 
+//
+// Pitfall Mod Loader instance.
+//
+
+#include "Pitfall.h"
+
+extern "C" { extern Pitfall* pitfallInstance; }
+
+static Pitfall g_pitfall;
+
+
 
 const int countdownSeconds = 10;
 HRESULT CALLBACK TaskDialogCallbackProc(HWND hwnd, UINT uNotification, WPARAM wParam, LPARAM lParam, LONG_PTR dwRefData)
 {
-    static bool userInteracted = false;
-    static UINT_PTR timerID = 1;
-    static int remainingSeconds = countdownSeconds;
-    static auto mainDialogHwnd = hwnd;
+	static bool userInteracted = false;
+	static UINT_PTR timerID = 1;
+	static int remainingSeconds = countdownSeconds;
+	static auto mainDialogHwnd = hwnd;
 
-    switch (uNotification)
-    {
-    case TDN_CREATED:
-    {
-        // Initialize progress bar
-        SendMessage(hwnd, TDM_SET_PROGRESS_BAR_RANGE, 0, MAKELPARAM(0, countdownSeconds));
-        SendMessage(hwnd, TDM_SET_PROGRESS_BAR_POS, countdownSeconds, 0);
+	switch (uNotification)
+	{
+	case TDN_CREATED:
+	{
+		// Initialize progress bar
+		SendMessage(hwnd, TDM_SET_PROGRESS_BAR_RANGE, 0, MAKELPARAM(0, countdownSeconds));
+		SendMessage(hwnd, TDM_SET_PROGRESS_BAR_POS, countdownSeconds, 0);
 
-        // Set timer for countdown (1000ms = 1 second)
-        timerID = SetTimer(mainDialogHwnd, timerID, 1000, NULL);
+		// Set timer for countdown (1000ms = 1 second)
+		timerID = SetTimer(mainDialogHwnd, timerID, 1000, NULL);
 
-        // Create a hook to capture ALL window messages for this thread
-        // This is more reliable than window subclassing for complex dialogs
-        SetWindowsHookEx(WH_GETMESSAGE, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
-        {
-            if (nCode >= 0 && wParam == PM_REMOVE)
-            {
-                MSG* msg = (MSG*)lParam;
-                switch (msg->message)
-                {
-                case WM_MOUSEMOVE:
-                case WM_KEYDOWN:
-                case WM_LBUTTONDOWN:
-                case WM_RBUTTONDOWN:
-                case WM_MBUTTONDOWN:
-                case WM_NCHITTEST:
-                case WM_SETCURSOR:
-                    if (!userInteracted)
-                    {
-                        if (msg->message == WM_MOUSEMOVE && remainingSeconds >= countdownSeconds - 1)
-                            break;
+		// Create a hook to capture ALL window messages for this thread
+		// This is more reliable than window subclassing for complex dialogs
+		SetWindowsHookEx(WH_GETMESSAGE, [](int nCode, WPARAM wParam, LPARAM lParam) -> LRESULT
+		{
+			if (nCode >= 0 && wParam == PM_REMOVE)
+			{
+				MSG* msg = (MSG*)lParam;
+				switch (msg->message)
+				{
+				case WM_MOUSEMOVE:
+				case WM_KEYDOWN:
+				case WM_LBUTTONDOWN:
+				case WM_RBUTTONDOWN:
+				case WM_MBUTTONDOWN:
+				case WM_NCHITTEST:
+				case WM_SETCURSOR:
+					if (!userInteracted)
+					{
+						if (msg->message == WM_MOUSEMOVE && remainingSeconds >= countdownSeconds - 1)
+							break;
 
-                        userInteracted = true;
-                        KillTimer(mainDialogHwnd, timerID);
-                        SendMessage(mainDialogHwnd, TDM_SET_PROGRESS_BAR_POS, 0, 0);
-                    }
-                    break;
-                }
-            }
-            return CallNextHookEx(NULL, nCode, wParam, lParam);
-        }, NULL, GetCurrentThreadId());
-    }
-    break;
-    case TDN_TIMER:
-        if (remainingSeconds > 0 && !userInteracted)
-        {
-            remainingSeconds--;
-            SendMessage(hwnd, TDM_SET_PROGRESS_BAR_POS, remainingSeconds, 0);
+						userInteracted = true;
+						KillTimer(mainDialogHwnd, timerID);
+						SendMessage(mainDialogHwnd, TDM_SET_PROGRESS_BAR_POS, 0, 0);
+					}
+					break;
+				}
+			}
+			return CallNextHookEx(NULL, nCode, wParam, lParam);
+		}, NULL, GetCurrentThreadId());
+	}
+	break;
+	case TDN_TIMER:
+		if (remainingSeconds > 0 && !userInteracted)
+		{
+			remainingSeconds--;
+			SendMessage(hwnd, TDM_SET_PROGRESS_BAR_POS, remainingSeconds, 0);
 
-            std::wstring progressText = L"Auto-closing in " + std::to_wstring(remainingSeconds) + L" seconds...";
-            SendMessage(hwnd, TDM_SET_ELEMENT_TEXT, TDE_FOOTER, (LPARAM)progressText.c_str());
+			std::wstring progressText = L"Auto-closing in " + std::to_wstring(remainingSeconds) + L" seconds...";
+			SendMessage(hwnd, TDM_SET_ELEMENT_TEXT, TDE_FOOTER, (LPARAM)progressText.c_str());
 
-            if (remainingSeconds == 0)
-            {
-                KillTimer(hwnd, timerID);
-                SendMessage(hwnd, TDM_CLICK_BUTTON, DEFAULT_BUTTON, 0);
-            }
-        }
-    break;
-    case TDN_BUTTON_CLICKED:
-        if (!userInteracted) {
-            userInteracted = true;
-            KillTimer(hwnd, timerID);
-            SendMessage(hwnd, TDM_SET_PROGRESS_BAR_POS, 0, 0);
-        }
-    break;
-    }
+			if (remainingSeconds == 0)
+			{
+				KillTimer(hwnd, timerID);
+				SendMessage(hwnd, TDM_CLICK_BUTTON, DEFAULT_BUTTON, 0);
+			}
+		}
+	break;
+	case TDN_BUTTON_CLICKED:
+		if (!userInteracted) {
+			userInteracted = true;
+			KillTimer(hwnd, timerID);
+			SendMessage(hwnd, TDM_SET_PROGRESS_BAR_POS, 0, 0);
+		}
+	break;
+	}
 
-    return S_OK;
+	return S_OK;
 }
 
 HMODULE hm;
@@ -116,154 +127,154 @@ static void wstr_to_lower(std::wstring& s)
 
 static bool iequals(const std::wstring& s1, const std::wstring& s2)
 {
-    std::wstring str1(s1);
-    std::wstring str2(s2);
-    wstr_to_lower( str1 );
-    wstr_to_lower( str2 );
-    return (str1 == str2);
+	std::wstring str1(s1);
+	std::wstring str2(s2);
+	wstr_to_lower( str1 );
+	wstr_to_lower( str2 );
+	return (str1 == str2);
 }
 
 
 std::wstring to_wstring(const std::string& cstr)
 {
-    std::string str(std::move(cstr));
-    auto charsReturned = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
-    std::wstring wstrTo(charsReturned, 0);
-    MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], charsReturned);
-    return wstrTo;
+	std::string str(std::move(cstr));
+	auto charsReturned = MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), NULL, 0);
+	std::wstring wstrTo(charsReturned, 0);
+	MultiByteToWideChar(CP_UTF8, 0, &str[0], (int)str.size(), &wstrTo[0], charsReturned);
+	return wstrTo;
 }
 
 std::wstring SHGetKnownFolderPath(REFKNOWNFOLDERID rfid, DWORD dwFlags, HANDLE hToken)
 {
-    std::wstring r;
-    WCHAR* szSystemPath = nullptr;
-    if (SUCCEEDED(SHGetKnownFolderPath(rfid, dwFlags, hToken, &szSystemPath)))
-    {
-        r = szSystemPath;
-    }
-    CoTaskMemFree(szSystemPath);
-    return r;
+	std::wstring r;
+	WCHAR* szSystemPath = nullptr;
+	if (SUCCEEDED(SHGetKnownFolderPath(rfid, dwFlags, hToken, &szSystemPath)))
+	{
+		r = szSystemPath;
+	}
+	CoTaskMemFree(szSystemPath);
+	return r;
 };
 
 std::wstring GetCurrentDirectoryW()
 {
-    static const auto INITIAL_BUFFER_SIZE = MAX_PATH;
-    static const auto MAX_ITERATIONS = 7;
-    std::wstring ret;
-    DWORD bufferSize = INITIAL_BUFFER_SIZE;
-    for (size_t iterations = 0; iterations < MAX_ITERATIONS; ++iterations) {
-        ret.resize(bufferSize);
-        auto charsReturned = ::GetCurrentDirectoryW(bufferSize, (LPWSTR) ret.data());
-        if (charsReturned < ret.length())
-        {
-            ret.resize(charsReturned);
-            return ret;
-        }
-        else
-        {
-            bufferSize *= 2;
-        }
-    }
-    return L"";
+	static const auto INITIAL_BUFFER_SIZE = MAX_PATH;
+	static const auto MAX_ITERATIONS = 7;
+	std::wstring ret;
+	DWORD bufferSize = INITIAL_BUFFER_SIZE;
+	for (size_t iterations = 0; iterations < MAX_ITERATIONS; ++iterations) {
+		ret.resize(bufferSize);
+		auto charsReturned = ::GetCurrentDirectoryW(bufferSize, (LPWSTR) ret.data());
+		if (charsReturned < ret.length())
+		{
+			ret.resize(charsReturned);
+			return ret;
+		}
+		else
+		{
+			bufferSize *= 2;
+		}
+	}
+	return L"";
 }
 
 std::wstring GetModulePath(HMODULE hModule)
 {
-    static const auto INITIAL_BUFFER_SIZE = MAX_PATH;
-    static const auto MAX_ITERATIONS = 7;
-    std::wstring ret;
-    auto bufferSize = INITIAL_BUFFER_SIZE;
-    for (size_t iterations = 0; iterations < MAX_ITERATIONS; ++iterations)
-    {
-        ret.resize(bufferSize);
-        size_t charsReturned = 0;
-        charsReturned = GetModuleFileNameW(hModule, (LPWSTR) ret.data(), bufferSize);
-        if (charsReturned < ret.length())
-        {
-            ret.resize(charsReturned);
-            return ret;
-        }
-        else
-        {
-            bufferSize *= 2;
-        }
-    }
-    return std::wstring();
+	static const auto INITIAL_BUFFER_SIZE = MAX_PATH;
+	static const auto MAX_ITERATIONS = 7;
+	std::wstring ret;
+	auto bufferSize = INITIAL_BUFFER_SIZE;
+	for (size_t iterations = 0; iterations < MAX_ITERATIONS; ++iterations)
+	{
+		ret.resize(bufferSize);
+		size_t charsReturned = 0;
+		charsReturned = GetModuleFileNameW(hModule, (LPWSTR) ret.data(), bufferSize);
+		if (charsReturned < ret.length())
+		{
+			ret.resize(charsReturned);
+			return ret;
+		}
+		else
+		{
+			bufferSize *= 2;
+		}
+	}
+	return std::wstring();
 }
 
 std::wstring GetExeModulePath()
 {
-    std::wstring r = GetModulePath(NULL);
-    r = r.substr(0, r.find_last_of(L"/\\") + 1);
-    return r;
+	std::wstring r = GetModulePath(NULL);
+	r = r.substr(0, r.find_last_of(L"/\\") + 1);
+	return r;
 }
 
 
 inline std::wstring GetSelfName()
 {
-    return moduleFileName.substr(moduleFileName.find_last_of(L"/\\") + 1);
+	return moduleFileName.substr(moduleFileName.find_last_of(L"/\\") + 1);
 }
 
 
 enum Kernel32ExportsNames
 {
-    eGetStartupInfoA,
-    eGetStartupInfoW,
-    eGetModuleHandleA,
-    eGetModuleHandleW,
-    eGetProcAddress,
-    eGetShortPathNameA,
-    eFindFirstFileA,
-    eFindNextFileA,
-    eFindFirstFileW,
-    eFindNextFileW,
-    eFindFirstFileExA,
-    eFindFirstFileExW,
-    eLoadLibraryExA,
-    eLoadLibraryExW,
-    eLoadLibraryA,
-    eLoadLibraryW,
-    eFreeLibrary,
-    eCreateEventA,
-    eCreateEventW,
-    eGetSystemInfo,
-    eInterlockedCompareExchange,
-    eSleep,
-    eGetSystemTimeAsFileTime,
-    eGetCurrentProcessId,
-    eGetCommandLineA,
-    eGetCommandLineW,
-    eAcquireSRWLockExclusive,
-    eCreateFileA,
-    eCreateFileW,
-    eGetFileAttributesA,
-    eGetFileAttributesW,
-    eGetFileAttributesExA,
-    eGetFileAttributesExW,
+	eGetStartupInfoA,
+	eGetStartupInfoW,
+	eGetModuleHandleA,
+	eGetModuleHandleW,
+	eGetProcAddress,
+	eGetShortPathNameA,
+	eFindFirstFileA,
+	eFindNextFileA,
+	eFindFirstFileW,
+	eFindNextFileW,
+	eFindFirstFileExA,
+	eFindFirstFileExW,
+	eLoadLibraryExA,
+	eLoadLibraryExW,
+	eLoadLibraryA,
+	eLoadLibraryW,
+	eFreeLibrary,
+	eCreateEventA,
+	eCreateEventW,
+	eGetSystemInfo,
+	eInterlockedCompareExchange,
+	eSleep,
+	eGetSystemTimeAsFileTime,
+	eGetCurrentProcessId,
+	eGetCommandLineA,
+	eGetCommandLineW,
+	eAcquireSRWLockExclusive,
+	eCreateFileA,
+	eCreateFileW,
+	eGetFileAttributesA,
+	eGetFileAttributesW,
+	eGetFileAttributesExA,
+	eGetFileAttributesExW,
 
-    Kernel32ExportsNamesCount
+	Kernel32ExportsNamesCount
 };
 
 enum Kernel32ExportsData
 {
-    IATPtr,
-    ProcAddress,
+	IATPtr,
+	ProcAddress,
 
-    Kernel32ExportsDataCount
+	Kernel32ExportsDataCount
 };
 
 enum OLE32ExportsNames
 {
-    eCoCreateInstance,
+	eCoCreateInstance,
 
-    OLE32ExportsNamesCount
+	OLE32ExportsNamesCount
 };
 
 enum vccorlibExportsNames
 {
-    eGetCmdArguments,
+	eGetCmdArguments,
 
-    vccorlibExportsNamesCount
+	vccorlibExportsNamesCount
 };
 
 size_t Kernel32Data[Kernel32ExportsNamesCount][Kernel32ExportsDataCount];
@@ -310,21 +321,21 @@ void InjectCode()
 
 void LoadOriginalLibrary()
 {
-    auto szSelfName = GetSelfName();
-    auto szSystemPath = SHGetKnownFolderPath(FOLDERID_System, 0, nullptr) + L'\\' + szSelfName;
-    auto szLocalPath = moduleFileName.substr( 0, moduleFileName.find_last_of(L"/\\") + 1 );
+	auto szSelfName = GetSelfName();
+	auto szSystemPath = SHGetKnownFolderPath(FOLDERID_System, 0, nullptr) + L'\\' + szSelfName;
+	auto szLocalPath = moduleFileName.substr( 0, moduleFileName.find_last_of(L"/\\") + 1 );
 
-    if ( iequals(szSelfName, L"binkw32.dll") ) {
-        szLocalPath += L"binkw32_o.dll";
+	if ( iequals(szSelfName, L"binkw32.dll") ) {
+		szLocalPath += L"binkw32_o.dll";
 		HMODULE ogLib = LoadLibraryW(szLocalPath.c_str());
 		if ( ogLib != 0 ) {
 			binkw32.LoadOriginalLibrary(ogLib, false);
 		}
-    }
-    else {
-        MessageBox(0, TEXT("This library isn't supported."), TEXT("ASI Loader"), MB_ICONERROR);
-        ExitProcess(0);
-    }
+	}
+	else {
+		MessageBox(0, TEXT("This library isn't supported."), TEXT("ASI Loader"), MB_ICONERROR);
+		ExitProcess(0);
+	}
 }
 
 #include "PitfallPlugin.h"
@@ -337,60 +348,65 @@ void FindFiles()
 	std::wstring gameDir = GetCurrentDirectoryW();
 	std::wstring modsDir = gameDir + L"\\mods";
 
-    HANDLE asiFile = FindFirstFileW(L".\\mods\\*.asi", fd);
+	HANDLE asiFile = FindFirstFileW(L".\\mods\\*.asi", fd);
 	if ( asiFile == INVALID_HANDLE_VALUE ) {
 		return;
 	}
 
-    do
-    {
-        if ((fd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) continue;
+	do
+	{
+		if ((fd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) continue;
 
-        auto pos = wcslen(fd->cFileName);
+		auto pos = wcslen(fd->cFileName);
 
-        if (fd->cFileName[pos - 4] == '.' &&
-                (fd->cFileName[pos - 3] == 'a' || fd->cFileName[pos - 3] == 'A') &&
-                (fd->cFileName[pos - 2] == 's' || fd->cFileName[pos - 2] == 'S') &&
-                (fd->cFileName[pos - 1] == 'i' || fd->cFileName[pos - 1] == 'I'))
-        {
-            auto path = modsDir + L'\\' + fd->cFileName;
+		if (fd->cFileName[pos - 4] == '.' &&
+				(fd->cFileName[pos - 3] == 'a' || fd->cFileName[pos - 3] == 'A') &&
+				(fd->cFileName[pos - 2] == 's' || fd->cFileName[pos - 2] == 'S') &&
+				(fd->cFileName[pos - 1] == 'i' || fd->cFileName[pos - 1] == 'I'))
+		{
+			auto path = modsDir + L'\\' + fd->cFileName;
 
-            if (GetModuleHandleW(path.c_str()) != NULL) continue;
+			if (GetModuleHandleW(path.c_str()) != NULL) continue;
 
 			HMODULE h = LoadLibraryW(path.c_str());
-            SetCurrentDirectoryW(gameDir.c_str()); //in case asi switched it
+			SetCurrentDirectoryW(gameDir.c_str()); //in case asi switched it
 
 			// Invoke plugin enable here.
+			Pitfall** modLoaderPtr = (Pitfall**) GetProcAddress( h, "pitfallInstance" );
 			PitfallPlugin* plugin = (PitfallPlugin*) GetProcAddress( h, "globalInstance" );
-			if ( plugin ) {
-				log_printf( "[%s] Starting...\n", plugin->getDisplayName() );
-				plugin->onEnable();
-				log_printf( "[%s] Mod started.\n", plugin->getDisplayName() );
+			if ( !modLoaderPtr || !plugin ) {
+				log_printf( "ERROR : Mod file \"%s\" has an invalid signature.\n", path.c_str() );
+				continue;
 			}
-        }
-    }
-    while (FindNextFileW(asiFile, fd));
 
-    FindClose(asiFile);
+			log_printf( "[%s] Starting...\n", plugin->getDisplayName() );
+			*modLoaderPtr = pitfallInstance;
+			plugin->onEnable();
+			log_printf( "[%s] Mod started.\n", plugin->getDisplayName() );
+		}
+	}
+	while (FindNextFileW(asiFile, fd));
+
+	FindClose(asiFile);
 }
 
 void LoadPlugins()
 {
-    auto oldDir = GetCurrentDirectoryW();
+	auto oldDir = GetCurrentDirectoryW();
 
-    auto szSelfPath = moduleFileName.substr(0, moduleFileName.find_last_of(L"/\\") + 1);
-    SetCurrentDirectoryW(szSelfPath.c_str());
+	auto szSelfPath = moduleFileName.substr(0, moduleFileName.find_last_of(L"/\\") + 1);
+	SetCurrentDirectoryW(szSelfPath.c_str());
 
-    FindFiles();
+	FindFiles();
 
-    SetCurrentDirectoryW(oldDir.c_str());
+	SetCurrentDirectoryW(oldDir.c_str());
 }
 
 void LoadEverything()
 {
-    LoadOriginalLibrary();
+	LoadOriginalLibrary();
 
-    LoadPlugins();
+	LoadPlugins();
 }
 
 #define value_orA(path1, path2) (path1.empty() ? path2 : path1.string().c_str())
@@ -400,118 +416,121 @@ void LoadEverything()
 
 LONG WINAPI CustomUnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 {
-    // step 1: write minidump
-    wchar_t     modulename[MAX_PATH];
-    wchar_t     filename[MAX_PATH];
-    wchar_t     timestamp[128];
-    __time64_t  time;
-    struct tm   ltime;
-    HANDLE      hFile;
-    HWND        hWnd;
+	// step 1: write minidump
+	wchar_t     modulename[MAX_PATH];
+	wchar_t     filename[MAX_PATH];
+	wchar_t     timestamp[128];
+	__time64_t  time;
+	struct tm   ltime;
+	HANDLE      hFile;
+	HWND        hWnd;
 
-    wchar_t* modulenameptr = nullptr;
-    if (GetModuleFileNameW(GetModuleHandle(NULL), modulename, _countof(modulename)) != 0)
-    {
-        modulenameptr = wcsrchr(modulename, '\\');
-        *modulenameptr = L'\0';
-        modulenameptr += 1;
-    }
-    else
-    {
-        wcscpy_s(modulename, L"err.err");
-    }
+	wchar_t* modulenameptr = nullptr;
+	if (GetModuleFileNameW(GetModuleHandle(NULL), modulename, _countof(modulename)) != 0)
+	{
+		modulenameptr = wcsrchr(modulename, '\\');
+		*modulenameptr = L'\0';
+		modulenameptr += 1;
+	}
+	else
+	{
+		wcscpy_s(modulename, L"err.err");
+	}
 
-    _time64(&time);
-    _localtime64_s(&ltime, &time);
-    wcsftime(timestamp, _countof(timestamp), L"%Y%m%d%H%M%S", &ltime);
-    swprintf_s(filename, L"%s\\%s\\%s.%s.dmp", modulename, L"CrashDumps", modulenameptr, timestamp);
+	_time64(&time);
+	_localtime64_s(&ltime, &time);
+	wcsftime(timestamp, _countof(timestamp), L"%Y%m%d%H%M%S", &ltime);
+	swprintf_s(filename, L"%s\\%s\\%s.%s.dmp", modulename, L"CrashDumps", modulenameptr, timestamp);
 
-    hFile = CreateFileW(filename, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	hFile = CreateFileW(filename, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
-    if (hFile != INVALID_HANDLE_VALUE)
-    {
-        MINIDUMP_EXCEPTION_INFORMATION ex;
-        memset(&ex, 0, sizeof(ex));
-        ex.ThreadId = GetCurrentThreadId();
-        ex.ExceptionPointers = ExceptionInfo;
-        ex.ClientPointers = TRUE;
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		MINIDUMP_EXCEPTION_INFORMATION ex;
+		memset(&ex, 0, sizeof(ex));
+		ex.ThreadId = GetCurrentThreadId();
+		ex.ExceptionPointers = ExceptionInfo;
+		ex.ClientPointers = TRUE;
 
-        if (FAILED(MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpWithDataSegs, &ex, NULL, NULL)))
-        {
-        }
+		if (FAILED(MiniDumpWriteDump(GetCurrentProcess(), GetCurrentProcessId(), hFile, MiniDumpWithDataSegs, &ex, NULL, NULL)))
+		{
+		}
 
-        CloseHandle(hFile);
-    }
+		CloseHandle(hFile);
+	}
 
-    // step 2: write log
-    // Logs exception into buffer and writes to file
-    swprintf_s(filename, L"%s\\%s\\%s.%s.log", modulename, L"CrashDumps", modulenameptr, timestamp);
-    hFile = CreateFileW(filename, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+	// step 2: write log
+	// Logs exception into buffer and writes to file
+	swprintf_s(filename, L"%s\\%s\\%s.%s.log", modulename, L"CrashDumps", modulenameptr, timestamp);
+	hFile = CreateFileW(filename, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
 
-    if (hFile != INVALID_HANDLE_VALUE)
-    {
-        auto Log = [ExceptionInfo, hFile](char* buffer, size_t size, bool reg, bool stack, bool trace)
-        {
-            if (LogException(buffer, size, (LPEXCEPTION_POINTERS)ExceptionInfo, reg, stack, trace))
-            {
-                DWORD NumberOfBytesWritten = 0;
-                WriteFile(hFile, buffer, strlen(buffer), &NumberOfBytesWritten, NULL);
-            }
-        };
+	if (hFile != INVALID_HANDLE_VALUE)
+	{
+		auto Log = [ExceptionInfo, hFile](char* buffer, size_t size, bool reg, bool stack, bool trace)
+		{
+			if (LogException(buffer, size, (LPEXCEPTION_POINTERS)ExceptionInfo, reg, stack, trace))
+			{
+				DWORD NumberOfBytesWritten = 0;
+				WriteFile(hFile, buffer, strlen(buffer), &NumberOfBytesWritten, NULL);
+			}
+		};
 
-        // Try to make a very descriptive exception, for that we need to malloc a huge buffer...
-        if (auto buffer = (char*)malloc(max_logsize_ever))
-        {
-            Log(buffer, max_logsize_ever, true, true, true);
-            free(buffer);
-        }
-        else
-        {
-            // Use a static buffer, no need for any allocation
-            static const auto size = max_logsize_basic + max_logsize_regs + max_logsize_stackdump;
-            static char static_buf[size];
-            static_assert(size <= max_static_buffer, "Static buffer is too big");
+		// Try to make a very descriptive exception, for that we need to malloc a huge buffer...
+		if (auto buffer = (char*)malloc(max_logsize_ever))
+		{
+			Log(buffer, max_logsize_ever, true, true, true);
+			free(buffer);
+		}
+		else
+		{
+			// Use a static buffer, no need for any allocation
+			static const auto size = max_logsize_basic + max_logsize_regs + max_logsize_stackdump;
+			static char static_buf[size];
+			static_assert(size <= max_static_buffer, "Static buffer is too big");
 
-            Log(buffer = static_buf, sizeof(static_buf), true, true, false);
-        }
+			Log(buffer = static_buf, sizeof(static_buf), true, true, false);
+		}
 
-        CloseHandle(hFile);
-    }
+		CloseHandle(hFile);
+	}
 
-    // step 3: exit the application
-    ShowCursor(TRUE);
-    hWnd = FindWindowW(0, L"");
-    SetForegroundWindow(hWnd);
+	// step 3: exit the application
+	ShowCursor(TRUE);
+	hWnd = FindWindowW(0, L"");
+	SetForegroundWindow(hWnd);
 
-    return EXCEPTION_CONTINUE_SEARCH;
+	return EXCEPTION_CONTINUE_SEARCH;
 }
+
 
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 {
-    if (reason == DLL_PROCESS_ATTACH) {
+	if (reason == DLL_PROCESS_ATTACH) {
 		wchar_t filename[8192];
 
 		AllocConsole();
 
-        hm = hModule;
+		pitfallInstance = &g_pitfall;
+
+		hm = hModule;
 		GetModuleFileNameW( hm, filename, sizeof(filename) );
 		moduleFileName = filename;
 
 		InjectCode();
 
-        LoadEverything();
-    }
-    else if (reason == DLL_PROCESS_DETACH) {
-        for (size_t i = 0; i < OLE32ExportsNamesCount; i++) {
-            if (OLE32Data[i][IATPtr] && OLE32Data[i][ProcAddress]) {
-                auto ptr = (size_t*)OLE32Data[i][IATPtr];
-                DWORD dwProtect[2];
-                VirtualProtect(ptr, sizeof(size_t), PAGE_EXECUTE_READWRITE, &dwProtect[0]);
-                *ptr = OLE32Data[i][ProcAddress];
-                VirtualProtect(ptr, sizeof(size_t), dwProtect[0], &dwProtect[1]);
-            }
-        }
-    }
-    return TRUE;
+		LoadEverything();
+	}
+	else if (reason == DLL_PROCESS_DETACH) {
+		for (size_t i = 0; i < OLE32ExportsNamesCount; i++) {
+			if (OLE32Data[i][IATPtr] && OLE32Data[i][ProcAddress]) {
+				auto ptr = (size_t*)OLE32Data[i][IATPtr];
+				DWORD dwProtect[2];
+				VirtualProtect(ptr, sizeof(size_t), PAGE_EXECUTE_READWRITE, &dwProtect[0]);
+				*ptr = OLE32Data[i][ProcAddress];
+				VirtualProtect(ptr, sizeof(size_t), dwProtect[0], &dwProtect[1]);
+			}
+		}
+	}
+	return TRUE;
 }

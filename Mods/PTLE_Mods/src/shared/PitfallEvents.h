@@ -11,10 +11,10 @@ class PitfallEvents
 public:
 
 	template<class EventType>
-	void registerEvent( typename EventType::ICallbackType* cb );
+	inline void registerEvent( typename EventType::ICallbackType* cb );
 
 	template<class EventType>
-	void invokeEvent( EventType& event );
+	inline void invokeEvent( EventType& event );
 
 
 private:
@@ -28,13 +28,13 @@ private:
 // Definitions for registerEvent() and invokeEvent().
 #define PITFALL_EVENT(name) \
 	template<> \
-	void PitfallEvents::registerEvent<name##Event>( typename name##Event::ICallbackType* cb ) \
+	inline void PitfallEvents::registerEvent<name##Event>( typename name##Event::ICallbackType* cb ) \
 	{ \
 		m_event##name.push_back( cb ); \
 	} \
 	\
 	template<> \
-	void PitfallEvents::invokeEvent<name##Event>( name##Event& event ) \
+	inline void PitfallEvents::invokeEvent<name##Event>( name##Event& event ) \
 	{ \
 		for ( const auto& cb : m_event##name ) { cb->on##name( event ); } \
 	}

@@ -3,12 +3,17 @@
 #include "PitfallPlugin.h"
 
 
-extern "C" { __declspec(dllexport) Pitfall* pitfallInstance = 0; }
+extern "C" { extern Pitfall* pitfallInstance = 0; }
 
 
 Pitfall::Pitfall()
 {
 
+}
+
+/*static*/ Pitfall* Pitfall::getInstance()
+{
+	return pitfallInstance;
 }
 
 PitfallPlugin* Pitfall::getThisPlugin()

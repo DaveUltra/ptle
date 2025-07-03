@@ -393,7 +393,8 @@ public:
 		init_menu_patcher();
 
 
-		std::ofstream spoilerLogFile( "cfg/Randomizer/spoiler.log" );
+		std::wstring cfgDir = PitfallPlugin::getInstance()->getConfigDirectory();
+		std::ofstream spoilerLogFile( cfgDir + L"/spoiler.log" );
 		generate_spoiler_logs( spoilerLogFile );
 	}
 };
