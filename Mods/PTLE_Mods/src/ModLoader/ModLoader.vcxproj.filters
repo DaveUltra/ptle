@@ -15,18 +15,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\David%27s PTLE Repo\Mods\PTLE_Mods\src\ModLoader\dllmain.cpp">
+    <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\David%27s PTLE Repo\Mods\PTLE_Mods\src\ModLoader\dllmain.h">
+    <ClInclude Include="dllmain.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\David%27s PTLE Repo\Mods\PTLE_Mods\src\ModLoader\exception.hpp">
+    <ClInclude Include="exception.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\..\..\David%27s PTLE Repo\Mods\PTLE_Mods\src\ModLoader\dll\dll.h">
+    <ClInclude Include="dll\dll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

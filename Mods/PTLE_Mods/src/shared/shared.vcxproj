@@ -73,6 +73,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Pitfall.cpp" />
     <ClCompile Include="PitfallPlugin.cpp" />
     <ClCompile Include="ptle\types\types.cpp" />
     <ClCompile Include="ptle\check.cpp" />
@@ -80,7 +81,13 @@
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="event\EntitySpawnEvent.h" />
+    <ClInclude Include="Pitfall.h" />
+    <ClInclude Include="PitfallEvents.h" />
+    <ClInclude Include="event\CollectExplorerEvent.h" />
+    <ClInclude Include="event\CollectIdolEvent.h" />
     <ClInclude Include="event\Event.h" />
+    <ClInclude Include="event\LevelLoadedEvent.h" />
     <ClInclude Include="event\LoadLevelEvent.h" />
     <ClInclude Include="PitfallPlugin.h" />
     <ClInclude Include="ptle\containers\LinkedList\LinkedList.h" />
@@ -156,6 +163,9 @@
     <ClInclude Include="ptle\math\Vector3f.h" />
     <ClInclude Include="ptle\math\Vector4f.h" />
     <ClInclude Include="utils\log.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PitfallEvents.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

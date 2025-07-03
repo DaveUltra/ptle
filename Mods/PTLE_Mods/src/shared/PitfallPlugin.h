@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string>
 
+
 class EIHarry;
 class ERLevel;
 
@@ -40,7 +41,20 @@ public:
 
 	static uint32_t getCurrentLevelCRC();
 
-	static void registerLoadLevel( ILoadLevelEvent* e );
+	template<typename EventType>
+	static void registerEvent( typename EventType::ICallbackType* e )
+	{
+		EventType::registerCallback( e );
+	}
+
+	template<typename EventType>
+	static void invokeEvent( EventType& e )
+	{
+		auto list = EventType::getCallbackList();
+		for ( typename EventType::ICallbackType* c : list ) {
+			c->
+		}
+	}
 
 private:
 

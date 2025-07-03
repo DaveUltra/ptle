@@ -3,8 +3,6 @@
 #include <vector>
 
 
-static std::vector<ILoadLevelEvent*> g_loadLevelCallbacks;
-
 PitfallPlugin* PitfallPlugin::m_instance = 0;
 
 
@@ -82,11 +80,4 @@ ERLevel* PitfallPlugin::getLevel()
 uint32_t PitfallPlugin::getCurrentLevelCRC()
 {
 	return *((uint32_t*) 0x917088);
-}
-
-
-
-void PitfallPlugin::registerLoadLevel( ILoadLevelEvent* e )
-{
-	g_loadLevelCallbacks.push_back( e );
 }

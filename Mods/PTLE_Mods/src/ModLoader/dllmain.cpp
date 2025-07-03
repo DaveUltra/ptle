@@ -272,6 +272,42 @@ size_t vccorlibData[vccorlibExportsNamesCount][Kernel32ExportsDataCount];
 
 
 
+#include "injector/injector.hpp"
+#include "utils/log.h"
+#include "ptle/EInstance.h"
+
+#include "event/EntitySpawnEvent.h"
+
+static void EntitySpawn( class ERLevel* level, EInstance* inst )
+{
+	int step = *((int*) 0x91707C);
+	log_printf( "Spawned! %s\n", inst->GetTypeName() );
+
+	EntitySpawnEvent event( inst );
+
+	auto list = EntitySpawnEvent::getCallbackList();
+	for ( IEntitySpawnListener* c : list ) {
+		c->onEntitySpawn( event );
+	}
+}
+
+static __declspec(naked) void _EntitySpawn()
+{
+	__asm push dword ptr [ebp+0x8]
+	__asm push ecx
+	__asm call EntitySpawn
+	__asm mov esp, ebp
+	__asm pop ebp
+	__asm ret 0x4
+}
+
+void InjectCode()
+{
+	injector::MakeJMP( 0x626747, _EntitySpawn );
+}
+
+
+
 void LoadOriginalLibrary()
 {
     auto szSelfName = GetSelfName();
@@ -461,6 +497,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
         hm = hModule;
 		GetModuleFileNameW( hm, filename, sizeof(filename) );
 		moduleFileName = filename;
+
+		InjectCode();
 
         LoadEverything();
     }

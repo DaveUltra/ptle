@@ -6,6 +6,7 @@
     <ClCompile Include="utils\log.cpp" />
     <ClCompile Include="ptle\types\types.cpp" />
     <ClCompile Include="PitfallPlugin.cpp" />
+    <ClCompile Include="Pitfall.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -84,5 +85,14 @@
     <ClInclude Include="PitfallPlugin.h" />
     <ClInclude Include="event\LoadLevelEvent.h" />
     <ClInclude Include="event\Event.h" />
+    <ClInclude Include="event\EntitySpawnEvent.h" />
+    <ClInclude Include="Pitfall.h" />
+    <ClInclude Include="PitfallEvents.h" />
+    <ClInclude Include="event\LevelLoadedEvent.h" />
+    <ClInclude Include="event\CollectIdolEvent.h" />
+    <ClInclude Include="event\CollectExplorerEvent.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="PitfallEvents.inl" />
   </ItemGroup>
 </Project>

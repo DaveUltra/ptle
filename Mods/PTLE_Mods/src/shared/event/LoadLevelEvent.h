@@ -5,7 +5,9 @@
 #include <stdint.h>
 
 
-class LoadLevelEvent : public Event
+DECLARE_EVENT( LoadLevel );
+
+class LoadLevelEvent : public Event<ILoadLevelListener>
 {
 public:
 
@@ -14,12 +16,4 @@ public:
 private:
 
 
-};
-
-
-class ILoadLevelListener
-{
-public:
-
-	virtual void onLoadLevel( LoadLevelEvent& e ) = 0;
 };
