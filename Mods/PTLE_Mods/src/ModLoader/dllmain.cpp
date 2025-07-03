@@ -317,6 +317,10 @@ static void LevelLoaded()
 
 void InjectCode()
 {
+	// Inconveniently spammed prints remaining in the game's code.
+	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
+
+	// Not working.
 	injector::MakeJMP( 0x626747, _EntitySpawn );
 
 	// Level finished loading.
