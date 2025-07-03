@@ -340,6 +340,15 @@ void LoadOriginalLibrary()
 
 #include "PitfallPlugin.h"
 
+static bool matchesTargetExtension( LPWSTR filename )
+{
+	auto length = wcslen( filename );
+	return filename[length - 4] == '.' &&
+		(filename[length - 3] == 'a' || filename[length - 3] == 'A') &&
+		(filename[length - 2] == 's' || filename[length - 2] == 'S') &&
+		(filename[length - 1] == 'i' || filename[length - 1] == 'I');
+}
+
 void FindFiles()
 {
 	WIN32_FIND_DATAW findData;
@@ -353,41 +362,47 @@ void FindFiles()
 		return;
 	}
 
-	do
-	{
+	// List all ASIs present in the mods directory.
+	std::vector<std::wstring> modulesToLoad;
+	do {
 		if ((fd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) continue;
 
-		auto pos = wcslen(fd->cFileName);
-
-		if (fd->cFileName[pos - 4] == '.' &&
-				(fd->cFileName[pos - 3] == 'a' || fd->cFileName[pos - 3] == 'A') &&
-				(fd->cFileName[pos - 2] == 's' || fd->cFileName[pos - 2] == 'S') &&
-				(fd->cFileName[pos - 1] == 'i' || fd->cFileName[pos - 1] == 'I'))
-		{
-			auto path = modsDir + L'\\' + fd->cFileName;
+		if ( matchesTargetExtension(fd->cFileName) ) {
+			std::wstring path = modsDir + L'\\' + fd->cFileName;
 
 			if (GetModuleHandleW(path.c_str()) != NULL) continue;
 
-			HMODULE h = LoadLibraryW(path.c_str());
-			SetCurrentDirectoryW(gameDir.c_str()); //in case asi switched it
-
-			// Invoke plugin enable here.
-			Pitfall** modLoaderPtr = (Pitfall**) GetProcAddress( h, "pitfallInstance" );
-			PitfallPlugin* plugin = (PitfallPlugin*) GetProcAddress( h, "globalInstance" );
-			if ( !modLoaderPtr || !plugin ) {
-				log_printf( "ERROR : Mod file \"%s\" has an invalid signature.\n", path.c_str() );
-				continue;
-			}
-
-			log_printf( "[%s] Starting...\n", plugin->getDisplayName() );
-			*modLoaderPtr = pitfallInstance;
-			plugin->onEnable();
-			log_printf( "[%s] Mod started.\n", plugin->getDisplayName() );
+			modulesToLoad.push_back( path );
 		}
 	}
 	while (FindNextFileW(asiFile, fd));
 
 	FindClose(asiFile);
+
+	// Load all.
+	int success = 0;
+	log_printf( "Loading %d mods...\n\n", modulesToLoad.size() );
+	for ( const std::wstring& path : modulesToLoad ) {
+		HMODULE h = LoadLibraryW( path.c_str() );
+		SetCurrentDirectoryW( gameDir.c_str() );   // In case asi changed it.
+
+		// Invoke plugin enable here.
+		Pitfall** modLoaderPtr = (Pitfall**) GetProcAddress( h, "pitfallInstance" );
+		PitfallPlugin* plugin = (PitfallPlugin*) GetProcAddress( h, "globalInstance" );
+		if ( !modLoaderPtr || !plugin ) {
+			log_printf( "ERROR : Mod file \"%s\" has an invalid signature.\n", path.c_str() );
+			continue;
+		}
+
+		log_printf( "[%s] Starting...\n", plugin->getDisplayName() );
+		*modLoaderPtr = pitfallInstance;
+		plugin->onEnable();
+		log_printf( "[%s] Mod started.\n", plugin->getDisplayName() );
+
+		success++;
+	}
+
+	log_printf( "\n%d mods loaded successfully.\n\n", success );
 }
 
 void LoadPlugins()
