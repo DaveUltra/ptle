@@ -34,4 +34,4 @@ To disable a specific mod : delete, move, or change the extension of its `.asi` 
 
 You can edit and build the mods yourself using the Visual Studio solution. You'll need at least MSBuildTools v142 for C++ (as that's the targetted platform toolset, comes with Visual Studio 2019), which can be installed with the Visual Studio Installer.
 
-Mods will be automatically saved under `$(SolutionDir)bin\$(Configuration)` (where `$(Configuration)` is `Release`|`Debug`). You only want the `.adsi` files and `cfg` folder.
+Mods will be automatically saved under `$(SolutionDir)bin\$(Configuration)` (where `$(Configuration)` is `Release`|`Debug`). You only want the `.adsi` files and `config` folder.
