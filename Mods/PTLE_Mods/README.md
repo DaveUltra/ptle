@@ -12,10 +12,15 @@ You can also check out the [latest automated builds](/../../actions/workflows/bu
 To set up the mod loader, you only need three steps :
 
 - Locate your game installation directory. It should be in `C:\Program Files (x86)\Aspyr\PITFALL The Lost Expedition` by default.
-- Copy the contents of the repository's `patch` directory into the `Game` directory. Don't worry about overwriting the existing `binkw32.dll`, a backed up copy is provided.
+- Extract the contents of the downloaded `PTLE_Mods.zip` directly to the root of the `Game` directory.
 - Remove `KBhook.dll` to avoid the game stealing focus from other programs. The game will use the default system DLL.
 
-Then, you are ready to use mods. You can find pre-built versions of the mods in this repository under `mods`. To enable a mod, simply copy the `.asi` file into the `Game/mods/` directory. If it doesn't exist yet, you can create it. The next time you open the game, any `.asi` file that the mod loader finds will be automatically loaded.
+### Enabling-disabling the mods
+
+- To enable the mod loader: rename `binkw32.dll` to `binkw32_o.dll` then `binkw32.mod` to `binkw32.dll`.
+- To disable the mod loader: rename  `binkw32.dll` to `binkw32.mod` then  `binkw32_o.dll`to `binkw32.mod`.
+- `disable_mod.bat` and `enable_mod.bat` are provided for your convenience.
+- To disable individual mods, move the `.asi` file into the `Game/mods/` directory.
 
 **Note :** You might be aware of PC's version many flaws : the taskbar gets locked, the game constantly steals focus, responds to any input even outside of its window, and freezes on Alt+Tabs. DxWnd does allow playing in windowed mode, but it does not address any of the other issues. It is recommended to use the `WindowedMode.asi` mod to counter all of these effects and be able to multitask.
 
