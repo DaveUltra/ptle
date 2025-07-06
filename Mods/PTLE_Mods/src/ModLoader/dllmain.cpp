@@ -27,11 +27,14 @@ typedef NTSTATUS(NTAPI* LdrAddRefDll_t)(ULONG, HMODULE);
 // Pitfall Mod Loader instance.
 //
 
-#include "Pitfall.h"
+#include "gizmod/Gizmod.h"
+#include "gizmod/GizmodPlugin.h"
 
-extern "C" { Pitfall* pitfallInstance; }
+extern "C" { Gizmod* gizmodInstance; }
 
-static Pitfall g_pitfall;
+bool g_enabled = true;
+
+Gizmod g_pitfall;
 
 
 
@@ -277,9 +280,9 @@ enum vccorlibExportsNames
 	vccorlibExportsNamesCount
 };
 
-size_t Kernel32Data[Kernel32ExportsNamesCount][Kernel32ExportsDataCount];
-size_t OLE32Data[OLE32ExportsNamesCount][Kernel32ExportsDataCount];
-size_t vccorlibData[vccorlibExportsNamesCount][Kernel32ExportsDataCount];
+//size_t Kernel32Data[Kernel32ExportsNamesCount][Kernel32ExportsDataCount];
+//size_t OLE32Data[OLE32ExportsNamesCount][Kernel32ExportsDataCount];
+//size_t vccorlibData[vccorlibExportsNamesCount][Kernel32ExportsDataCount];
 
 
 
@@ -287,8 +290,8 @@ size_t vccorlibData[vccorlibExportsNamesCount][Kernel32ExportsDataCount];
 #include "utils/log.h"
 #include "ptle/EInstance.h"
 
-#include "event/EntitySpawnEvent.h"
-#include "event/LevelLoadedEvent.h"
+#include "gizmod/event/EntitySpawnEvent.h"
+#include "gizmod/event/LevelLoadedEvent.h"
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -321,7 +324,7 @@ void InjectCode()
 	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
 
 	// Not working.
-	injector::MakeJMP( 0x626747, _EntitySpawn );
+	//injector::MakeJMP( 0x626747, _EntitySpawn );
 
 	// Level finished loading.
 	injector::MakeNOP( 0x5EC196, 8 );
@@ -349,7 +352,6 @@ void LoadOriginalLibrary()
 	}
 }
 
-#include "PitfallPlugin.h"
 
 static bool matchesTargetExtension( LPWSTR filename )
 {
@@ -358,6 +360,15 @@ static bool matchesTargetExtension( LPWSTR filename )
 		(filename[length - 3] == 'a' || filename[length - 3] == 'A') &&
 		(filename[length - 2] == 's' || filename[length - 2] == 'S') &&
 		(filename[length - 1] == 'i' || filename[length - 1] == 'I');
+}
+
+static std::string getFileNameWithoutExt( const std::wstring& path )
+{
+	size_t dirsep = path.find_last_of( L'\\' );
+	size_t extdot = path.find_last_of( L'.' );
+	std::wstring name = path.substr( dirsep + 1, extdot - dirsep - 1 );
+
+	return std::string( name.begin(), name.end() );
 }
 
 void FindFiles()
@@ -398,15 +409,20 @@ void FindFiles()
 		SetCurrentDirectoryW( gameDir.c_str() );   // In case asi changed it.
 
 		// Invoke plugin enable here.
-		Pitfall** modLoaderPtr = (Pitfall**) GetProcAddress( h, "pitfallInstance" );
-		PitfallPlugin* plugin = (PitfallPlugin*) GetProcAddress( h, "globalInstance" );
+		Gizmod** modLoaderPtr = (Gizmod**) GetProcAddress( h, "gizmodInstance" );
+		GizmodPlugin* plugin = (GizmodPlugin*) GetProcAddress( h, "pluginInstance" );
 		if ( !modLoaderPtr || !plugin ) {
 			log_printf( "ERROR : Mod file \"%s\" has an invalid signature.\n", path.c_str() );
 			continue;
 		}
 
+		// Warn if names don't match (might become a requirement).
+		if ( getFileNameWithoutExt(path) != plugin->getSystemName() ) {
+			log_printf( "WARN : Mod \"%s\"'s system name and file name do not match. This might become a requirement in the future.\n", plugin->getDisplayName() );
+		}
+
 		log_printf( "[%s] Starting...\n", plugin->getDisplayName() );
-		*modLoaderPtr = pitfallInstance;
+		*modLoaderPtr = &g_pitfall;
 		plugin->onEnable();
 		log_printf( "[%s] Mod started.\n", plugin->getDisplayName() );
 
@@ -428,12 +444,6 @@ void LoadPlugins()
 	SetCurrentDirectoryW(oldDir.c_str());
 }
 
-void LoadEverything()
-{
-	LoadOriginalLibrary();
-
-	LoadPlugins();
-}
 
 #define value_orA(path1, path2) (path1.empty() ? path2 : path1.string().c_str())
 #define value_orW(path1, path2) (path1.empty() ? path2 : path1.wstring().c_str())
@@ -529,15 +539,16 @@ LONG WINAPI CustomUnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 }
 
 
+#include "modloader/modloader.h"
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 {
 	if (reason == DLL_PROCESS_ATTACH) {
 		wchar_t filename[8192];
 
-		AllocConsole();
+		gizmodInstance = &g_pitfall;
 
-		pitfallInstance = &g_pitfall;
+		load_config();
 
 		hm = hModule;
 		GetModuleFileNameW( hm, filename, sizeof(filename) );
@@ -545,10 +556,16 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 
 		InjectCode();
 
-		LoadEverything();
+		// Load binkw32.
+		LoadOriginalLibrary();
+
+		// Load mods.
+		if ( g_enabled ) {
+			LoadPlugins();
+		}
 	}
 	else if (reason == DLL_PROCESS_DETACH) {
-		for (size_t i = 0; i < OLE32ExportsNamesCount; i++) {
+		/*for (size_t i = 0; i < OLE32ExportsNamesCount; i++) {
 			if (OLE32Data[i][IATPtr] && OLE32Data[i][ProcAddress]) {
 				auto ptr = (size_t*)OLE32Data[i][IATPtr];
 				DWORD dwProtect[2];
@@ -556,7 +573,7 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 				*ptr = OLE32Data[i][ProcAddress];
 				VirtualProtect(ptr, sizeof(size_t), dwProtect[0], &dwProtect[1]);
 			}
-		}
+		}*/
 	}
 	return TRUE;
 }

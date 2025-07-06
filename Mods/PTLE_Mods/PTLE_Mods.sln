@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.13.35931.197 d17.13
+VisualStudioVersion = 17.13.35931.197
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CheatLab", "src\CheatLab\CheatLab.vcxproj", "{47EA66AF-EDF0-4C76-988D-A8BA6CD4A94C}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -24,6 +24,9 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "json", "src\json\json.vcxproj", "{3590F87A-267F-4C9E-A3EA-2DAFCCE6B355}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModLoader", "src\ModLoader\ModLoader.vcxproj", "{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4AB7382-2627-4C92-9F52-44ECD723880B} = {A4AB7382-2627-4C92-9F52-44ECD723880B}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

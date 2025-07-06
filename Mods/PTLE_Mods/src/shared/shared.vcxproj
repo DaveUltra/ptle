@@ -73,23 +73,28 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Pitfall.cpp" />
-    <ClCompile Include="PitfallPlugin.cpp" />
+    <ClCompile Include="gizmod\world\GizmodWorld.cpp" />
+    <ClCompile Include="gizmod\Logger.cpp" />
+    <ClCompile Include="gizmod\Gizmod.cpp" />
+    <ClCompile Include="gizmod\GizmodPlugin.cpp" />
     <ClCompile Include="ptle\types\types.cpp" />
     <ClCompile Include="ptle\check.cpp" />
     <ClCompile Include="ptle\levels\level_info.cpp" />
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="event\EntitySpawnEvent.h" />
-    <ClInclude Include="Pitfall.h" />
-    <ClInclude Include="PitfallEvents.h" />
-    <ClInclude Include="event\CollectExplorerEvent.h" />
-    <ClInclude Include="event\CollectIdolEvent.h" />
-    <ClInclude Include="event\Event.h" />
-    <ClInclude Include="event\LevelLoadedEvent.h" />
-    <ClInclude Include="event\LoadLevelEvent.h" />
-    <ClInclude Include="PitfallPlugin.h" />
+    <ClInclude Include="gizmod\types\Projectile.h" />
+    <ClInclude Include="gizmod\world\GizmodWorld.h" />
+    <ClInclude Include="gizmod\event\EntitySpawnEvent.h" />
+    <ClInclude Include="gizmod\Logger.h" />
+    <ClInclude Include="gizmod\Gizmod.h" />
+    <ClInclude Include="gizmod\EventListener.h" />
+    <ClInclude Include="gizmod\event\CollectExplorerEvent.h" />
+    <ClInclude Include="gizmod\event\CollectIdolEvent.h" />
+    <ClInclude Include="gizmod\event\Event.h" />
+    <ClInclude Include="gizmod\event\LevelLoadedEvent.h" />
+    <ClInclude Include="gizmod\event\LoadLevelEvent.h" />
+    <ClInclude Include="gizmod\GizmodPlugin.h" />
     <ClInclude Include="ptle\containers\LinkedList\LinkedList.h" />
     <ClInclude Include="ptle\EIEvilHarryP.h" />
     <ClInclude Include="ptle\EUIIcon.h" />
@@ -165,7 +170,7 @@
     <ClInclude Include="utils\log.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="PitfallEvents.inl" />
+    <None Include="gizmod\GizmodEvents.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

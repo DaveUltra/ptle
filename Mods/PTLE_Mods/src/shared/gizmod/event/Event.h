@@ -13,7 +13,7 @@
 template<class ICallbackType>
 class Event
 {
-	friend class PitfallPlugin;
+	friend class GizmodPlugin;
 	friend class PitfallEvents;
 
 public:

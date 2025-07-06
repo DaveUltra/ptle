@@ -18,6 +18,9 @@
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="config\config.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="dllmain.h">
@@ -29,10 +32,14 @@
     <ClInclude Include="dll\dll.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="modloader\modloader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Source.def">
       <Filter>Source Files</Filter>
     </None>
+    <None Include="..\..\patch\config.ini" />
   </ItemGroup>
 </Project>
