@@ -1,4 +1,4 @@
-#include "PitfallPlugin.h"
+#include "gizmod/GizmodPlugin.h"
 
 #include <Windows.h>
 
@@ -95,7 +95,7 @@ void InitMod()
 }
 
 
-class WindowedModePlugin : public PitfallPlugin
+class WindowedModePlugin : public GizmodPlugin
 {
 public:
 

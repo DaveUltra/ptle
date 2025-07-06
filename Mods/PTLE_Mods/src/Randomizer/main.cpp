@@ -36,9 +36,9 @@
  */
 
 
-#include <Windows.h>
-
-#include "PitfallPlugin.h"
+#include "gizmod/Gizmod.h"
+#include "gizmod/GizmodPlugin.h"
+#include "gizmod/event/LevelLoadedEvent.h"
 
 #include "ptle/types/types.h"
 #include "ptle/levels/level_info.h"
@@ -76,7 +76,7 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 		return;
 	}
 
-	uint32_t currentAreaCRC = PitfallPlugin::getCurrentLevelCRC();
+	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
 	uint32_t prevAreaCRC = *prevAreaPtr;
 	uint32_t targetAreaID = level_get_by_crc( targetAreaCRC );
 	uint32_t prevAreaID = level_get_by_crc( prevAreaCRC );
@@ -324,10 +324,7 @@ void generate_spoiler_logs( std::ostream& os )
 
 
 
-#include "Pitfall.h"
-#include "event/LevelLoadedEvent.h"
-
-class RandomizerPlugin : public PitfallPlugin, public ILevelLoadedListener
+class RandomizerPlugin : public GizmodPlugin, public ILevelLoadedListener
 {
 public:
 
@@ -363,7 +360,7 @@ public:
 		//injector::MakeCALL( 0x5ECC70, read_transition_ptr );
 		injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
 
-		Pitfall::getInstance()->getEventListener()->registerEvent<LevelLoadedEvent>( this );
+		Gizmod::getInstance()->getEventListener()->registerEvent<LevelLoadedEvent>( this );
 
 		// TODO : What happens when you die????
 
@@ -391,7 +388,7 @@ public:
 		init_menu_patcher();
 
 
-		std::wstring cfgDir = PitfallPlugin::getInstance()->getConfigDirectory();
+		std::wstring cfgDir = this->getConfigDirectory();
 		std::ofstream spoilerLogFile( cfgDir + L"/spoiler.log" );
 		generate_spoiler_logs( spoilerLogFile );
 	}

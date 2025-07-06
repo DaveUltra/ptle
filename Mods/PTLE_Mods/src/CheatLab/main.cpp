@@ -37,9 +37,9 @@ unsigned long __stdcall Thread( void* )
 }
 
 
-#include "PitfallPlugin.h"
+#include "gizmod/GizmodPlugin.h"
 
-class CheatLabPlugin : public PitfallPlugin
+class CheatLabPlugin : public GizmodPlugin
 {
 public:
 

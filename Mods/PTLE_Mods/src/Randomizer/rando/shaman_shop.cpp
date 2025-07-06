@@ -1,4 +1,4 @@
-#include "PitfallPlugin.h"
+#include "gizmod/Gizmod.h"
 
 #include "rando.h"
 #include "utils/log.h"
@@ -108,7 +108,7 @@ void randomize_shaman_shop()
 	std::qsort( shaman_shop_prices,     5, sizeof(int), sort_compare );
 	std::qsort( shaman_shop_prices + 5, 5, sizeof(int), sort_compare );
 
-	PitfallPlugin::getInstance()->log_printf( "Initialized shaman prices.\n" );
+	Gizmod::getInstance()->getLogger()->log_printf( "Initialized shaman prices.\n" );
 }
 
 // Applies the custom prices to the actual in-memory shaman shop.

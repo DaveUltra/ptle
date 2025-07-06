@@ -1,6 +1,8 @@
 #include "rando/config/config.h"
 
-#include "PitfallPlugin.h"
+#include "gizmod/Gizmod.h"
+#include "gizmod/GizmodPlugin.h"
+
 #include "utils/log.h"
 #include "ptle/levels/level_info.h"
 
@@ -81,7 +83,7 @@ RandoConfig::RandoConfig()
 
 void load_config()
 {
-	std::wstring configDir = PitfallPlugin::getInstance()->getConfigDirectory();
+	std::wstring configDir = Gizmod::getThisPlugin()->getConfigDirectory();
 	std::ifstream cfg( configDir + L"/config.ini" );
 
 	std::string line;
@@ -137,22 +139,21 @@ void load_config()
 
 void display_config()
 {
-	PitfallPlugin* p = PitfallPlugin::getInstance();
-	p->log_printf( "Rando config :\n" );
+	Gizmod::getInstance()->getLogger()->log( "Rando config :\n" );
 	for ( int i = 0; i < _countof(fields); i++ ) {
 		switch ( fields[i].m_type )
 		{
 		case config_field_type_t::BOOLEAN:
-			p->log_printf( "- %s = %s\n", fields[i].m_name, bool_to_str(((bool*) (((char*) &rando_config) + fields[i].m_offset))[0]) );
+			Gizmod::getInstance()->getLogger()->log_printf( "- %s = %s\n", fields[i].m_name, bool_to_str(((bool*) (((char*) &rando_config) + fields[i].m_offset))[0]) );
 			break;
 
 		case config_field_type_t::INT:
-			p->log_printf( "- %s = %d\n", fields[i].m_name, ((int*) (((char*) &rando_config) + fields[i].m_offset))[0] );
+			Gizmod::getInstance()->getLogger()->log_printf( "- %s = %d\n", fields[i].m_name, ((int*) (((char*) &rando_config) + fields[i].m_offset))[0] );
 			break;
 
 		case config_field_type_t::LEVEL_CRC: {
 			uint32_t crc = ((uint32_t*) (((char*) &rando_config) + fields[i].m_offset))[0];
-			p->log_printf( "- %s = %s (0x%.8X)\n", fields[i].m_name, level_get_name(level_get_by_crc(crc)), crc );
+			Gizmod::getInstance()->getLogger()->log_printf( "- %s = %s (0x%.8X)\n", fields[i].m_name, level_get_name(level_get_by_crc(crc)), crc );
 			}
 			break;
 		}

@@ -622,12 +622,8 @@
 	    "requires": []
 	  },
       "idols": [
-        {
-          "unique_id": "0x2488971F",
-          "duplicate": true,
-          "requires": ["item slide"]
-        }
-      ]
+      ],
+      "cmt": "No idols to randomize, just so we avoid losing quantum idol."
     },
     {
       "area_id": "0x5511C46C",

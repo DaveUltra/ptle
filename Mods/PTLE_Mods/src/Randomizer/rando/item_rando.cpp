@@ -2,7 +2,7 @@
 
 #include "rando.h"
 
-#include "PitfallPlugin.h"
+#include "gizmod/Gizmod.h"
 
 #include "ptle/EIHarry.h"
 #include "ptle/EScriptContext.h"
@@ -82,7 +82,7 @@ struct Unlockable
 		switch ( m_type )
 		{
 		case INVENTORY_ITEM:
-			harry = PitfallPlugin::getHarry();
+			harry = Gizmod::getHarry();
 			UnlockItem( harry->m_itemHotbar, m_itemHash );
 			log_printf( "Collected %s!\n", m_displayName );
 			break;
@@ -248,7 +248,7 @@ static ItemStruct* _get_item_by_hash( uint32_t itemHash )
 
 static void _UnlockItem_custom( void* self, uint32_t itemHash )
 {
-	uint32_t currentAreaCRC = PitfallPlugin::getCurrentLevelCRC();
+	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
 
 	// St.Claire's Camp : Don't randomize items!
 	if ( currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT || currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY ) {
@@ -290,7 +290,7 @@ MAKE_THISCALL_WRAPPER( UnlockItem_custom, _UnlockItem_custom );
 // In the process, we override "levelCRC" and "amount", but their values are always known.
 static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, int amount )
 {
-	levelCRC = PitfallPlugin::getCurrentLevelCRC();
+	levelCRC = Gizmod::getCurrentLevelCRC();
 
 	// Find override.
 	const Idol* idol = get_idol( levelCRC, self->m_uniqueID );
@@ -315,7 +315,7 @@ MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
 
 static void _EITreasureIdol_InitValues_custom( EITreasureIdol* self, Vector3f* pos, Vector4f* rot, uint32_t modelCRC, uint32_t particleCRC, uint32_t soundCRC )
 {
-	uint32_t areaCRC = PitfallPlugin::getCurrentLevelCRC();
+	uint32_t areaCRC = Gizmod::getCurrentLevelCRC();
 	const Idol* idol = get_idol( areaCRC, self->m_uniqueID );
 
 	if ( idol ) {
@@ -425,7 +425,7 @@ void item_rando_init()
 	shuffled = original;
 	std::random_shuffle( shuffled.begin(), shuffled.end() );
 
-	for ( int i = 0; i < shuffled.size(); i++ ) {
+	for ( size_t i = 0; i < shuffled.size(); i++ ) {
 		g_unlockablesMap.emplace( original[i], shuffled[i] );
 
 		const UnlockableType ogType = original[i]->m_type, shType = shuffled[i]->m_type;
@@ -453,6 +453,7 @@ void item_rando_init()
 	injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
 	injector::MakeNOP( 0x598009, 3 );
 
+	// Misc.
 	injector::MakeCALL( 0x5973E9, EITreasureIdol_InitValues_custom );     // Set correct model on EITreasureIdol instances (regular idols).
 	injector::MakeCALL( 0x59810D, EITreasureIdol_InitValues_custom );     // Set correct model on EITreasureIdol instances (explorer idols).
 	injector::MakeRangedNOP( 0x4E9D6F, 0x4E9D83 );                        // Remove hotbar autoset for the first 4 items.
@@ -462,7 +463,7 @@ void item_rando_init()
 	injector::MakeRangedNOP( 0x4E2EDE, 0x4E2EF4 );   // Cavern Lake to Jungle Canyon.
 	injector::MakeRangedNOP( 0x4E3C33, 0x4E3C49 );   // Mountain Sled Run.
 
-	PitfallPlugin::getInstance()->log_printf( "Initialized item rando.\n" );
+	Gizmod::getInstance()->getLogger()->log( "Initialized item rando.\n" );
 }
 
 
