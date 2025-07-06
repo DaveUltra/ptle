@@ -7,13 +7,13 @@ on:
       - master
     paths:
       - ".github/workflows/build-mods.yml"
-      - "Mods/PTLE_mods/**"
+      - "Mods/PTLE_Mods/**"
   pull_request:
     branches:
       - master
     paths:
       - ".github/workflows/build-mods.yml"
-      - "Mods/PTLE_mods/**"
+      - "Mods/PTLE_Mods/**"
 
 jobs:
   Build:
