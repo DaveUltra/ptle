@@ -31,7 +31,7 @@ jobs:
           New-Item -ItemType Directory dist/mods
           Get-Item Mods/PTLE_Mods/bin/Release/*.asi | Copy-Item -Destination "dist/mods/$($_.Name)"
           Get-Item Mods/PTLE_Mods/patch/* | Copy-Item -Destination "dist/$($_.Name)"
-          Copy-Item Mods/PTLE_Mods/bin/Release/binkw32.mod dist/binkw32.mod
+          Copy-Item Mods/PTLE_Mods/bin/Release/binkw32.dll dist/binkw32.dll
           Copy-Item Mods/PTLE_Mods/bin/Release/config/ dist/ -Recurse
         shell: pwsh
 
