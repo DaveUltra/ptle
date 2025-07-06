@@ -6,10 +6,11 @@
 
 class GizmodPlugin
 {
+	friend class Gizmod;
+
 private:
 	static GizmodPlugin* m_instance;
 public:
-	static const uint32_t MODLOADER_VERSION;   // The associated mod loader version.
 	static inline GizmodPlugin* getInstance() { return m_instance; }
 
 public:
@@ -18,6 +19,9 @@ public:
 
 		/// Returns the path to the dedicated config directory for this mod.
 	std::wstring getConfigDirectory() const;
+
+		/// Get the version this mod was built for.
+	std::string getVersionString() const;
 
 	virtual void onEnable() { }
 
@@ -28,6 +32,13 @@ public:
 		/// The internal mod name, used for config, identification.
 		/// It must only contain alphanumeric characters, dashes and underscores.
 	virtual const char* getSystemName() const = 0;
+
+
+private:
+
+	uint32_t m_versionMajor;
+	uint32_t m_versionMinor;
+	uint32_t m_versionPatch;
 };
 
 

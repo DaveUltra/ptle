@@ -4,8 +4,25 @@
 
 #include <Windows.h>
 
+#include <sstream>
+
 
 extern "C" { extern Gizmod* gizmodInstance; }
+
+
+/*static*/ int Gizmod::checkVersion( GizmodPlugin* p )
+{
+	if ( p->m_versionMajor > VERSION_MAJOR || p->m_versionMinor > VERSION_MINOR || p->m_versionPatch > VERSION_PATCH ) {
+		return 2;
+	}
+	if ( p->m_versionMajor < VERSION_MAJOR || p->m_versionMinor < VERSION_MINOR ) {
+		return -2;
+	}
+	if ( p->m_versionPatch < VERSION_PATCH ) {
+		return -1;
+	}
+	return 0;
+}
 
 
 Gizmod::Gizmod()
@@ -18,9 +35,17 @@ Gizmod::Gizmod()
 	return gizmodInstance;
 }
 
-GizmodPlugin* Gizmod::getThisPlugin()
+/*static*/ GizmodPlugin* Gizmod::getThisPlugin()
 {
 	return GizmodPlugin::getInstance();
+}
+
+
+std::string Gizmod::getVersionString() const
+{
+	std::stringstream ss;
+	ss << VERSION_MAJOR << '.' << VERSION_MINOR << '.' << VERSION_PATCH;
+	return ss.str();
 }
 
 

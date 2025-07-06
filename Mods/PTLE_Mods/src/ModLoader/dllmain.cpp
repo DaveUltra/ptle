@@ -322,6 +322,7 @@ void InjectCode()
 {
 	// Inconveniently spammed prints remaining in the game's code.
 	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
+	injector::MakeRangedNOP( 0x60D1B6, 0x60D1C3 );    // "ACTIVATE!!!!"
 
 	// Not working.
 	//injector::MakeJMP( 0x626747, _EntitySpawn );
@@ -414,6 +415,19 @@ void FindFiles()
 		if ( !modLoaderPtr || !plugin ) {
 			log_printf( "ERROR : Mod file \"%s\" has an invalid signature.\n", path.c_str() );
 			continue;
+		}
+
+		int ver = Gizmod::checkVersion( plugin );
+		if ( ver == 2 ) {
+			log_printf( "ERROR : Mod \"%s\" was made for a later version of Gizmod. It will not be loaded.\n", plugin->getDisplayName() );
+			continue;
+		}
+		if ( ver == -2 ) {
+			log_printf( "ERROR : Mod \"%s\" was made for an earlier version of Gizmod. It will not be loaded.\n", plugin->getDisplayName() );
+			continue;
+		}
+		if ( ver == -1 ) {
+			log_printf( "WARN : Mod \"%s\" was made for an earlier patch of Gizmod. Some features might not work properly.\n", plugin->getDisplayName() );
 		}
 
 		// Warn if names don't match (might become a requirement).
@@ -549,6 +563,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 		gizmodInstance = &g_pitfall;
 
 		load_config();
+
+		log_printf( "Gizmod %s\n", g_pitfall.getVersionString().c_str() );
 
 		hm = hModule;
 		GetModuleFileNameW( hm, filename, sizeof(filename) );
