@@ -335,6 +335,7 @@ public:
 	virtual void onLoadLevel( LoadLevelEvent& event ) override
 	{
 		hijack_transition( event );
+		//read_transition( event );
 	}
 
 	// Level finished loading.
@@ -383,10 +384,6 @@ public:
 		}
 
 		// TODO : Load world call (new game).
-
-		// Load world call (level transition).
-		//injector::MakeCALL( 0x5ECC70, read_transition_ptr );
-		//injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
 
 		EventListener* eventListener = Gizmod::getInstance()->getEventListener();
 		eventListener->registerEvent<LoadLevelEvent>( this );
