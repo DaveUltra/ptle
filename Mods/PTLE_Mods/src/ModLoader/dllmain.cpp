@@ -289,8 +289,12 @@ enum vccorlibExportsNames
 #include "injector/injector.hpp"
 #include "utils/func.h"
 #include "utils/log.h"
+#include "ptle/types/types.h"
+
 #include "ptle/EInstance.h"
+#include "ptle/EIBeast.h"
 #include "ptle/ESDInt.h"
+#include "ptle/EScriptContext.h"
 
 #include "ptle/containers/TreeMap/TreeMap.h"
 
@@ -298,6 +302,22 @@ enum vccorlibExportsNames
 #include "gizmod/event/LevelLoadedEvent.h"
 #include "gizmod/event/LoadLevelEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
+
+
+// Monkey Temple crash fix.
+GET_FUNC( 0x422C30, void, Script_SetBeastTarget_Original, EScriptContext* );
+GET_METHOD( 0x6C2E70, void*, EScriptContext_PopVar, EScriptContext* );
+void Script_SetBeastTarget_Safe( EScriptContext* context )
+{
+	EIBeast* beast = type_cast<EIBeast>( context->m_owningInstance, get_type_by_vtable(0x86C3D0) );
+	if ( !beast ) {
+		EScriptContext_PopVar( context );
+		return;
+	}
+
+	Script_SetBeastTarget_Original( context );
+}
+
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -401,6 +421,10 @@ void InjectCode()
 	// Inconveniently spammed prints remaining in the game's code.
 	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
 	injector::MakeRangedNOP( 0x60D1B6, 0x60D1C3 );    // "ACTIVATE!!!!"
+
+	// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
+	injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
+
 
 	// Not working.
 	//injector::MakeJMP( 0x626747, _EntitySpawn );

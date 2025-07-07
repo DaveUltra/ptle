@@ -218,23 +218,6 @@ MAKE_THISCALL_WRAPPER( read_transition_ptr, read_transition );
 
 
 
-// Monkey Temple crash fix.
-// TODO : MAKES MOLE FIRE AT YOU :/
-GET_FUNC( 0x422C30, void, Script_SetBeastTarget_Original, EScriptContext* );
-GET_METHOD( 0x6C2E70, void*, EScriptContext_PopVar, EScriptContext* );
-void Script_SetBeastTarget_Safe( EScriptContext* context )
-{
-	EIBeast* beast = type_cast<EIBeast>( context->m_owningInstance, get_type_by_vtable(0x86C3D0) );
-	if ( !beast ) {
-		EScriptContext_PopVar( context );
-		return;
-	}
-
-	Script_SetBeastTarget_Original( context );
-}
-
-
-
 // Display randomized level name
 // when approaching a level transition.
 char* get_patched_level_name( char* orig )
@@ -395,9 +378,6 @@ public:
 		// Hijack new game starting area.
 		uint32_t startCRC = rando_config.startingArea;
 		injector::WriteMemory( 0x5EB9E6, startCRC );
-
-		// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
-		injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
 
 		// Patch this script function, to display the actual (randomized) destination level name when approaching
 		// an entrance.
