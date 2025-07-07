@@ -66,8 +66,6 @@ void ensure_item_swap()
 }
 
 
-GET_METHOD( 0x5EBA90, void, ScheduleWorldLoad, void*, uint32_t, bool );
-
 void hijack_transition( LoadLevelEvent& event )
 {
 	uint32_t targetAreaCRC = event.getLevelCRC();
@@ -207,8 +205,6 @@ void read_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 		level_get_name(level_get_by_crc(original.areaToID)), original.areaToID );
 
 
-	log_printf( "Prev : \"%s\" (0x%X)\n", level_get_name(level_get_by_crc(prevAreaCRC)), prevAreaCRC );
-	ScheduleWorldLoad( globalStruct, targetAreaCRC, p2 );
 	log_printf( "Prev : \"%s\" (0x%X)\n", level_get_name(level_get_by_crc(prevAreaCRC)), prevAreaCRC );
 
 	log_printf( "------------------------------\n" );
