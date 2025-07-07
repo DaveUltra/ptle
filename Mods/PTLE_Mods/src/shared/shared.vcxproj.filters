@@ -9,6 +9,8 @@
     <ClCompile Include="gizmod\Gizmod.cpp" />
     <ClCompile Include="gizmod\Logger.cpp" />
     <ClCompile Include="gizmod\world\GizmodWorld.cpp" />
+    <ClCompile Include="gizmod\shaman\ShamanShop.cpp" />
+    <ClCompile Include="gizmod\event\ShamanPurchaseEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -96,6 +98,8 @@
     <ClInclude Include="gizmod\Logger.h" />
     <ClInclude Include="gizmod\world\GizmodWorld.h" />
     <ClInclude Include="gizmod\types\Projectile.h" />
+    <ClInclude Include="gizmod\shaman\ShamanShop.h" />
+    <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

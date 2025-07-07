@@ -39,6 +39,7 @@
 #include "gizmod/Gizmod.h"
 #include "gizmod/GizmodPlugin.h"
 #include "gizmod/event/LevelLoadedEvent.h"
+#include "gizmod/event/ShamanPurchaseEvent.h"
 
 #include "ptle/types/types.h"
 #include "ptle/levels/level_info.h"
@@ -324,7 +325,7 @@ void generate_spoiler_logs( std::ostream& os )
 
 
 
-class RandomizerPlugin : public GizmodPlugin, public ILevelLoadedListener
+class RandomizerPlugin : public GizmodPlugin, public ILevelLoadedListener, public IShamanPurchaseListener
 {
 public:
 
@@ -340,6 +341,26 @@ public:
 		}
 
 		prevent_transition_softlock();
+	}
+
+	virtual void onShamanPurchase( ShamanPurchaseEvent& event ) override
+	{
+		const char* name = 0;
+		switch ( event.getItem() )
+		{
+		case ShamanShop::HEALTH1: name = "health upgrade"; break;
+		case ShamanShop::CANTEEN1: name = "canteen upgrade"; break;
+		case ShamanShop::SMASH_STRIKE: name = "smash strike"; break;
+		case ShamanShop::SUPER_SLING: name = "super sling"; break;
+		case ShamanShop::BREAKDANCE: name = "breakdance"; break;
+		case ShamanShop::JUNGLE_NOTES: name = "jungle notes"; break;
+		case ShamanShop::NATIVE_NOTES: name = "native notes"; break;
+		case ShamanShop::CAVERN_NOTES: name = "cavern notes"; break;
+		case ShamanShop::MOUTAIN_NOTES: name = "mountain notes"; break;
+		case ShamanShop::MYSTERY_ITEM: name = "mystery item"; break;
+		}
+
+		Gizmod::getInstance()->getLogger()->log_printf( "%s %s.\n", (event.hasEnoughIdols() ? "Purchased" : "Not enough idols for"), name );
 	}
 
 	virtual void onEnable()
@@ -361,6 +382,7 @@ public:
 		injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
 
 		Gizmod::getInstance()->getEventListener()->registerEvent<LevelLoadedEvent>( this );
+		Gizmod::getInstance()->getEventListener()->registerEvent<ShamanPurchaseEvent>( this );
 
 		// TODO : What happens when you die????
 

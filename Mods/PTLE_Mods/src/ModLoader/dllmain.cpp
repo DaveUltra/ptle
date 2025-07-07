@@ -287,11 +287,13 @@ enum vccorlibExportsNames
 
 
 #include "injector/injector.hpp"
+#include "utils/func.h"
 #include "utils/log.h"
 #include "ptle/EInstance.h"
 
 #include "gizmod/event/EntitySpawnEvent.h"
 #include "gizmod/event/LevelLoadedEvent.h"
+#include "gizmod/event/ShamanPurchaseEvent.h"
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -315,8 +317,51 @@ static __declspec(naked) void _EntitySpawn()
 static void LevelLoaded()
 {
 	LevelLoadedEvent event;
-	g_pitfall.getEventListener()->invokeEvent<LevelLoadedEvent>( event );
+	g_pitfall.getEventListener()->invokeEvent( event );
 }
+
+static ShamanShop::PriceSlot id_to_shaman( int id )
+{
+	switch ( id )
+	{
+	case 0x89: return ShamanShop::HEALTH1;
+	case 0x8A: return ShamanShop::CANTEEN1;
+	case 0x8B: return ShamanShop::SMASH_STRIKE;
+	case 0x8C: return ShamanShop::SUPER_SLING;
+	case 0x8D: return ShamanShop::BREAKDANCE;
+	case 0x8E: return ShamanShop::JUNGLE_NOTES;
+	case 0x8F: return ShamanShop::NATIVE_NOTES;
+	case 0x90: return ShamanShop::CAVERN_NOTES;
+	case 0x91: return ShamanShop::MOUTAIN_NOTES;
+	case 0x9C: return ShamanShop::MYSTERY_ITEM;
+	default: return ShamanShop::UNKNOWN;
+	}
+}
+static bool OnShamanPurchase( int id )
+{
+	ShamanPurchaseEvent event( id_to_shaman(id) );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	return event.isCancelled();
+}
+
+class EPauseMain;
+GET_METHOD( 0x52C590, void, EPauseMain_Message, EPauseMain*, int, void*, int );
+static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* param1, int param2 )
+{
+	switch ( messageID )
+	{
+	// Shaman purchase.
+	case 0x89: case 0x8A: case 0x8B: case 0x8C: case 0x8D: case 0x8E: case 0x8F: case 0x90: case 0x91: case 0x9C:
+		if ( OnShamanPurchase( messageID ) ) {
+			return;
+		}
+		break;
+	}
+
+	EPauseMain_Message( self, messageID, param1, param2 );
+}
+MAKE_THISCALL_WRAPPER( EPauseMain_Message_custom, _EPauseMain_Message_custom );
 
 void InjectCode()
 {
@@ -330,6 +375,9 @@ void InjectCode()
 	// Level finished loading.
 	injector::MakeNOP( 0x5EC196, 8 );
 	injector::MakeCALL( 0x5EC196, LevelLoaded );
+
+	// EPauseMain_Message() in vtable.
+	injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );
 }
 
 

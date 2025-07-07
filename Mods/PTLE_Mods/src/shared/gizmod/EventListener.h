@@ -5,6 +5,7 @@
 #include "event/EntitySpawnEvent.h"
 #include "event/LevelLoadedEvent.h"
 #include "event/LoadLevelEvent.h"
+#include "event/ShamanPurchaseEvent.h"
 
 
 class EventListener
