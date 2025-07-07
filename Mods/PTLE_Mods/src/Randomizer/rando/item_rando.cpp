@@ -84,15 +84,15 @@ struct Unlockable
 		case INVENTORY_ITEM:
 			harry = Gizmod::getHarry();
 			UnlockItem( harry->m_itemHotbar, m_itemHash );
-			log_printf( "Collected %s!\n", m_displayName );
+			Gizmod::getInstance()->getLogger()->log_printf( "Collected %s!\n", m_displayName );
 			break;
 		case IDOL_SINGLE:
 			AddCollectedIdols( m_idol->m_levelCRC, 1 );
-			log_printf( "Collected an idol!\n" );
+			Gizmod::getInstance()->getLogger()->log( "Collected an idol!\n" );
 			break;
 		case IDOL_EXPLORER:
 			AddCollectedIdols( m_idol->m_levelCRC, 5 );
-			log_printf( "Collected an explorer idol!\n" );
+			Gizmod::getInstance()->getLogger()->log( "Collected an explorer idol!\n" );
 			break;
 		}
 	}

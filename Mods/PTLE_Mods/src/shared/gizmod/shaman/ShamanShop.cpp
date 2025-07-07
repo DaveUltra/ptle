@@ -35,6 +35,18 @@ enum PriceOffsets
 };
 
 
+/* Valid chunks :
+"health"
+"water"
+"heroic_smash"
+"heroic_super_sling"
+"heroic_breakdance"
+"map_junglea"
+"map_jungleb"
+"map_caverns"
+"map_snow"
+"pitfall_cart"
+*/
 GET_METHOD( 0x63A720, void*, ERQuickdata_FindChunkByName, void*, char* );
 GET_METHOD( 0x63A8D0, void*, ERQuickdata_FindInChunk, void*, void*, char* );
 static int* get_prices_buffer()
