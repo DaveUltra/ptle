@@ -38,6 +38,7 @@
 
 #include "gizmod/Gizmod.h"
 #include "gizmod/GizmodPlugin.h"
+#include "gizmod/event/LoadLevelEvent.h"
 #include "gizmod/event/LevelLoadedEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
 
@@ -67,20 +68,14 @@ void ensure_item_swap()
 
 GET_METHOD( 0x5EBA90, void, ScheduleWorldLoad, void*, uint32_t, bool );
 
-void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
+void hijack_transition( LoadLevelEvent& event )
 {
-	// Find previous area CRC's location.
-	// Patching over this value will ensure that the player emerges from the correct entrance.
-	uint32_t* prevAreaPtr = find_previous_area_memory();
-	if ( !prevAreaPtr ) {
-		log_printf( "FATAL : Could not retrieve previous area!\n" );
-		return;
-	}
+	uint32_t targetAreaCRC = event.getLevelCRC();
+	uint32_t prevAreaCRC = event.getPrevCRC();
+	const uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
 
-	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
-	uint32_t prevAreaCRC = *prevAreaPtr;
-	uint32_t targetAreaID = level_get_by_crc( targetAreaCRC );
-	uint32_t prevAreaID = level_get_by_crc( prevAreaCRC );
+	const uint32_t targetAreaID = level_get_by_crc( event.getLevelCRC() );
+	const uint32_t prevAreaID = level_get_by_crc( prevAreaCRC );
 
 
 	switch ( prevAreaCRC )
@@ -113,7 +108,7 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 
 	// Transition in progress.
 	Transition original( prevAreaCRC, targetAreaCRC );
-	log_printf( "Game wants to go from \"%s\" (0x%X) to \"%s\" (0x%X).\n",
+	Gizmod::getInstance()->getLogger()->log_printf( "Game wants to go from \"%s\" (0x%X) to \"%s\" (0x%X).\n",
 		level_get_name(level_get_by_crc(original.areaFromID)), original.areaFromID,
 		level_get_name(level_get_by_crc(original.areaToID)), original.areaToID );
 
@@ -122,7 +117,7 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 	extern Transition rando_redirect_transition;
 	Transition redirect = original;
 	if ( rando_map.spoofTransition(redirect) ) {
-		log_printf( "Redirection is \"%s\" (0x%X) to \"%s\" (0x%X).\n",
+		Gizmod::getInstance()->getLogger()->log_printf( "Redirection is \"%s\" (0x%X) to \"%s\" (0x%X).\n",
 			level_get_name(level_get_by_crc(redirect.areaFromID)), redirect.areaFromID,
 			level_get_name(level_get_by_crc(redirect.areaToID)), redirect.areaToID );
 
@@ -161,7 +156,7 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 			}*/
 			{
 				// Set previous area for correct transition (linked transitions mode).
-				*prevAreaPtr = redirect.areaFromID;
+				prevAreaCRC = redirect.areaFromID;
 				targetAreaCRC = redirect.areaToID;
 			}
 		}
@@ -169,14 +164,15 @@ void hijack_transition( void* globalStruct, uint32_t targetAreaCRC, bool p2 )
 	else {
 		rando_redirect_transition = redirect;
 
-		log_printf( "Transition has no override, we'll proceed like normal.\n" );
+		Gizmod::getInstance()->getLogger()->log( "Transition has no override, we'll proceed like normal.\n" );
 	}
 
-	log_printf( "------------------------------\n" );
+	Gizmod::getInstance()->getLogger()->log( "------------------------------\n" );
 
-	//log_printf( "Prev : \"%s\" (0x%X)\n", level_get_name(level_get_by_crc(*prevAreaPtr)), *prevAreaPtr );
-	ScheduleWorldLoad( globalStruct, targetAreaCRC, p2 );
-	//log_printf( "Prev : \"%s\" (0x%X)\n", level_get_name(level_get_by_crc(*prevAreaPtr)), *prevAreaPtr );
+	// Update load level request with patched values.
+	// Note : Patching over the prevAreaCRC value will ensure that the player emerges from the correct entrance.
+	event.setLevelCRC( targetAreaCRC );
+	event.setPrevCRC( prevAreaCRC );
 }
 
 MAKE_THISCALL_WRAPPER( hijack_transition_ptr, hijack_transition );
@@ -325,13 +321,23 @@ void generate_spoiler_logs( std::ostream& os )
 
 
 
-class RandomizerPlugin : public GizmodPlugin, public ILevelLoadedListener, public IShamanPurchaseListener
+class RandomizerPlugin : public GizmodPlugin
+	, public ILoadLevelListener
+	, public ILevelLoadedListener
+	, public IShamanPurchaseListener
 {
 public:
 
 	virtual const char* getDisplayName() const override { return "PTLE Randomizer"; }
 	virtual const char* getSystemName() const override { return "Randomizer"; }
 
+	// Loading a level.
+	virtual void onLoadLevel( LoadLevelEvent& event ) override
+	{
+		hijack_transition( event );
+	}
+
+	// Level finished loading.
 	virtual void onLevelLoaded( LevelLoadedEvent& event ) override
 	{
 		ensure_item_swap();
@@ -343,6 +349,7 @@ public:
 		prevent_transition_softlock();
 	}
 
+	// Purchasing a shaman item.
 	virtual void onShamanPurchase( ShamanPurchaseEvent& event ) override
 	{
 		const char* name = 0;
@@ -379,10 +386,12 @@ public:
 
 		// Load world call (level transition).
 		//injector::MakeCALL( 0x5ECC70, read_transition_ptr );
-		injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
+		//injector::MakeCALL( 0x5ECC70, hijack_transition_ptr );
 
-		Gizmod::getInstance()->getEventListener()->registerEvent<LevelLoadedEvent>( this );
-		Gizmod::getInstance()->getEventListener()->registerEvent<ShamanPurchaseEvent>( this );
+		EventListener* eventListener = Gizmod::getInstance()->getEventListener();
+		eventListener->registerEvent<LoadLevelEvent>( this );
+		eventListener->registerEvent<LevelLoadedEvent>( this );
+		eventListener->registerEvent<ShamanPurchaseEvent>( this );
 
 		// TODO : What happens when you die????
 

@@ -100,6 +100,7 @@
     <ClInclude Include="gizmod\types\Projectile.h" />
     <ClInclude Include="gizmod\shaman\ShamanShop.h" />
     <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
+    <ClInclude Include="ptle\ESDInt.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

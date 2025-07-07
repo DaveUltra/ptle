@@ -290,9 +290,13 @@ enum vccorlibExportsNames
 #include "utils/func.h"
 #include "utils/log.h"
 #include "ptle/EInstance.h"
+#include "ptle/ESDInt.h"
+
+#include "ptle/containers/TreeMap/TreeMap.h"
 
 #include "gizmod/event/EntitySpawnEvent.h"
 #include "gizmod/event/LevelLoadedEvent.h"
+#include "gizmod/event/LoadLevelEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
@@ -319,6 +323,35 @@ static void LevelLoaded()
 	LevelLoadedEvent event;
 	g_pitfall.getEventListener()->invokeEvent( event );
 }
+
+GET_METHOD( 0x5EBA90, void, LoadLevel, void*, uint32_t, bool );
+static uint32_t* get_prev_level_address()
+{
+	TreeMap* map = ((TreeMap*) 0x91FE2C);      // This tree map contains a node which points to the previous area value...
+	const uint32_t targetNodeID = 0x174CD628;  // ... and this is the ID of said node.
+
+	// Look for it.
+	// TODO : Binary search might be a good idea for performance.
+	TreeMapNode* node = map->m_iterateFirst;
+	while ( node && node->m_hash != targetNodeID ) {
+		node = node->m_iterateNext;
+	}
+
+	ESDInt* scriptInt = reinterpret_cast<ESDInt*>(node->m_ptr);
+	return reinterpret_cast<uint32_t*>(&scriptInt->m_value);
+}
+static void _LoadLevel_custom( void* self, uint32_t levelCRC, bool param )
+{
+	uint32_t* prevPtr = get_prev_level_address();
+	LoadLevelEvent event( levelCRC, *prevPtr );
+	Gizmod::getInstance()->getEventListener()->invokeEvent( event );
+
+	levelCRC = event.getLevelCRC();
+	*prevPtr = event.getPrevCRC();
+
+	LoadLevel( self, levelCRC, param );
+}
+MAKE_THISCALL_WRAPPER( LoadLevel_custom, _LoadLevel_custom )
 
 static ShamanShop::PriceSlot id_to_shaman( int id )
 {
@@ -371,6 +404,9 @@ void InjectCode()
 
 	// Not working.
 	//injector::MakeJMP( 0x626747, _EntitySpawn );
+
+	// Load level.
+	injector::MakeCALL( 0x5ECC70, LoadLevel_custom );
 
 	// Level finished loading.
 	injector::MakeNOP( 0x5EC196, 8 );
