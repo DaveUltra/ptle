@@ -392,6 +392,7 @@ public:
 		init_menu_patcher();
 
 
+		Gizmod::getInstance()->getLogger()->log( "Generating spoiler logs...\n" );
 		std::wstring cfgDir = this->getConfigDirectory();
 		std::ofstream spoilerLogFile( cfgDir + L"/spoiler.log" );
 		generate_spoiler_logs( spoilerLogFile );

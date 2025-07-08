@@ -27,7 +27,10 @@ extern "C" { extern Gizmod* gizmodInstance; }
 
 Gizmod::Gizmod()
 {
-
+	for ( int i = 0; i < 8; i++ ) {
+		m_inventoryItems[i].m_itemType = (InventoryItem::Item) i;
+		m_inventoryItems[i].m_itemStruct = reinterpret_cast<ItemStruct*>(0x8EEB90) + i;
+	}
 }
 
 /*static*/ Gizmod* Gizmod::getInstance()

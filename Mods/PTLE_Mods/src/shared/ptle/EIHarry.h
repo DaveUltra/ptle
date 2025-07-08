@@ -29,15 +29,3 @@ public:
 
 	char padding7[0xF0];
 };
-
-
-struct ItemStruct
-{
-	void* (*m_factory)();
-	void* m_object;
-	char* m_name;
-	uint32_t m_hash;
-	uint32_t unused0;
-	int m_unlocked;
-	uint32_t unused1;
-};

@@ -31,31 +31,9 @@ GET_FUNC( 0x4E9EC0, void, Script_HarryIsInInventory, EScriptContext* );
 GET_FUNC( 0x65BDF0, int*, PopScriptVariable_Int, EScriptContext* );
 GET_FUNC( 0x65C880, int*, GetOutVariable, EScriptContext* );
 
-static ItemStruct* _get_item_by_hash( uint32_t itemHash );
 static uint32_t get_item_default_location( uint32_t itemHash );
 
-struct ItemModelsCRC
-{
-	enum Enum
-	{
-		SLING    = 0x34F68DDD,
-		TORCH    = 0xA101D16E,
-		PICKAXES = 0x914C77EA,
-		TNT      = 0xB79DE8BD,
-		SHIELD   = 0xC02A375A,
-		RAFT     = 0x5DA0408B,
-		GAS_MASK = 0x85B90335,
-		CANTEEN  = 0xAF6C8584,
 
-		ARTIFACT_MONKEY    = 0x1EB77F70,
-		ARTIFACT_SCORPION  = 0x87BE2ECA,
-		ARTIFACT_PENGUIN   = 0xF0B91E5C,
-		ARTIFACT_CHAMELEON = 0x6EDD8BFF,
-
-		IDOL_SILVER   = 0x816D97BF,
-		IDOL_EXPLORER = 0xFC8E375F,
-	};
-};
 
 enum UnlockableType
 {
@@ -103,7 +81,6 @@ struct Unlockable
 		switch ( m_type )
 		{
 		case INVENTORY_ITEM:
-			_get_item_by_hash( m_itemHash )->m_unlocked = false;
 			break;
 		}
 	}
@@ -180,38 +157,6 @@ static const Idol* get_idol( uint32_t levelCRC, uint32_t uniqueID )
 	return 0;
 }
 
-static const char* get_item_name( uint32_t itemHash )
-{
-	switch ( itemHash )
-	{
-	case 0x915AA574: return "Sling";
-	case 0x04ADF9C7: return "Torch";
-	case 0xC024157C: return "Pickaxes";
-	case 0x9608A818: return "TNT";
-	case 0xEE6B156E: return "Shield";
-	case 0xFB3D82AC: return "Raft";
-	case 0xCFC909C3: return "Gas Mask";
-	case 0xE51C8F72: return "Canteen";
-	default: return 0;
-	}
-}
-
-static uint32_t get_item_model_crc( uint32_t itemHash )
-{
-	switch ( itemHash )
-	{
-	case 0x915AA574: return ItemModelsCRC::SLING;
-	case 0x04ADF9C7: return ItemModelsCRC::TORCH;
-	case 0xC024157C: return ItemModelsCRC::PICKAXES;
-	case 0x9608A818: return ItemModelsCRC::TNT;
-	case 0xEE6B156E: return ItemModelsCRC::SHIELD;
-	case 0xFB3D82AC: return ItemModelsCRC::RAFT;
-	case 0xCFC909C3: return ItemModelsCRC::GAS_MASK;
-	case 0xE51C8F72: return ItemModelsCRC::CANTEEN;
-	default: return 0;
-	}
-}
-
 static uint32_t get_item_default_location( uint32_t itemHash )
 {
 	switch ( itemHash )
@@ -234,30 +179,18 @@ static uint32_t get_item_default_location( uint32_t itemHash )
 // Code injection section.
 //
 
-static ItemStruct* _get_item_by_hash( uint32_t itemHash )
-{
-	ItemStruct* items = (ItemStruct*) 0x8EEB90;
-
-	for ( int i = 0; i < 9; i++ ) {
-		if ( items[i].m_hash == itemHash ) {
-			return items + i;
-		}
-	}
-	return 0;
-}
-
-static void _UnlockItem_custom( void* self, uint32_t itemHash )
+static void collectItem( CollectItemEvent& event )
 {
 	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
 
 	// St.Claire's Camp : Don't randomize items!
 	if ( currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_NIGHT || currentAreaCRC == levelCRC::ST_CLAIRE_EXCAVATION_CAMP_DAY ) {
-		UnlockItem( self, itemHash );
 		return;
 	}
 
 	// Getting Sling from Gates of El Dorado cutscene.
 	if ( currentAreaCRC == levelCRC::GATES_OF_EL_DORADO ) {
+		event.setCancelled( true );
 		return;
 	}
 
@@ -265,24 +198,25 @@ static void _UnlockItem_custom( void* self, uint32_t itemHash )
 	if ( currentAreaCRC == levelCRC::NATIVE_VILLAGE ) {
 		static bool unlockedShield = false;
 		if ( unlockedShield ) {
+			event.setCancelled( true );
 			return;
 		}
 		unlockedShield = true;
 	}
 
 	// Find override.
-	Unlockable u = { INVENTORY_ITEM, itemHash };
+	Unlockable u = { INVENTORY_ITEM, event.getItemHash() };
 	auto it = g_unlockablesMap.find( &u );
 
 	// No override, just unlock the item as intended.
 	if ( it == g_unlockablesMap.end() ) {
-		UnlockItem( self, itemHash );
 		return;
 	}
 
+	event.setCancelled( true );
 	it->second->grant();
 }
-MAKE_THISCALL_WRAPPER( UnlockItem_custom, _UnlockItem_custom );
+
 
 // VERY hacky :
 // The original "AddCollectedIdols" function is not a member function. But at the injection point, ECX contains a pointer
@@ -328,7 +262,7 @@ static void _EITreasureIdol_InitValues_custom( EITreasureIdol* self, Vector3f* p
 			switch ( u->m_type )
 			{
 			case INVENTORY_ITEM:
-				modelCRC = get_item_model_crc( u->m_itemHash );
+				modelCRC = Gizmod::getInstance()->getInventoryItem( InventoryItem::getItemByHash(u->m_itemHash) )->getModelCRC();
 				break;
 			case IDOL_SINGLE:
 				modelCRC = ItemModelsCRC::IDOL_SILVER;
@@ -367,6 +301,17 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 	}
 }
 
+
+class ItemRandoListener : public ICollectItemListener
+{
+public:
+
+	virtual void onCollectItem( CollectItemEvent& event ) override
+	{
+		collectItem( event );
+	}
+}
+g_itemRandoListener;
 
 
 //
@@ -444,9 +389,9 @@ void item_rando_init()
 	}
 
 
+	Gizmod::getInstance()->getEventListener()->registerEvent<CollectItemEvent>( &g_itemRandoListener );
+
 	// Code injection.
-	injector::MakeCALL( 0x4E9E51, UnlockItem_custom );        // Intercept item unlock ("HarryAddInventoryItem" script function).
-	injector::MakeCALL( 0x598036, UnlockItem_custom );        // Intercept item unlock (picking up an EITreasure).
 
 	// Intercept idol grab.
 	injector::MakeCALL( 0x598004, AddCollectedIdols_custom );
@@ -473,7 +418,8 @@ void log_item_rando( std::ostream& os )
 
 	os << "Item Rando :\n";
 	for ( const auto& p : g_itemLocations ) {
-		os << " - " << get_item_name(p.first) << " is in " << level_get_name(level_get_by_crc(p.second)) << ".\n";
+		InventoryItem* item = Gizmod::getInstance()->getInventoryItem( InventoryItem::getItemByHash(p.first) );
+		os << " - " << item->getName() << " is in " << level_get_name(level_get_by_crc(p.second)) << ".\n";
 	}
 	/*for ( const auto& p : g_unlockablesMap ) {
 		Unlockable* original = p.first;

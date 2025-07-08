@@ -2,6 +2,7 @@
 
 #include "EventListener.h"
 #include "Logger.h"
+#include "item/InventoryItem.h"
 
 #include <string>
 
@@ -43,6 +44,8 @@ public:
 	inline EventListener* getEventListener() { return &m_eventListener; }
 	inline Logger* getLogger() { return &m_logger; }
 
+	inline InventoryItem* getInventoryItem( InventoryItem::Item i ) { return i == InventoryItem::UNKNOWN ? 0 : &m_inventoryItems[i]; };
+
 
 	void showConsole();
 
@@ -58,4 +61,6 @@ private:
 
 	EventListener m_eventListener;
 	Logger m_logger;
+
+	InventoryItem m_inventoryItems[8];
 };

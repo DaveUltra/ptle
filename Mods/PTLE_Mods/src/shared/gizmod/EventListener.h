@@ -2,6 +2,7 @@
 
 #include "event/CollectExplorerEvent.h"
 #include "event/CollectIdolEvent.h"
+#include "event/CollectItemEvent.h"
 #include "event/EntitySpawnEvent.h"
 #include "event/LevelLoadedEvent.h"
 #include "event/LoadLevelEvent.h"

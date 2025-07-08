@@ -11,6 +11,7 @@
     <ClCompile Include="gizmod\world\GizmodWorld.cpp" />
     <ClCompile Include="gizmod\shaman\ShamanShop.cpp" />
     <ClCompile Include="gizmod\event\ShamanPurchaseEvent.cpp" />
+    <ClCompile Include="gizmod\event\CollectItemEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -101,8 +102,12 @@
     <ClInclude Include="gizmod\shaman\ShamanShop.h" />
     <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
     <ClInclude Include="ptle\ESDInt.h" />
+    <ClInclude Include="gizmod\event\CollectItemEvent.h" />
+    <ClInclude Include="gizmod\item\InventoryItem.h" />
+    <ClInclude Include="gizmod\item\ItemModelsCRC.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />
+    <None Include="gizmod\item\InventoryItem.inl" />
   </ItemGroup>
 </Project>

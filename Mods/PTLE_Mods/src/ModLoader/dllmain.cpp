@@ -298,6 +298,7 @@ enum vccorlibExportsNames
 
 #include "ptle/containers/TreeMap/TreeMap.h"
 
+#include "gizmod/event/CollectItemEvent.h"
 #include "gizmod/event/EntitySpawnEvent.h"
 #include "gizmod/event/LevelLoadedEvent.h"
 #include "gizmod/event/LoadLevelEvent.h"
@@ -318,6 +319,18 @@ void Script_SetBeastTarget_Safe( EScriptContext* context )
 	Script_SetBeastTarget_Original( context );
 }
 
+
+GET_METHOD( 0x506170, void, CollectItem, void*, uint32_t );
+static void _CollectItem_custom( void* self, uint32_t itemHash )
+{
+	CollectItemEvent event( itemHash );
+	Gizmod::getInstance()->getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		CollectItem( self, event.getItemHash() );
+	}
+}
+MAKE_THISCALL_WRAPPER( CollectItem_custom, _CollectItem_custom );
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -425,6 +438,10 @@ void InjectCode()
 	// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
 	injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
 
+
+	// Collect item.
+	injector::MakeCALL( 0x4E9E51, CollectItem_custom );        // Intercept item unlock ("HarryAddInventoryItem" script function).
+	injector::MakeCALL( 0x598036, CollectItem_custom );        // Intercept item unlock (picking up an EITreasure).
 
 	// Not working.
 	//injector::MakeJMP( 0x626747, _EntitySpawn );
