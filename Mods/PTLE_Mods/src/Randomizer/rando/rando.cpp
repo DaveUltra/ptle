@@ -182,6 +182,9 @@ static void set_starting_areas()
 		case levelCRC::PLANE_CUTSCENE:
 		case levelCRC::VIRACOCHA_MONOLITHS_CUTSCENE:
 
+		// Crashes if starting area (probably a generation bug).
+		case levelCRC::CRASH_SITE:
+
 		// Beta levels (unrandomized for now).
 		case levelCRC::BETA_VOLCANO:
 			break;
