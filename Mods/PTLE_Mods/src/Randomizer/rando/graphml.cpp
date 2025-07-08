@@ -2,6 +2,9 @@
 
 #include "item_rando.h"
 
+#include "gizmod/Gizmod.h"
+#include "gizmod/GizmodPlugin.h"
+
 #include "ptle/levels/level_info.h"
 
 #include <iostream>
@@ -162,7 +165,8 @@ void write_graphml()
 {
 	std::set<uint32_t> dontShow( DONT_SHOW, DONT_SHOW+_countof(DONT_SHOW) );
 
-	ofstream graph( "rando.graphml" );
+	std::wstring cfgDir = Gizmod::getThisPlugin()->getConfigDirectory();
+	ofstream graph( cfgDir + L"/rando.graphml" );
 
 	graph << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 	graph << "<graphml><graph id=\"Graph\" uidGraph=\"1\" uidEdge=\"1\">";

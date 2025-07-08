@@ -7,13 +7,13 @@ on:
       - master
     paths:
       - ".github/workflows/build-mods.yml"
-      - "Mods/PTLE_mods/**"
+      - "Mods/PTLE_Mods/**"
   pull_request:
     branches:
       - master
     paths:
       - ".github/workflows/build-mods.yml"
-      - "Mods/PTLE_mods/**"
+      - "Mods/PTLE_Mods/**"
 
 jobs:
   Build:
@@ -26,12 +26,21 @@ jobs:
 
       - run: msbuild Mods/PTLE_mods/PTLE_Mods.sln /property:Configuration=Release
 
+      - name: Create distribution folder
+        run: |
+          New-Item -ItemType Directory dist/mods
+          Get-Item Mods/PTLE_Mods/bin/Release/*.asi | Copy-Item -Destination "dist/mods/$($_.Name)"
+          Rename-Item dist/mods/Randomizer.asi Randomizer.asi.d    # Disable Rando by default.
+          Rename-Item dist/mods/CheatLab.asi CheatLab.asi.d        # Disable CheatLab by default.
+          Get-Item Mods/PTLE_Mods/patch/* | Copy-Item -Destination "dist/$($_.Name)"
+          Copy-Item Mods/PTLE_Mods/src/ModLoader/config.ini dist/config.ini
+          Copy-Item Mods/PTLE_Mods/bin/Release/binkw32.dll dist/binkw32.dll
+          Copy-Item Mods/PTLE_Mods/bin/Release/config/ dist/ -Recurse
+        shell: pwsh
+
       - name: Upload Build Artifact
         uses: actions/upload-artifact@v4
         with:
           name: PTLE_Mods
-          path: |
-            Mods/PTLE_Mods/bin/Release/*.asi
-            Mods/PTLE_Mods/bin/Release/cfg
-            Mods/PTLE_Mods/patch/*
+          path: dist
           if-no-files-found: error

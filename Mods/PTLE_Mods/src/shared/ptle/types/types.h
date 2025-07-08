@@ -45,6 +45,8 @@ const type_info_t* get_type_by_vtable( uint32_t vtableAddr );
 
 bool is_type_derived_from( const type_info_t* type, const type_info_t* base );
 
+bool is_type_derived_from( const ETypeInfo* type, const ETypeInfo* base );
+
 template<typename T>
 T* type_cast( EStorable* obj, const type_info_t* t )
 {

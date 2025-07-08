@@ -4,6 +4,8 @@
 
 #include "EIUpdateRegion.h"
 
+#include "ptle/containers/HashMap/HashMap.h"
+
 
 class ERLevel : public EResource
 {
@@ -14,5 +16,9 @@ public:
 	EIUpdateRegion m_updateRegion;
 	EInstance instanceUnknown;
 
-	char padding2[0x124];
+	char padding2[0x7C];
+
+	HashMap m_entitiesByID;
+
+	char padding3[0x94];
 };

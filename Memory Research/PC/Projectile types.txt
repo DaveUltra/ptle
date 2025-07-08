@@ -3,29 +3,37 @@ Projectile types
 
 1B6BFEE7 - Coconut (regular)
 
-2304CA96 - TNT number 3 for some reason
+2304CA96 - St.Claire TNT
 
 2FBEB3BC - Stink bomb
+
+3255C06F - Super sling rock
 
 33CCCA9D - Large stink bomb with trail
 
 3496F0BE - Pusca ghost projectile
 
+43172012 - Pusca heat seek projectile (phase 2)
+
 53E3A6F3 - Pusca large explosive
 
-636F550B - (glitched?)
+62CF53CC - Mango
+
+636F550B - Porcupine spikes
 
 660384B3 - Larger stink bombs?
 
 7DEE9568 - Merc TNT
 
+90D2CD5D - Sling rock
+
 984B0C66 - Coconuts that destroy on first impact
 
 B28E9E3C - BLACK BALLS
 
-BBCAC492 - TNT
+BBCAC492 - Harry TNT
 
-DB9AE30C - Eyes of Doom projectiles?
+DB9AE30C - Eyes of Doom projectiles
 
 E49357F9 - Large stink bomb with trail that lasts longer
 
