@@ -35,6 +35,19 @@ bool is_type_derived_from( const type_info_t* type, const type_info_t* base )
 	return false;
 }
 
+bool is_type_derived_from( const ETypeInfo* type, const ETypeInfo* base )
+{
+	do {
+		if ( type == base ) {
+			return true;
+		}
+		type = type->m_parent;
+	}
+	while ( type->m_parent != type );
+
+	return false;
+}
+
 
 static inline void register_type( uint32_t vtableAddr, uint32_t ptleTypeAddr )
 {

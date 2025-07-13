@@ -2,7 +2,8 @@
 
 #include "ptle/levels/level_info.h"
 
-#include "PitfallPlugin.h"
+#include "gizmod/Gizmod.h"
+#include "gizmod/GizmodPlugin.h"
 
 #include "ptle/EIHarry.h"
 
@@ -180,6 +181,9 @@ static void set_starting_areas()
 		// Cutscenes.
 		case levelCRC::PLANE_CUTSCENE:
 		case levelCRC::VIRACOCHA_MONOLITHS_CUTSCENE:
+
+		// Crashes if starting area (probably a generation bug).
+		case levelCRC::CRASH_SITE:
 
 		// Beta levels (unrandomized for now).
 		case levelCRC::BETA_VOLCANO:
@@ -384,7 +388,7 @@ void RandoMap::generateLinkedTransitions()
 			continue;
 		}
 	}
-	log_printf( " - %d levels purged (no exits)\n", purgeList.size() );
+	Gizmod::getInstance()->getLogger()->log_printf( " - %d levels purged (no exits)\n", purgeList.size() );
 	for ( uint32_t i : purgeList ) {
 		knownAreas.erase( i );
 		availablePorts.erase( i );
@@ -398,7 +402,7 @@ void RandoMap::generateLinkedTransitions()
 	strictAvail.push_back( rando_config.startingArea );
 
 	// List all other zones as non-reachable.
-	log_printf( " - %d known areas.\n", knownAreas.size() );
+	Gizmod::getInstance()->getLogger()->log_printf( " - %d known areas.\n", knownAreas.size() );
 	knownAreas.erase( rando_config.startingArea );
 	availNotMaster.insert( availNotMaster.begin(), knownAreas.begin(), knownAreas.end() );
 
@@ -408,7 +412,7 @@ void RandoMap::generateLinkedTransitions()
 		uint32_t levelFromCRC, levelToCRC;
 
 		if ( strictAvail.size() == 0 && availNotMaster.size() > 0 ) {
-			log_printf( "GENERATION ERROR : Reachable map has no more ports left, but some areas are still unassigned.\n" );
+			Gizmod::getInstance()->getLogger()->log( "GENERATION ERROR : Reachable map has no more ports left, but some areas are still unassigned.\n" );
 			break;
 		}
 
@@ -420,7 +424,7 @@ void RandoMap::generateLinkedTransitions()
 			// Prevent level from looping onto itself.
 			if ( levelFrom == levelTo ) {
 				if ( strictAvail.size() == 1 ) {
-					log_printf( "WARN : %s will loop onto itself!\n", level_get_name(level_get_by_crc(strictAvail[0])) );
+					Gizmod::getInstance()->getLogger()->log_printf( "WARN : %s will loop onto itself!\n", level_get_name(level_get_by_crc(strictAvail[0])) );
 				}
 				else {
 					if ( levelFrom == 0 ) levelFrom++;
@@ -457,7 +461,7 @@ void RandoMap::generateLinkedTransitions()
 			levelToCRC = availNotMaster[levelTo];
 
 			if ( levelFromCRC == levelToCRC ) {
-				log_printf( "WARN : %s is going to connect with itself!\n", level_get_name(level_get_by_crc(levelToCRC)) );
+				Gizmod::getInstance()->getLogger()->log_printf( "WARN : %s is going to connect with itself!\n", level_get_name(level_get_by_crc(levelToCRC)) );
 			}
 		}
 
@@ -467,7 +471,7 @@ void RandoMap::generateLinkedTransitions()
 			toEntrance = 1;
 		}
 
-		//log_printf( " - %s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
+		//PitfallPlugin::getInstance()->log_printf( " - %s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
 
 		// Form linked transition.
 		Transition original( levelFromCRC, availablePorts[levelFromCRC][fromExit] );
@@ -502,17 +506,17 @@ void RandoMap::generateLinkedTransitions()
 		}
 	}
 
-	log_printf( " - Main process done.\n" );
+	Gizmod::getInstance()->getLogger()->log( " - Main process done.\n" );
 
 	if ( strictAvail.size() == 1 && availNotMaster.empty() ) {
-		log_printf( "GENERATION ERROR : This area wasn't processed correctly : %s\n", level_get_name(level_get_by_crc(strictAvail[0])) );
+		Gizmod::getInstance()->getLogger()->log_printf( "GENERATION ERROR : This area wasn't processed correctly : %s\n", level_get_name(level_get_by_crc(strictAvail[0])) );
 		//log_printf( "        Level has %d unconnected exits!\n", accessibleAreas[0] );
 	}
 
 	if ( !availablePorts.empty() ) {
-		log_printf( "GENERATION ERROR : Some exits are still not connected!\n" );
+		Gizmod::getInstance()->getLogger()->log( "GENERATION ERROR : Some exits are still not connected!\n" );
 		for ( auto& p : availablePorts ) {
-			log_printf( " - %s : %d exits\n", level_get_name(level_get_by_crc(p.first)), p.second.size() );
+			Gizmod::getInstance()->getLogger()->log_printf( " - %s : %d exits\n", level_get_name(level_get_by_crc(p.first)), p.second.size() );
 		}
 		//return;
 	}
@@ -527,7 +531,7 @@ void RandoMap::generateLinkedTransitions()
 	// Remove water levels.
 	// We do it after generation to avoid changing the random seed.
 	if ( rando_config.skipWaterLevels ) {
-		log_printf( " - Skipping water levels...\n" );
+		Gizmod::getInstance()->getLogger()->log( " - Skipping water levels...\n" );
 
 		remove_line_level( levelCRC::FLOODED_CAVE,      levelCRC::BITTENBINDER_CAMP, levelCRC::RENEGADE_FORT );
 		remove_line_level( levelCRC::MYSTERIOUS_TEMPLE, levelCRC::BITTENBINDER_CAMP, levelCRC::ALTAR_OF_AGES );
@@ -542,7 +546,7 @@ void RandoMap::generateLinkedTransitions()
 		m_transitionsMap[Transition(levelCRC::GATES_OF_EL_DORADO, levelCRC::RUINS_OF_EL_DORADO)] = puscaRedirect;
 	}
 
-	log_printf( " - Generation ended.\n" );
+	Gizmod::getInstance()->getLogger()->log( " - Generation ended.\n" );
 }
 
 
@@ -612,6 +616,8 @@ void RandoMap::generateLegacy()
 
 void RandoMap::generateMap()
 {
+	Gizmod::getInstance()->getLogger()->log( "Entrance Randomizer :\n" );
+
 	if ( rando_config.legacy ) {
 		generateLegacy();
 	}
@@ -680,7 +686,7 @@ Transition rando_redirect_transition;
 static bool can_escape_apu_illapu()
 {
 	ItemStruct* items = (ItemStruct*) 0x8EEB90;
-	EIHarry* harry = PitfallPlugin::getHarry();
+	EIHarry* harry = Gizmod::getHarry();
 
 	// Can finish fight?
 	if (
@@ -715,12 +721,12 @@ static bool can_escape_apu_illapu()
 GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
 void prevent_transition_softlock()
 {
-	uint32_t currentAreaCRC = PitfallPlugin::getCurrentLevelCRC();
-	EIHarry* harry = PitfallPlugin::getHarry();
+	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
+	EIHarry* harry = Gizmod::getHarry();
 
 	if ( currentAreaCRC == levelCRC::APU_ILLAPU_SHRINE ) {
 		if ( !can_escape_apu_illapu() ) {
-			log_printf( "Missing requirements to complete Apu Illapu Shrine. Kicking you out!\n" );
+			Gizmod::getInstance()->getLogger()->log( "Missing requirements to complete Apu Illapu Shrine. Kicking you out!\n" );
 
 			Matrix4f m = harry->m_transformMatrix;
 			m.data[3][0] = -24.0F;
@@ -729,14 +735,14 @@ void prevent_transition_softlock()
 			EIHarry_Teleport( harry, &m, true, 1.0F );
 		}
 		else {
-			log_printf( "Player can escape Apu Illapu on their own.\n" );
+			Gizmod::getInstance()->getLogger()->log( "Player can escape Apu Illapu on their own.\n" );
 		}
 	}
 	else {
 		Transition t( rando_redirect_transition.areaFromID, currentAreaCRC );
 
 		if ( softlockableTransitions.find(t) != softlockableTransitions.end() ) {
-			log_printf( "Detected softlockable transition!\n" );
+			Gizmod::getInstance()->getLogger()->log( "Detected softlockable transition!\n" );
 
 			Matrix4f m = harry->m_transformMatrix;
 			m.data[3][2] += 14.0F;

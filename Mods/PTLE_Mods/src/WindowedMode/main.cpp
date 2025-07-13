@@ -1,3 +1,5 @@
+#include "gizmod/GizmodPlugin.h"
+
 #include <Windows.h>
 
 #include "injector/injector.hpp"
@@ -26,8 +28,6 @@ static void adjust_window_size()
 #include <d3d9.h>
 void InitMod()
 {
-	log_printf( "PTLE Windowed Mode : Patching...\n" );
-
 	// System inconveniences.
 	{
 		// Remove explorer.exe locking.
@@ -92,20 +92,20 @@ void InitMod()
 	injector::MakeRangedNOP( 0x620C0C, 0x620C19 );
 	injector::MakeRangedNOP( 0x620C6F, 0x620C72 );
 	injector::MakeRangedNOP( 0x620C51, 0x620C54 );*/
-
-	log_printf( "PTLE Windowed Mode : Patch completed.\n" );
 }
 
-BOOL WINAPI DllMain( HINSTANCE hinstace, DWORD reason, LPVOID )
+
+class WindowedModePlugin : public GizmodPlugin
 {
-	switch ( reason )
-	{
-	case DLL_PROCESS_ATTACH:
-		InitMod();
-		break;
-	default:
-		break;
-	}
+public:
 
-	return true;
-}
+	virtual const char* getDisplayName() const { return "PTLE Windowed Mode"; }
+	virtual const char* getSystemName() const { return "WindowedMode"; }
+
+	virtual void onEnable()
+	{
+		InitMod();
+	}
+};
+
+DECLARE_PLUGIN( WindowedModePlugin );

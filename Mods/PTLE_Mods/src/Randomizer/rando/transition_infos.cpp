@@ -1,5 +1,8 @@
 #include "rando/rando.h"
 
+#include "gizmod/Gizmod.h"
+#include "gizmod/GizmodPlugin.h"
+
 #include "json/json.h"
 #include "utils/log.h"
 
@@ -42,7 +45,10 @@ static uint32_t parse_int_hex( const std::string& str )
 bool load_transition_infos()
 {
 	json::JSONDocument doc;
-	doc.LoadFile( "cfg/Randomizer/transition_infos.json" );
+
+	std::wstring cfgPath = Gizmod::getThisPlugin()->getConfigDirectory();
+	cfgPath += L"/transition_infos.json";
+	doc.LoadFile( std::string(cfgPath.begin(), cfgPath.end()).c_str() );
 
 	if ( !doc.IsValid() ) {
 		log_printf( "ERROR : transition_infos.json not found!\n" );

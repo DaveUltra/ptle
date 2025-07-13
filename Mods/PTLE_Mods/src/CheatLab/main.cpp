@@ -27,21 +27,6 @@ void _EIPlayerTick_custom( EIHarry* harry )
 MAKE_THISCALL_WRAPPER( EIPlayerTick_custom, _EIPlayerTick_custom );
 
 
-unsigned long __stdcall Thread( void* );
-
-void InitMod()
-{
-	AllocConsole();
-	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
-
-	injector::MakeCALL( 0x4B2DE1, EIPlayerTick_custom );
-
-	register_types();
-
-	CreateThread( 0, 0, Thread, 0, 0, 0 );
-
-	log_printf( "PTLE Cheat Lab : Mod started.\n" );
-}
 
 unsigned long __stdcall Thread( void* )
 {
@@ -52,16 +37,23 @@ unsigned long __stdcall Thread( void* )
 }
 
 
-BOOL WINAPI DllMain( HINSTANCE hinstace, DWORD reason, LPVOID )
-{
-	switch ( reason )
-	{
-	case DLL_PROCESS_ATTACH:
-		InitMod();
-		break;
-	default:
-		break;
-	}
+#include "gizmod/GizmodPlugin.h"
 
-	return true;
-}
+class CheatLabPlugin : public GizmodPlugin
+{
+public:
+
+	virtual const char* getDisplayName() const { return "CheatLab"; }
+	virtual const char* getSystemName() const { return "CheatLab"; }
+
+	virtual void onEnable()
+	{
+		injector::MakeCALL( 0x4B2DE1, EIPlayerTick_custom );
+
+		register_types();
+
+		CreateThread( 0, 0, Thread, 0, 0, 0 );
+	}
+};
+
+DECLARE_PLUGIN( CheatLabPlugin );

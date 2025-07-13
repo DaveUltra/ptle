@@ -95,20 +95,20 @@
     <ClInclude Include="rando\rando.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="cfg\Randomizer\config.ini">
+    <Text Include="config\Randomizer\config.ini">
       <DeploymentContent>true</DeploymentContent>
     </Text>
   </ItemGroup>
   <ItemGroup>
-    <None Include="cfg\Randomizer\idols_infos.json">
+    <None Include="config\Randomizer\idols_infos.json">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="cfg\Randomizer\transition_infos.json">
+    <None Include="config\Randomizer\transition_infos.json">
       <DeploymentContent>true</DeploymentContent>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="cfg\**">
+    <Content Include="config\**">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

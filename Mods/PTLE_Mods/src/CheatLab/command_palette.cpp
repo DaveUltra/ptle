@@ -1,5 +1,7 @@
 #include "command_palette.h"
 
+#include "gizmod/Gizmod.h"
+
 #include "injector/injector.hpp"
 
 #include "ptle/ERLevel.h"
@@ -607,32 +609,25 @@ static void _list_model_assets()
 }
 
 
-static void _list_updates_1()
+static void _list_entities()
 {
-	EIHarry* harry = *((EIHarry**) 0x917034);
-	ERLevel* level = harry->m_world;
+	ERLevel* level = Gizmod::getLevel();
+	HashMap* entitiesByID = &level->m_entitiesByID;
 
-	TreeMapNode* node = ((TreeMap*)((uint32_t) level) + 0x5B0)->m_iterateFirst;
-
-	while ( node ) {
-		if ( node->m_ptr ) {
-			EInstance* inst = (EInstance*) node->m_ptr;
-			EIBeast* beast = type_cast<EIBeast>( (EStorable*) node->m_ptr, get_type_by_vtable(0x86C3D0) );
-
-			const type_info_t* type = get_object_type( inst );
-
-			if ( beast && beast->m_beastTypeName ) {
-				log_printf( "- 0x%X : %s (%s)\n", beast, type ? type->get_name() : "UnknownType", beast->m_beastTypeName );
-			}
-			else {
-				log_printf( "- 0x%X : %s\n", inst, type ? type->get_name() : "UnknownType" );
-			}
+	int i = 0;
+	for ( HashMapEntry* e = entitiesByID->m_iterateFirst; e != 0; e = e->m_iterateNext ) {
+		if ( !e->m_ptr ) {
+			Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : (unknown)\n", e->m_key );
+			continue;
 		}
-		else {
-			log_printf( "- 0x??????? : unknown\n" );
-		}
-		node = node->m_iterateNext;
+
+		EInstance* inst = (EInstance*) e->m_ptr;
+		Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : %s\n", e->m_key, inst->GetTypeName() );
+
+		i++;
 	}
+
+	Gizmod::getInstance()->getLogger()->log_printf( "Total : %d entities.\n", i );
 }
 
 // List entities in second update list.
@@ -732,6 +727,7 @@ static void _log_epausemain()
 
 const cheat_t cheats[] =
 {
+	/* Name,                  On Enable / Disable */
 	{ "Auto Skip Cutscene",  _auto_skip_cutscenes },
 	{ "Effector Debug Draw", _effector_debug_draw },
 	{ "Invulnerable",        _invulnerable },
@@ -744,7 +740,7 @@ const cheat_t cheats[] =
 
 const command_t commands[] =
 {
-	/* Name,                  On Enable */
+	/* Name,                  On Trigger */
 	{ "Give Stuff",           _give_stuff },
 	{ "Heal",                 _heal },
 	{ "Remove Stuff",         _remove_stuff },
@@ -755,7 +751,7 @@ const command_t commands[] =
 	{ "Spawn Native",         _netiv_spawn },
 	{ "AI patch",             _ai_patch },
 	{ "List models",          _list_model_assets },
-	{ "List updates 1",       _list_updates_1 },
+	{ "List entities w/ IDs", _list_entities },
 	{ "List updates 2",       _list_updates_2 },
 	{ "Log Save UI Contents", _log_saveui_contents },
 	{ "Log Main UI Contents", _log_epausemain },

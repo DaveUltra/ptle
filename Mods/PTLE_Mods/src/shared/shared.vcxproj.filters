@@ -5,7 +5,13 @@
     <ClCompile Include="ptle\levels\level_info.cpp" />
     <ClCompile Include="utils\log.cpp" />
     <ClCompile Include="ptle\types\types.cpp" />
-    <ClCompile Include="PitfallPlugin.cpp" />
+    <ClCompile Include="gizmod\GizmodPlugin.cpp" />
+    <ClCompile Include="gizmod\Gizmod.cpp" />
+    <ClCompile Include="gizmod\Logger.cpp" />
+    <ClCompile Include="gizmod\world\GizmodWorld.cpp" />
+    <ClCompile Include="gizmod\shaman\ShamanShop.cpp" />
+    <ClCompile Include="gizmod\event\ShamanPurchaseEvent.cpp" />
+    <ClCompile Include="gizmod\event\CollectItemEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -81,8 +87,27 @@
     <ClInclude Include="ptle\EUIObjectNode.h" />
     <ClInclude Include="ptle\EUIIcon.h" />
     <ClInclude Include="ptle\EUITextIcon.h" />
-    <ClInclude Include="PitfallPlugin.h" />
-    <ClInclude Include="event\LoadLevelEvent.h" />
-    <ClInclude Include="event\Event.h" />
+    <ClInclude Include="gizmod\GizmodPlugin.h" />
+    <ClInclude Include="gizmod\event\LoadLevelEvent.h" />
+    <ClInclude Include="gizmod\event\Event.h" />
+    <ClInclude Include="gizmod\event\EntitySpawnEvent.h" />
+    <ClInclude Include="gizmod\Gizmod.h" />
+    <ClInclude Include="gizmod\EventListener.h" />
+    <ClInclude Include="gizmod\event\LevelLoadedEvent.h" />
+    <ClInclude Include="gizmod\event\CollectIdolEvent.h" />
+    <ClInclude Include="gizmod\event\CollectExplorerEvent.h" />
+    <ClInclude Include="gizmod\Logger.h" />
+    <ClInclude Include="gizmod\world\GizmodWorld.h" />
+    <ClInclude Include="gizmod\types\Projectile.h" />
+    <ClInclude Include="gizmod\shaman\ShamanShop.h" />
+    <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
+    <ClInclude Include="ptle\ESDInt.h" />
+    <ClInclude Include="gizmod\event\CollectItemEvent.h" />
+    <ClInclude Include="gizmod\item\InventoryItem.h" />
+    <ClInclude Include="gizmod\item\ItemModelsCRC.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="gizmod\GizmodEvents.inl" />
+    <None Include="gizmod\item\InventoryItem.inl" />
   </ItemGroup>
 </Project>
