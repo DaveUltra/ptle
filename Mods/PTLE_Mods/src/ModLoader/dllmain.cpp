@@ -691,6 +691,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 
 		gizmodInstance = &g_pitfall;
 
+		register_types();
+
 		load_config();
 
 		log_printf( "Gizmod %s\n", g_pitfall.getVersionString().c_str() );
