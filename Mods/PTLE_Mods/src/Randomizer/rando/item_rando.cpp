@@ -23,15 +23,18 @@
 // Definitions.
 //
 
+// TODO : Move all of the save stuff to Gizmod.
 struct SaveLocation
 {
 	void* m_entry0;
 	int unknown0;
 	void* m_entryRoot;
 };
-struct SaveMan
+class ESaveGameMan
 {
-	void** vtable;
+public:
+
+	void** vtable;   // Don't know where it is yet...
 
 	SaveLocation m_saveLocation1;
 	SaveLocation m_saveLocation2;
@@ -42,11 +45,12 @@ GET_FUNC( 0x6F8EC0, uint32_t, HashStrCaseInsensitive, const char* );
 GET_FUNC( 0x65F9A0, uint32_t, CombineHashes, uint32_t, uint32_t, uint32_t );
 GET_METHOD( 0x6C6D60, bool, FindSaveGameVar, SaveLocation*, uint32_t, ESaveGameVar** );
 
-static bool GetVarCustom( SaveMan* saveGameMan, uint32_t levelCRC, uint32_t instanceID, const char* varName, int* out )
+static bool GetVarCustom( uint32_t levelCRC, uint32_t instanceID, const char* varName, int* out, bool flip = false )
 {
-	int val = *((int*) 0x920084);
+	ESaveGameMan* saveGameMan = *((ESaveGameMan**) 0x920058);
 
-	SaveLocation* saveLocation = (val == 0) ? &saveGameMan->m_saveLocation1 : &saveGameMan->m_saveLocation2;
+	int val = *((int*) 0x920084);
+	SaveLocation* saveLocation = ((val == 0) != flip) ? &saveGameMan->m_saveLocation1 : &saveGameMan->m_saveLocation2;
 
 	uint32_t varHash = HashStrCaseInsensitive( varName );
 	uint32_t hash = CombineHashes( levelCRC, instanceID, varHash );
@@ -324,16 +328,15 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 		int* out = GetOutVariable( context );
 
 		*out = 0;
+		GetVarCustom( 0x4A3E4058, 0x07BC40E8, "numTimesPlayed", out, true );
 	}
 	// Native Village's shield cutscene will be gone if we enter with shield already.
 	else if ( currentAreaCRC == levelCRC::NATIVE_VILLAGE ) {
 		PopScriptVariable_Int( context );
 		int* out = GetOutVariable( context );
 
-		SaveMan* saveMan = *((SaveMan**) 0x920058);
 		*out = 0;
-		bool found = GetVarCustom( saveMan, 0x05AA726C, 0x07BC40E8, "numTimesPlayed", out );
-		Gizmod::getInstance()->getLogger()->log_printf( "Save : %d, %d\n", (int) found, *out );
+		GetVarCustom( 0x05AA726C, 0x07BC40E8, "numTimesPlayed", out );
 	}
 	else {
 		Script_HarryIsInInventory( context );
