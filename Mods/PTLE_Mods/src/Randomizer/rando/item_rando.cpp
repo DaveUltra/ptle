@@ -140,6 +140,17 @@ struct Unlockable
 			return 0;
 		}
 	}
+
+	uint32_t getModelCRC() const
+	{
+		switch ( m_type )
+		{
+		case INVENTORY_ITEM: return Gizmod::getInstance()->getInventoryItem( InventoryItem::getItemByHash(m_itemHash) )->getModelCRC();
+		case IDOL_SINGLE:    return ItemModelsCRC::IDOL_SILVER;
+		case IDOL_EXPLORER:  return ItemModelsCRC::IDOL_EXPLORER;
+		}
+		return 0;
+	}
 };
 
 
@@ -287,30 +298,32 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 }
 MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
 
+
 static void _EITreasureIdol_InitValues_custom( EITreasureIdol* self, Vector3f* pos, Vector4f* rot, uint32_t modelCRC, uint32_t particleCRC, uint32_t soundCRC )
 {
 	uint32_t areaCRC = Gizmod::getCurrentLevelCRC();
-	const Idol* idol = get_idol( areaCRC, self->m_uniqueID );
 
+	// Replace gas mask in Renegade HQ.
+	InventoryItem* gasmask = Gizmod::getInstance()->getInventoryItem( InventoryItem::GAS_MASK );
+	if ( areaCRC == levelCRC::RENEGADE_HEADQUARTERS && modelCRC == gasmask->getModelCRC() ) {
+		Unlockable u = { INVENTORY_ITEM, gasmask->getHash() };
+		auto it = g_unlockablesMap.find( &u );
+
+		if ( it != g_unlockablesMap.end() ) {
+			Unlockable* u = it->second;
+			modelCRC = u->getModelCRC();
+		}
+	}
+
+	// Replace idol models.
+	const Idol* idol = get_idol( areaCRC, self->m_uniqueID );
 	if ( idol ) {
 		Unlockable u = { idol->isExplorerIdol() ? IDOL_EXPLORER : IDOL_SINGLE, (uint32_t) idol };
 		auto it = g_unlockablesMap.find( &u );
 
-		// Replace with item model.
 		if ( it != g_unlockablesMap.end() ) {
 			Unlockable* u = it->second;
-			switch ( u->m_type )
-			{
-			case INVENTORY_ITEM:
-				modelCRC = Gizmod::getInstance()->getInventoryItem( InventoryItem::getItemByHash(u->m_itemHash) )->getModelCRC();
-				break;
-			case IDOL_SINGLE:
-				modelCRC = ItemModelsCRC::IDOL_SILVER;
-				break;
-			case IDOL_EXPLORER:
-				modelCRC = ItemModelsCRC::IDOL_EXPLORER;
-				break;
-			}
+			modelCRC = u->getModelCRC();
 		}
 	}
 
@@ -320,7 +333,7 @@ MAKE_THISCALL_WRAPPER( EITreasureIdol_InitValues_custom, _EITreasureIdol_InitVal
 
 static void Script_HarryIsInInventory_custom( EScriptContext* context )
 {
-	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
+	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
 
 	// Plane cockpit cutscene checks if we have canteen, just spoof the answer with "no".
 	if ( currentAreaCRC == levelCRC::PLANE_COCKPIT ) {
