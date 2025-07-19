@@ -324,6 +324,10 @@ GET_METHOD( 0x506170, void, CollectItem, void*, uint32_t );
 static void _CollectItem_custom( void* self, uint32_t itemHash )
 {
 	CollectItemEvent event( itemHash );
+	if ( event.getItem() == 0 ) {   // For artifacts.
+		return;
+	}
+
 	Gizmod::getInstance()->getEventListener()->invokeEvent( event );
 
 	if ( !event.isCancelled() ) {
@@ -686,6 +690,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 		wchar_t filename[8192];
 
 		gizmodInstance = &g_pitfall;
+
+		register_types();
 
 		load_config();
 

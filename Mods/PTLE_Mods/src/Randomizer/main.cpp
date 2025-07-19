@@ -313,7 +313,9 @@ public:
 	// Loading a level.
 	virtual void onLoadLevel( LoadLevelEvent& event ) override
 	{
-		hijack_transition( event );
+		if ( rando_config.entranceRando ) {
+			hijack_transition( event );
+		}
 		//read_transition( event );
 	}
 
@@ -356,7 +358,9 @@ public:
 
 		rando_init();
 
-		rando_map.generateMap();
+		if ( rando_config.entranceRando ) {
+			rando_map.generateMap();
+		}
 
 		if ( rando_config.randomizeShamanShop ) {
 			randomize_shaman_shop();

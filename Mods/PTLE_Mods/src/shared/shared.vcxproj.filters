@@ -105,6 +105,7 @@
     <ClInclude Include="gizmod\event\CollectItemEvent.h" />
     <ClInclude Include="gizmod\item\InventoryItem.h" />
     <ClInclude Include="gizmod\item\ItemModelsCRC.h" />
+    <ClInclude Include="ptle\ESaveGameVar.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

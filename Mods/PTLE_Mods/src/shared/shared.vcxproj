@@ -105,6 +105,7 @@
     <ClInclude Include="gizmod\GizmodPlugin.h" />
     <ClInclude Include="ptle\containers\LinkedList\LinkedList.h" />
     <ClInclude Include="ptle\EIEvilHarryP.h" />
+    <ClInclude Include="ptle\ESaveGameVar.h" />
     <ClInclude Include="ptle\ESDInt.h" />
     <ClInclude Include="ptle\EUIIcon.h" />
     <ClInclude Include="ptle\EUIObjectNode.h" />

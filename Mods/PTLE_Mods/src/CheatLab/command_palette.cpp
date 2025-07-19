@@ -198,6 +198,22 @@ static void _fast_native( bool enable )
 
 
 // --------------------------------------------------------------------------------
+// Deactivate effectors.
+// --------------------------------------------------------------------------------
+static void _deactivate_effectors( bool enable )
+{
+	static char origBytes[5];
+	if ( enable ) {
+		memcpy( origBytes, (void*) 0x668943, 5 );
+		injector::MakeJMP( 0x668943, 0x668BC4 );
+	}
+	else {
+		injector::WriteMemoryRaw( 0x668943, origBytes, 5, true );
+	}
+}
+
+
+// --------------------------------------------------------------------------------
 // Give useful items, abilities, and max HP.
 // --------------------------------------------------------------------------------
 static void _give_stuff()
@@ -727,15 +743,15 @@ static void _log_epausemain()
 
 const cheat_t cheats[] =
 {
-	/* Name,                  On Enable / Disable */
-	{ "Auto Skip Cutscene",  _auto_skip_cutscenes },
-	{ "Effector Debug Draw", _effector_debug_draw },
-	{ "Invulnerable",        _invulnerable },
-	{ "Infinite Jump",       _infinite_jump },
-	{ "TNT Rain",            _tnt_rain },
-	{ "All TNT",             _all_tnt },
-	{ "Crack Native",        _fast_native },
-	{ "",                    _empty_cheat }
+	/* Name,                   On Enable / Disable */
+	{ "Auto Skip Cutscene",   _auto_skip_cutscenes },
+	{ "Effector Debug Draw",  _effector_debug_draw },
+	{ "Invulnerable",         _invulnerable },
+	{ "Infinite Jump",        _infinite_jump },
+	{ "TNT Rain",             _tnt_rain },
+	{ "All TNT",              _all_tnt },
+	{ "Crack Native",         _fast_native },
+	{ "Deactivate Effectors", _deactivate_effectors },
 };
 
 const command_t commands[] =
