@@ -541,7 +541,7 @@ static void log_state_machine_info( EBeastStateMachine* sm )
 
 	log_printf( "%d conditions :\n", sm->m_numConditions );
 	for ( int i = 0; i < sm->m_numConditions; i++ ) {
-		log_printf( "- %d : \"%s\"\n", i, sm->m_conditions[i].m_name );
+		log_printf( "- %d : \"%s\" (0x%.6X)\n", i, sm->m_conditions[i].m_name, sm->m_conditions[i].m_func.m_func );
 	}
 
 	log_printf( "%d transitions :\n", sm->m_numTransitions );
@@ -736,6 +736,48 @@ static void _log_epausemain()
 }
 
 
+#include "ptle/EIExplorer.h"
+static Matrix4f m;
+
+GET_METHOD( 0x414F80, void, Tick, EIBeast* );
+static void _ExplorerTick( EIExplorer* self )
+{
+	static int prevState = -1;
+
+	if ( self->m_stateIndexCurrent != prevState ) {
+		Gizmod::getInstance()->getLogger()->log_printf( "State switch : %d to %d\n", prevState, self->m_stateIndexCurrent );
+		prevState = self->m_stateIndexCurrent;
+	}
+
+	m = self->m_transformMatrix;
+
+	Tick( self );
+}
+MAKE_THISCALL_WRAPPER( ExplorerTick, _ExplorerTick );
+
+GET_METHOD( 0x4B55F0, void, EIHarry_Tp, EIHarry*, Matrix4f*, bool, float );
+
+static void _explorer_tracker()
+{
+	static bool non = false;
+	if ( !non ) {
+		non = true;
+
+		// Patch tick function.
+		injector::WriteMemory( 0x87642C, ExplorerTick );
+
+		// Display explorer state machine.
+		void* dummy = (void*) (0x876400);
+		EBeastStateMachine* sm = ((EIBeast*)(&dummy))->GetStateMachine();
+		log_state_machine_info( sm );
+	}
+
+	Matrix4f mat = m;
+	mat.data[3][2] += 5.0F;
+	EIHarry_Tp(Gizmod::getHarry(), &mat, false, 1.0F);
+}
+
+
 
 //
 // List of available commands / cheats.
@@ -771,6 +813,7 @@ const command_t commands[] =
 	{ "List updates 2",       _list_updates_2 },
 	{ "Log Save UI Contents", _log_saveui_contents },
 	{ "Log Main UI Contents", _log_epausemain },
+	{ "Explorer Tracker",     _explorer_tracker },
 };
 
 const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);

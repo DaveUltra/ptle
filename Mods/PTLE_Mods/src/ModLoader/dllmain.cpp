@@ -433,6 +433,11 @@ static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* p
 }
 MAKE_THISCALL_WRAPPER( EPauseMain_Message_custom, _EPauseMain_Message_custom );
 
+static bool ReturnYes()
+{
+	return true;
+}
+
 void InjectCode()
 {
 	// Inconveniently spammed prints remaining in the game's code.
@@ -441,6 +446,9 @@ void InjectCode()
 
 	// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
 	injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
+
+	// Protection against explorer softlock.
+	injector::WriteMemory( 0x87659C, ReturnYes );
 
 
 	// Collect item.
