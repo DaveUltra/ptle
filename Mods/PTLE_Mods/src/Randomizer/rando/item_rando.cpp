@@ -324,6 +324,11 @@ static void _EITreasureIdol_InitValues_custom( EITreasureIdol* self, Vector3f* p
 		if ( it != g_unlockablesMap.end() ) {
 			Unlockable* u = it->second;
 			modelCRC = u->getModelCRC();
+
+			// Raise model a bit for items, otherwise they look weird (and Valley of Spirits 2nd idol is stupid hard to grab).
+			if ( it->second->m_type == INVENTORY_ITEM ) {
+				pos->z += 1.0F;
+			}
 		}
 	}
 
