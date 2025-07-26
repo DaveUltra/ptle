@@ -709,13 +709,13 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 		GetModuleFileNameW( hm, filename, sizeof(filename) );
 		moduleFileName = filename;
 
-		InjectCode();
-
 		// Load binkw32.
 		LoadOriginalLibrary();
 
 		// Load mods.
 		if ( g_enabled ) {
+			InjectCode();
+
 			LoadPlugins();
 		}
 	}
