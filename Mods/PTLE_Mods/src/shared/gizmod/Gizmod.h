@@ -18,7 +18,7 @@ public:
 
 	static const uint32_t VERSION_MAJOR = 0;
 	static const uint32_t VERSION_MINOR = 1;
-	static const uint32_t VERSION_PATCH = 0;
+	static const uint32_t VERSION_PATCH = 1;
 
 		/// Returns :
 		/// - +2 if plugin was made for a later version.
