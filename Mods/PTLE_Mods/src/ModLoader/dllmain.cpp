@@ -324,6 +324,10 @@ GET_METHOD( 0x506170, void, CollectItem, void*, uint32_t );
 static void _CollectItem_custom( void* self, uint32_t itemHash )
 {
 	CollectItemEvent event( itemHash );
+	if ( event.getItem() == 0 ) {   // For artifacts.
+		return;
+	}
+
 	Gizmod::getInstance()->getEventListener()->invokeEvent( event );
 
 	if ( !event.isCancelled() ) {
@@ -429,6 +433,11 @@ static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* p
 }
 MAKE_THISCALL_WRAPPER( EPauseMain_Message_custom, _EPauseMain_Message_custom );
 
+static bool ReturnYes()
+{
+	return true;
+}
+
 void InjectCode()
 {
 	// Inconveniently spammed prints remaining in the game's code.
@@ -437,6 +446,9 @@ void InjectCode()
 
 	// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
 	injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
+
+	// Protection against explorer softlock.
+	injector::WriteMemory( 0x87659C, ReturnYes );
 
 
 	// Collect item.
@@ -687,6 +699,8 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 
 		gizmodInstance = &g_pitfall;
 
+		register_types();
+
 		load_config();
 
 		log_printf( "Gizmod %s\n", g_pitfall.getVersionString().c_str() );
@@ -695,13 +709,13 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 		GetModuleFileNameW( hm, filename, sizeof(filename) );
 		moduleFileName = filename;
 
-		InjectCode();
-
 		// Load binkw32.
 		LoadOriginalLibrary();
 
 		// Load mods.
 		if ( g_enabled ) {
+			InjectCode();
+
 			LoadPlugins();
 		}
 	}

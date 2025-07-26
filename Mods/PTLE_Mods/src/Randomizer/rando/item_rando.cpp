@@ -23,6 +23,46 @@
 // Definitions.
 //
 
+// TODO : Move all of the save stuff to Gizmod.
+struct SaveLocation
+{
+	void* m_entry0;
+	int unknown0;
+	void* m_entryRoot;
+};
+class ESaveGameMan
+{
+public:
+
+	void** vtable;   // Don't know where it is yet...
+
+	SaveLocation m_saveLocation1;
+	SaveLocation m_saveLocation2;
+};
+#include "ptle/ESaveGameVar.h"
+
+GET_FUNC( 0x6F8EC0, uint32_t, HashStrCaseInsensitive, const char* );
+GET_FUNC( 0x65F9A0, uint32_t, CombineHashes, uint32_t, uint32_t, uint32_t );
+GET_METHOD( 0x6C6D60, bool, FindSaveGameVar, SaveLocation*, uint32_t, ESaveGameVar** );
+
+static bool GetVarCustom( uint32_t levelCRC, uint32_t instanceID, const char* varName, int* out, bool flip = false )
+{
+	ESaveGameMan* saveGameMan = *((ESaveGameMan**) 0x920058);
+
+	int val = *((int*) 0x920084);
+	SaveLocation* saveLocation = ((val == 0) != flip) ? &saveGameMan->m_saveLocation1 : &saveGameMan->m_saveLocation2;
+
+	uint32_t varHash = HashStrCaseInsensitive( varName );
+	uint32_t hash = CombineHashes( levelCRC, instanceID, varHash );
+	ESaveGameVar* sgv;
+	if ( FindSaveGameVar(saveLocation, hash, &sgv) ) {
+		*out = *((int*) &sgv->m_value);
+		return true;
+	}
+	return false;
+}
+
+
 GET_METHOD( 0x506170, void, UnlockItem, void*, uint32_t );
 GET_FUNC( 0x5E34A0, void, AddCollectedIdols, uint32_t, int );
 GET_METHOD( 0x597400, void, EITreasureIdol_InitValues, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );
@@ -99,6 +139,17 @@ struct Unlockable
 		default:
 			return 0;
 		}
+	}
+
+	uint32_t getModelCRC() const
+	{
+		switch ( m_type )
+		{
+		case INVENTORY_ITEM: return Gizmod::getInstance()->getInventoryItem( InventoryItem::getItemByHash(m_itemHash) )->getModelCRC();
+		case IDOL_SINGLE:    return ItemModelsCRC::IDOL_SILVER;
+		case IDOL_EXPLORER:  return ItemModelsCRC::IDOL_EXPLORER;
+		}
+		return 0;
 	}
 };
 
@@ -247,29 +298,36 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 }
 MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
 
+
 static void _EITreasureIdol_InitValues_custom( EITreasureIdol* self, Vector3f* pos, Vector4f* rot, uint32_t modelCRC, uint32_t particleCRC, uint32_t soundCRC )
 {
 	uint32_t areaCRC = Gizmod::getCurrentLevelCRC();
-	const Idol* idol = get_idol( areaCRC, self->m_uniqueID );
 
+	// Replace gas mask in Renegade HQ.
+	InventoryItem* gasmask = Gizmod::getInstance()->getInventoryItem( InventoryItem::GAS_MASK );
+	if ( areaCRC == levelCRC::RENEGADE_HEADQUARTERS && modelCRC == gasmask->getModelCRC() ) {
+		Unlockable u = { INVENTORY_ITEM, gasmask->getHash() };
+		auto it = g_unlockablesMap.find( &u );
+
+		if ( it != g_unlockablesMap.end() ) {
+			Unlockable* u = it->second;
+			modelCRC = u->getModelCRC();
+		}
+	}
+
+	// Replace idol models.
+	const Idol* idol = get_idol( areaCRC, self->m_uniqueID );
 	if ( idol ) {
 		Unlockable u = { idol->isExplorerIdol() ? IDOL_EXPLORER : IDOL_SINGLE, (uint32_t) idol };
 		auto it = g_unlockablesMap.find( &u );
 
-		// Replace with item model.
 		if ( it != g_unlockablesMap.end() ) {
 			Unlockable* u = it->second;
-			switch ( u->m_type )
-			{
-			case INVENTORY_ITEM:
-				modelCRC = Gizmod::getInstance()->getInventoryItem( InventoryItem::getItemByHash(u->m_itemHash) )->getModelCRC();
-				break;
-			case IDOL_SINGLE:
-				modelCRC = ItemModelsCRC::IDOL_SILVER;
-				break;
-			case IDOL_EXPLORER:
-				modelCRC = ItemModelsCRC::IDOL_EXPLORER;
-				break;
+			modelCRC = u->getModelCRC();
+
+			// Raise model a bit for items, otherwise they look weird (and Valley of Spirits 2nd idol is stupid hard to grab).
+			if ( it->second->m_type == INVENTORY_ITEM ) {
+				pos->z += 1.0F;
 			}
 		}
 	}
@@ -280,7 +338,7 @@ MAKE_THISCALL_WRAPPER( EITreasureIdol_InitValues_custom, _EITreasureIdol_InitVal
 
 static void Script_HarryIsInInventory_custom( EScriptContext* context )
 {
-	uint32_t currentAreaCRC = *((uint32_t*) 0x917088);
+	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
 
 	// Plane cockpit cutscene checks if we have canteen, just spoof the answer with "no".
 	if ( currentAreaCRC == levelCRC::PLANE_COCKPIT ) {
@@ -288,6 +346,7 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 		int* out = GetOutVariable( context );
 
 		*out = 0;
+		GetVarCustom( 0x4A3E4058, 0x07BC40E8, "numTimesPlayed", out, true );
 	}
 	// Native Village's shield cutscene will be gone if we enter with shield already.
 	else if ( currentAreaCRC == levelCRC::NATIVE_VILLAGE ) {
@@ -295,6 +354,7 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 		int* out = GetOutVariable( context );
 
 		*out = 0;
+		GetVarCustom( 0x05AA726C, 0x07BC40E8, "numTimesPlayed", out );
 	}
 	else {
 		Script_HarryIsInInventory( context );
