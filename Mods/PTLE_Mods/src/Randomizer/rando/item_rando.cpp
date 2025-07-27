@@ -23,44 +23,7 @@
 // Definitions.
 //
 
-// TODO : Move all of the save stuff to Gizmod.
-struct SaveLocation
-{
-	void* m_entry0;
-	int unknown0;
-	void* m_entryRoot;
-};
-class ESaveGameMan
-{
-public:
 
-	void** vtable;   // Don't know where it is yet...
-
-	SaveLocation m_saveLocation1;
-	SaveLocation m_saveLocation2;
-};
-#include "ptle/ESaveGameVar.h"
-
-GET_FUNC( 0x6F8EC0, uint32_t, HashStrCaseInsensitive, const char* );
-GET_FUNC( 0x65F9A0, uint32_t, CombineHashes, uint32_t, uint32_t, uint32_t );
-GET_METHOD( 0x6C6D60, bool, FindSaveGameVar, SaveLocation*, uint32_t, ESaveGameVar** );
-
-static bool GetVarCustom( uint32_t levelCRC, uint32_t instanceID, const char* varName, int* out, bool flip = false )
-{
-	ESaveGameMan* saveGameMan = *((ESaveGameMan**) 0x920058);
-
-	int val = *((int*) 0x920084);
-	SaveLocation* saveLocation = ((val == 0) != flip) ? &saveGameMan->m_saveLocation1 : &saveGameMan->m_saveLocation2;
-
-	uint32_t varHash = HashStrCaseInsensitive( varName );
-	uint32_t hash = CombineHashes( levelCRC, instanceID, varHash );
-	ESaveGameVar* sgv;
-	if ( FindSaveGameVar(saveLocation, hash, &sgv) ) {
-		*out = *((int*) &sgv->m_value);
-		return true;
-	}
-	return false;
-}
 
 
 GET_METHOD( 0x506170, void, UnlockItem, void*, uint32_t );
@@ -340,13 +303,13 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 {
 	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
 
-	// Plane cockpit cutscene checks if we have canteen, just spoof the answer with "no".
+	// Plane cockpit cutscene checks if we have canteen.
 	if ( currentAreaCRC == levelCRC::PLANE_COCKPIT ) {
 		PopScriptVariable_Int( context );
 		int* out = GetOutVariable( context );
 
 		*out = 0;
-		GetVarCustom( 0x4A3E4058, 0x07BC40E8, "numTimesPlayed", out, true );
+		Gizmod::getInstance()->getSaveManager()->getNativeManager()->GetVar( levelCRC::PLANE_COCKPIT, 0x07BC40E8, "numTimesPlayed", out, true );
 	}
 	// Native Village's shield cutscene will be gone if we enter with shield already.
 	else if ( currentAreaCRC == levelCRC::NATIVE_VILLAGE ) {
@@ -354,7 +317,7 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 		int* out = GetOutVariable( context );
 
 		*out = 0;
-		GetVarCustom( 0x05AA726C, 0x07BC40E8, "numTimesPlayed", out );
+		Gizmod::getInstance()->getSaveManager()->getNativeManager()->GetVar( levelCRC::NATIVE_VILLAGE, 0x07BC40E8, "numTimesPlayed", out, false );
 	}
 	else {
 		Script_HarryIsInInventory( context );

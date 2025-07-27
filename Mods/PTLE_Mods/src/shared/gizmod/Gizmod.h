@@ -2,6 +2,7 @@
 
 #include "EventListener.h"
 #include "Logger.h"
+#include "save/SaveManager.h"
 #include "item/InventoryItem.h"
 
 #include <string>
@@ -43,6 +44,7 @@ public:
 		/// Mod services.
 	inline EventListener* getEventListener() { return &m_eventListener; }
 	inline Logger* getLogger() { return &m_logger; }
+	inline SaveManager* getSaveManager() { return &m_saveManager; }
 
 	inline InventoryItem* getInventoryItem( InventoryItem::Item i ) { return i == InventoryItem::UNKNOWN ? 0 : &m_inventoryItems[i]; };
 
@@ -61,6 +63,7 @@ private:
 
 	EventListener m_eventListener;
 	Logger m_logger;
+	SaveManager m_saveManager;
 
 	InventoryItem m_inventoryItems[8];
 };
