@@ -1,0 +1,32 @@
+Entity flags :
+
+31                              16
+|0 0 0 0 0 0 0 0| |0|0 0|0 0|0 0 0|
+|               | |2|   | 4 |     |
+15                               0
+|0 0 0 0 0 0 0 0| |0|0 0|0|0 0 0 0|
+| ???           | |3|   |3|   1   |
+
+
+1 : Seem to be tied to general activation, visibility, and ticking every frame.
+2 : Is set a lot on EIParticleEmitter instances
+3 : Seem to be set on deactivation (opposite of 1).
+4 : Set when deserialized
+
+
+---
+
+
+0 : visible
+1 : ???
+2 : ???
+3 : ???
+4 : Should NOT tick
+5 : Should tick
+6 : ???
+7 : ???
+8 : Keep in world after respawn
+
+19 : Set when deserialized (function 0x625C20)
+20 : Set when deserialized (function 0x625C20)
+21 : In world

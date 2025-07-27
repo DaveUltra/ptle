@@ -34,8 +34,8 @@ public:
 
 	float m_angle;
 	float unknown2;
-	float unknown3;
 
+	float m_elapsedTime;
 	int m_stateIndexCurrent;
 	int unknown4;
 	int m_stateIndexNext;

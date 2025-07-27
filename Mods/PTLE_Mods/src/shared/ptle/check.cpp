@@ -27,6 +27,7 @@
 #include "EITreasureIdol.h"
 #include "ERAnim.h"
 #include "ERCharacter.h"
+#include "ERDataset.h"
 #include "ERFont.h"
 #include "ERLevel.h"
 #include "ERModel.h"
@@ -104,6 +105,7 @@ CHECK_TYPE_SIZE( EIEvilHarryMM,      0x8B0 );
 CHECK_TYPE_SIZE( EIEvilHarryP,       0x970 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );
 CHECK_TYPE_SIZE( EResource,          0x14 );
+CHECK_TYPE_SIZE( ERDataset,          0x1C );
 CHECK_TYPE_SIZE( ERShader,           0x20 );
 CHECK_TYPE_SIZE( ERCharacter,        0x34 );
 CHECK_TYPE_SIZE( ERScript,           0x44 );

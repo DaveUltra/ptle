@@ -12,6 +12,8 @@
     <ClCompile Include="gizmod\shaman\ShamanShop.cpp" />
     <ClCompile Include="gizmod\event\ShamanPurchaseEvent.cpp" />
     <ClCompile Include="gizmod\event\CollectItemEvent.cpp" />
+    <ClCompile Include="ptle\src\ESaveGameMan.cpp" />
+    <ClCompile Include="gizmod\save\SaveManager.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -106,6 +108,9 @@
     <ClInclude Include="gizmod\item\InventoryItem.h" />
     <ClInclude Include="gizmod\item\ItemModelsCRC.h" />
     <ClInclude Include="ptle\ESaveGameVar.h" />
+    <ClInclude Include="ptle\ESaveGameMan.h" />
+    <ClInclude Include="ptle\stream\EStream.h" />
+    <ClInclude Include="gizmod\save\SaveManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />
