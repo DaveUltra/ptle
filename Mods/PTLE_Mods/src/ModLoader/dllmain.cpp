@@ -33,6 +33,7 @@ typedef NTSTATUS(NTAPI* LdrAddRefDll_t)(ULONG, HMODULE);
 extern "C" { Gizmod* gizmodInstance; }
 
 bool g_enabled = true;
+bool g_skipSplashScreens = false;
 
 Gizmod g_pitfall;
 
@@ -449,6 +450,15 @@ void InjectCode()
 
 	// Protection against explorer softlock.
 	injector::WriteMemory( 0x87659C, ReturnYes );
+
+	// Skip splash screens and trailer.
+	if ( g_skipSplashScreens ) {
+		injector::WriteMemory<uint8_t>( 0x512BC5, 0x22 );
+
+		//injector::MakeNOP( 0x489B28, 6 );
+		//injector::MakeNOP( 0x489C01, 2 );
+		//injector::MakeNOP( 0x489C22, 7 );
+	}
 
 
 	// Collect item.
