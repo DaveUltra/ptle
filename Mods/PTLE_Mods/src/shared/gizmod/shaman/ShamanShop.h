@@ -23,7 +23,7 @@ public:
 		JUNGLE_NOTES,
 		NATIVE_NOTES,
 		CAVERN_NOTES,
-		MOUTAIN_NOTES,
+		MOUNTAIN_NOTES,
 		MYSTERY_ITEM,
 
 		NUM_ITEMS,   // Should be equal to 18.

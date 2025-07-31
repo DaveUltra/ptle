@@ -403,7 +403,7 @@ static ShamanShop::PriceSlot id_to_shaman( int id )
 	case 0x8E: return ShamanShop::JUNGLE_NOTES;
 	case 0x8F: return ShamanShop::NATIVE_NOTES;
 	case 0x90: return ShamanShop::CAVERN_NOTES;
-	case 0x91: return ShamanShop::MOUTAIN_NOTES;
+	case 0x91: return ShamanShop::MOUNTAIN_NOTES;
 	case 0x9C: return ShamanShop::MYSTERY_ITEM;
 	default: return ShamanShop::UNKNOWN;
 	}
