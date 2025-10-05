@@ -73,8 +73,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gizmod\event\CollectIdolEvent.cpp" />
     <ClCompile Include="gizmod\event\CollectItemEvent.cpp" />
     <ClCompile Include="gizmod\event\ShamanPurchaseEvent.cpp" />
+    <ClCompile Include="gizmod\item\InventoryItem.cpp" />
     <ClCompile Include="gizmod\save\SaveManager.cpp" />
     <ClCompile Include="gizmod\shaman\ShamanShop.cpp" />
     <ClCompile Include="gizmod\world\GizmodWorld.cpp" />

@@ -14,6 +14,8 @@
     <ClCompile Include="gizmod\event\CollectItemEvent.cpp" />
     <ClCompile Include="ptle\src\ESaveGameMan.cpp" />
     <ClCompile Include="gizmod\save\SaveManager.cpp" />
+    <ClCompile Include="gizmod\item\InventoryItem.cpp" />
+    <ClCompile Include="gizmod\event\CollectIdolEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
