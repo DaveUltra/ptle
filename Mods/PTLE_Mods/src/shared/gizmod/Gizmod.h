@@ -4,6 +4,7 @@
 #include "Logger.h"
 #include "save/SaveManager.h"
 #include "item/InventoryItem.h"
+#include "world/GizmodWorld.h"
 
 #include <string>
 
@@ -46,6 +47,7 @@ public:
 	inline EventListener* getEventListener() { return &m_eventListener; }
 	inline Logger* getLogger() { return &m_logger; }
 	inline SaveManager* getSaveManager() { return &m_saveManager; }
+	inline GizmodWorld* getWorld() { return &m_world; }
 
 	inline InventoryItem* getInventoryItem( InventoryItem::Item i ) { return i == InventoryItem::UNKNOWN ? 0 : &m_inventoryItems[i]; };
 
@@ -66,6 +68,7 @@ private:
 	EventListener m_eventListener;
 	Logger m_logger;
 	SaveManager m_saveManager;
+	GizmodWorld m_world;
 
 	InventoryItem m_inventoryItems[8];
 };
