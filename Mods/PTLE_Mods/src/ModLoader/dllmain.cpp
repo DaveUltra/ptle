@@ -294,6 +294,7 @@ enum vccorlibExportsNames
 
 #include "ptle/EInstance.h"
 #include "ptle/EIBeast.h"
+#include "ptle/EITreasureIdol.h"
 #include "ptle/ESDInt.h"
 #include "ptle/EScriptContext.h"
 
@@ -336,6 +337,22 @@ static void _CollectItem_custom( void* self, uint32_t itemHash )
 	}
 }
 MAKE_THISCALL_WRAPPER( CollectItem_custom, _CollectItem_custom );
+
+// VERY hacky :
+// The original "AddCollectedIdols" function is not a member function. But at the injection point, ECX contains a pointer
+// to the idol, which we can retrieve by pretending that it is a member function.
+GET_FUNC( 0x5E34A0, void, AddCollectedIdols, uint32_t, int );
+static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, int amount )
+{
+	amount = self->GetAmount();
+	CollectIdolEvent event( self, amount );
+	Gizmod::getInstance()->getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		AddCollectedIdols( levelCRC, event.getAmount() );
+	}
+}
+MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -455,15 +472,15 @@ void InjectCode()
 	if ( g_skipSplashScreens ) {
 		injector::WriteMemory<uint8_t>( 0x512BC5, 0x22 );
 
-		//injector::MakeNOP( 0x489B28, 6 );
-		//injector::MakeNOP( 0x489C01, 2 );
-		//injector::MakeNOP( 0x489C22, 7 );
+		injector::WriteMemory<uint8_t>( 0x489929, 3 );
 	}
 
 
-	// Collect item.
+	// Collect items & idols.
 	injector::MakeCALL( 0x4E9E51, CollectItem_custom );        // Intercept item unlock ("HarryAddInventoryItem" script function).
-	injector::MakeCALL( 0x598036, CollectItem_custom );        // Intercept item unlock (picking up an EITreasure).
+	injector::MakeCALL( 0x598036, CollectItem_custom );        // Intercept item unlock (picking up an EITreasureIdol).
+	injector::MakeCALL( 0x598004, AddCollectedIdols_custom );  // Intercept idol grab (picking up an EITreasureIdol).
+	injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
 
 	// Not working.
 	//injector::MakeJMP( 0x626747, _EntitySpawn );

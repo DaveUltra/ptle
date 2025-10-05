@@ -231,12 +231,7 @@ static void collectItem( CollectItemEvent& event )
 	it->second->grant();
 }
 
-
-// VERY hacky :
-// The original "AddCollectedIdols" function is not a member function. But at the injection point, ECX contains a pointer
-// to the idol, which we can retrieve by pretending that it is a member function.
-// In the process, we override "levelCRC" and "amount", but their values are always known.
-static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, int amount )
+static bool collectIdol( EITreasureIdol* self, uint32_t levelCRC, int amount )
 {
 	levelCRC = Gizmod::getCurrentLevelCRC();
 
@@ -244,8 +239,7 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 	const Idol* idol = get_idol( levelCRC, self->m_uniqueID );
 	if ( idol == 0 ) {
 		log_printf( "No idol found! Was idols_infos.json loaded correctly?\n" );
-		AddCollectedIdols( levelCRC, (self->m_uniqueID == 0x412B274) ? 5 : 1 );
-		return;
+		return false;
 	}
 
 	Unlockable u = { idol->isExplorerIdol() ? IDOL_EXPLORER : IDOL_SINGLE, (uint32_t) idol };
@@ -253,14 +247,12 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 
 	// No override.
 	if ( it == g_unlockablesMap.end() ) {
-		AddCollectedIdols( levelCRC, idol->isExplorerIdol() ? 5 : 1 );
-		return;
+		return false;
 	}
 
 	it->second->grant();
+	return true;
 }
-MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
-
 
 static void _EITreasureIdol_InitValues_custom( EITreasureIdol* self, Vector3f* pos, Vector4f* rot, uint32_t modelCRC, uint32_t particleCRC, uint32_t soundCRC )
 {
@@ -325,13 +317,23 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 }
 
 
-class ItemRandoListener : public ICollectItemListener
+class ItemRandoListener
+	: public ICollectItemListener
+	, public ICollectIdolListener
 {
 public:
 
 	virtual void onCollectItem( CollectItemEvent& event ) override
 	{
 		collectItem( event );
+	}
+
+	virtual void onCollectIdol( CollectIdolEvent& event ) override
+	{
+		bool overriden = collectIdol( event.getEntity(), Gizmod::getCurrentLevelCRC(), event.getAmount() );
+		if ( overriden ) {
+			event.setCancelled( true );
+		}
 	}
 }
 g_itemRandoListener;
@@ -413,13 +415,9 @@ void item_rando_init()
 
 
 	Gizmod::getInstance()->getEventListener()->registerEvent<CollectItemEvent>( &g_itemRandoListener );
+	Gizmod::getInstance()->getEventListener()->registerEvent<CollectIdolEvent>( &g_itemRandoListener );
 
 	// Code injection.
-
-	// Intercept idol grab.
-	injector::MakeCALL( 0x598004, AddCollectedIdols_custom );
-	injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
-	injector::MakeNOP( 0x598009, 3 );
 
 	// Misc.
 	injector::MakeCALL( 0x5973E9, EITreasureIdol_InitValues_custom );     // Set correct model on EITreasureIdol instances (regular idols).

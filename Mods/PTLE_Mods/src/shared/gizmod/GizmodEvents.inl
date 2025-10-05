@@ -3,6 +3,7 @@
 #endif
 
 
+GIZMOD_EVENT( CollectIdol )
 GIZMOD_EVENT( CollectItem )
 GIZMOD_EVENT( EntitySpawn )
 GIZMOD_EVENT( LevelLoaded )
