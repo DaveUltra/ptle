@@ -134,6 +134,7 @@ CHECK_FIELD_OFFSET( EISupai,        m_isTutorialSupai,   0x991 );
 CHECK_FIELD_OFFSET( EIEffector,     m_scriptCRC0,        0x200 );
 
 CHECK_FIELD_OFFSET( ERLevel,        m_updateRegion,      0x440 );
+CHECK_FIELD_OFFSET( ERLevel,        m_entitiesByID,      0x59C );
 
 CHECK_FIELD_OFFSET( EScriptContext, m_scriptStack,       0x24 );
 CHECK_FIELD_OFFSET( EScriptContext, m_currentFunction,   0x884 );
