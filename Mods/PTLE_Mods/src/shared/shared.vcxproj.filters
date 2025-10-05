@@ -111,6 +111,7 @@
     <ClInclude Include="ptle\ESaveGameMan.h" />
     <ClInclude Include="ptle\stream\EStream.h" />
     <ClInclude Include="gizmod\save\SaveManager.h" />
+    <ClInclude Include="ptle\EUIHud.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

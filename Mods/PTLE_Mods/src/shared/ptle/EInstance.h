@@ -45,7 +45,7 @@ public:
 	virtual void Init();
 	virtual void Tick();
 	virtual int func_unknown1();
-	virtual void func_unknown2();
+	virtual void Render(void*, void*);
 	virtual void func_unknown3();
 	virtual void func_unknown4(Matrix4f*);
 	virtual int func_unknown5();
