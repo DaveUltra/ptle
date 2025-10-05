@@ -11,6 +11,7 @@ class GizmodPlugin;
 
 class EIHarry;
 class ERLevel;
+class EUIHud;
 
 
 class Gizmod
@@ -55,6 +56,7 @@ public:
 		/// Util functions.
 	static EIHarry* getHarry();
 	static ERLevel* getLevel();
+	static EUIHud* getHUD();
 
 	static uint32_t getCurrentLevelCRC();
 

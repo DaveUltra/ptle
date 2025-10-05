@@ -43,7 +43,7 @@ bool is_type_derived_from( const ETypeInfo* type, const ETypeInfo* base )
 		}
 		type = type->m_parent;
 	}
-	while ( type->m_parent != type );
+	while ( type && type->m_parent != type );
 
 	return false;
 }
@@ -71,6 +71,8 @@ void register_types()
 	register_type( 0x875B30, 0x0090F218 );   // EIEvilHarryS
 	register_type( 0x876400, 0x0090F3E8 );   // EIExplorer
 	register_type( 0x8779C0, 0x0090F5D0 );   // EIGamePlatform
+	register_type( 0x87A3D8, 0x0090F9C8 );   // EGamesUI3dScore
+	register_type( 0x87A750, 0x0090F9F4 );   // EGamesUI3dTimer
 	register_type( 0x87D300, 0x0090FBE8 );   // EIHarry
 	register_type( 0x87D618, 0x00910D30 );   // EIPlayer
 	register_type( 0x881BE8, 0x0090FEB4 );   // EIHenchman
@@ -102,7 +104,11 @@ void register_types()
 	register_type( 0x899130, 0x0091233C );   // EIStClair
 	register_type( 0x8999C8, 0x009123AC );   // EISupai
 	register_type( 0x89A2F8, 0x009124F0 );   // EITreasureIdol
+	register_type( 0x89A420, 0x009124F0 );   // EIUserTreasureIdol
 	register_type( 0x89DED0, 0x00912970 );   // EUIDDMenuTextItem
+	register_type( 0x89F608, 0x00912BB8 );   // EUIHudCube
+	register_type( 0x89F840, 0x00912BE4 );   // EUIHudInventory
+	register_type( 0x8A04D8, 0x00912C6C );   // EUIHudLifeMeter
 	register_type( 0x8A2148, 0x0091FED4 );   // EIWaterPatch
 	register_type( 0x8A2580, 0x00916E98 );   // EIWell
 	register_type( 0x8A2C70, 0x009170DC );   // EIYoYoMonkey
