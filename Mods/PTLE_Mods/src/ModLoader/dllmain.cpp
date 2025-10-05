@@ -373,10 +373,20 @@ static __declspec(naked) void _EntitySpawn()
 	__asm ret 0x4
 }
 
+GET_METHOD( 0x5229B0, void, EMusicManager_PlayMusic, void*, uint32_t, bool );
 static void LevelLoaded()
 {
+	uint32_t globalStruct = 0x917028;
+	uint32_t obj1 =     *(uint32_t*)(globalStruct + 0x4);
+	uint32_t obj2 =     *(uint32_t*)(obj1         + 0x4);
+	uint32_t musicCRC = *(uint32_t*)(obj2         + 0x34);
+
 	LevelLoadedEvent event;
+	event.setMusicOverride( musicCRC );
 	g_pitfall.getEventListener()->invokeEvent( event );
+
+	void* musicManager = (void*) 0x910850;
+	EMusicManager_PlayMusic( musicManager, event.getMusicCRC(), true );
 }
 
 GET_METHOD( 0x5EBA90, void, LoadLevel, void*, uint32_t, bool );
@@ -491,6 +501,7 @@ void InjectCode()
 	// Level finished loading.
 	injector::MakeNOP( 0x5EC196, 8 );
 	injector::MakeCALL( 0x5EC196, LevelLoaded );
+	injector::MakeRangedNOP( 0x5096BC, 0x5096ED );             // Defer music playing.
 
 	// EPauseMain_Message() in vtable.
 	injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );
