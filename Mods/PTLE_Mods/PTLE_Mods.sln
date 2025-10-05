@@ -28,6 +28,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ModLoader", "src\ModLoader\
 		{A4AB7382-2627-4C92-9F52-44ECD723880B} = {A4AB7382-2627-4C92-9F52-44ECD723880B}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TreasureHunt", "TreasureHunt\TreasureHunt.vcxproj", "{4FD73A7C-47CB-4332-8FB8-32F7B57FA8F7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4AB7382-2627-4C92-9F52-44ECD723880B} = {A4AB7382-2627-4C92-9F52-44ECD723880B}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -58,6 +63,10 @@ Global
 		{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}.Debug|Win32.Build.0 = Debug|Win32
 		{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}.Release|Win32.ActiveCfg = Release|Win32
 		{53AD47D4-E5FE-4F9A-9214-93744D57ADE4}.Release|Win32.Build.0 = Release|Win32
+		{4FD73A7C-47CB-4332-8FB8-32F7B57FA8F7}.Debug|Win32.ActiveCfg = Debug|Win32
+		{4FD73A7C-47CB-4332-8FB8-32F7B57FA8F7}.Debug|Win32.Build.0 = Debug|Win32
+		{4FD73A7C-47CB-4332-8FB8-32F7B57FA8F7}.Release|Win32.ActiveCfg = Release|Win32
+		{4FD73A7C-47CB-4332-8FB8-32F7B57FA8F7}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
