@@ -5,6 +5,7 @@
 #include "gizmod/event/LoadLevelEvent.h"
 #include "gizmod/event/LevelLoadedEvent.h"
 #include "gizmod/event/CollectIdolEvent.h"
+#include "gizmod/event/CinematicPlayEvent.h"
 
 #include "ptle/levels/level_info.h"
 #include "ptle/EInstance.h"
@@ -229,6 +230,7 @@ class TreasureHuntPlugin : public GizmodPlugin
 	, public ILoadLevelListener
 	, public ILevelLoadedListener
 	, public ICollectIdolListener
+	, public ICinematicPlayListener
 {
 public:
 
@@ -365,6 +367,11 @@ public:
 		collectedIdols.insert( event.getEntity()->m_uniqueID );
 	}
 
+	virtual void onCinematicPlay( CinematicPlayEvent& event )
+	{
+		event.setCancelled( true );
+	}
+
 
 	virtual void onEnable()
 	{
@@ -377,6 +384,7 @@ public:
 		eventListener->registerEvent<LoadLevelEvent>( this );
 		eventListener->registerEvent<LevelLoadedEvent>( this );
 		eventListener->registerEvent<CollectIdolEvent>( this );
+		eventListener->registerEvent<CinematicPlayEvent>( this );
 
 		// Hijack main UI to include our idol counter.
 		injector::WriteMemory( 0x8A070C, &M::TickUI );

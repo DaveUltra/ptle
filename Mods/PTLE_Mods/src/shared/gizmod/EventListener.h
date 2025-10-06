@@ -1,5 +1,6 @@
 #pragma once
 
+#include "event/CinematicPlayEvent.h"
 #include "event/CollectExplorerEvent.h"
 #include "event/CollectIdolEvent.h"
 #include "event/CollectItemEvent.h"

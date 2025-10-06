@@ -300,6 +300,7 @@ enum vccorlibExportsNames
 
 #include "ptle/containers/TreeMap/TreeMap.h"
 
+#include "gizmod/event/CinematicPlayEvent.h"
 #include "gizmod/event/CollectItemEvent.h"
 #include "gizmod/event/EntitySpawnEvent.h"
 #include "gizmod/event/LevelLoadedEvent.h"
@@ -346,13 +347,29 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 {
 	amount = self->GetAmount();
 	CollectIdolEvent event( self, amount );
-	Gizmod::getInstance()->getEventListener()->invokeEvent( event );
+	g_pitfall.getEventListener()->invokeEvent( event );
 
 	if ( !event.isCancelled() ) {
 		AddCollectedIdols( levelCRC, event.getAmount() );
 	}
 }
 MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
+
+// Cutscene start.
+GET_METHOD( 0x4308B0, bool, EICinematic_CheckCannotPlay, EICinematic*, bool );
+static bool _CinematicCannotPlay( EICinematic* self, bool param )
+{
+	// Determine whether the cutscene will play at all, using the original function.
+	bool notPlay = EICinematic_CheckCannotPlay( self, param );
+	if ( notPlay ) return true;
+
+	// If it is going to, forward the event to the manager.
+	CinematicPlayEvent event( self );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	return event.isCancelled();
+}
+MAKE_THISCALL_WRAPPER( CinematicCannotPlay, _CinematicCannotPlay );
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -491,6 +508,9 @@ void InjectCode()
 	injector::MakeCALL( 0x598036, CollectItem_custom );        // Intercept item unlock (picking up an EITreasureIdol).
 	injector::MakeCALL( 0x598004, AddCollectedIdols_custom );  // Intercept idol grab (picking up an EITreasureIdol).
 	injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
+
+	// Cinematic playing.
+	injector::MakeCALL( 0x430A20, CinematicCannotPlay );
 
 	// Not working.
 	//injector::MakeJMP( 0x626747, _EntitySpawn );

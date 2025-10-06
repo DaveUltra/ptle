@@ -90,6 +90,7 @@
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
     <ClInclude Include="gizmod\event\CollectItemEvent.h" />
     <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
     <ClInclude Include="gizmod\item\InventoryItem.h" />
