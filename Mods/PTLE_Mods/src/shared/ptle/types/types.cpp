@@ -2,8 +2,6 @@
 
 #include "ptle/EStorable.h"
 
-#include <map>
-
 
 static std::map<uint32_t, type_info_t> g_types;
 
@@ -18,6 +16,11 @@ const type_info_t* get_type_by_vtable( uint32_t vtableAddr )
 {
 	auto it = g_types.find( vtableAddr );
 	return (it != g_types.end()) ? &it->second : 0;
+}
+
+const std::map<uint32_t, type_info_t>& get_all_types()
+{
+	return g_types;
 }
 
 bool is_type_derived_from( const type_info_t* type, const type_info_t* base )

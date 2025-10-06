@@ -3,6 +3,7 @@
 #endif
 
 
+GIZMOD_EVENT( BeastStateSwitch )
 GIZMOD_EVENT( CinematicPlay )
 GIZMOD_EVENT( CollectIdol )
 GIZMOD_EVENT( CollectItem )

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "event/BeastStateSwitchEvent.h"
 #include "event/CinematicPlayEvent.h"
 #include "event/CollectExplorerEvent.h"
 #include "event/CollectIdolEvent.h"

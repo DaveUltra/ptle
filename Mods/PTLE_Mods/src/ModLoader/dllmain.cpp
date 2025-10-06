@@ -300,6 +300,7 @@ enum vccorlibExportsNames
 
 #include "ptle/containers/TreeMap/TreeMap.h"
 
+#include "gizmod/event/BeastStateSwitchEvent.h"
 #include "gizmod/event/CinematicPlayEvent.h"
 #include "gizmod/event/CollectItemEvent.h"
 #include "gizmod/event/EntitySpawnEvent.h"
@@ -322,6 +323,30 @@ void Script_SetBeastTarget_Safe( EScriptContext* context )
 	Script_SetBeastTarget_Original( context );
 }
 
+
+GET_METHOD( 0x4159B0, void, EIBeast_PerformStateSwitch, EIBeast*, uint32_t, bool, bool );
+class MyBeast : public EIBeast
+{
+public:
+	void PerformStateSwitch_custom( uint32_t stateID, bool param1, bool param2 )
+	{
+		EBeastStateMachine* sm = this->GetStateMachine();
+		const char* name = sm->m_states[stateID].m_name;
+		const char* nameEnd = name + strlen( name );
+
+		if ( strcmp(nameEnd - 4, "init") != 0 ) {
+			EIBeast_PerformStateSwitch( this, stateID, param1, param2 );
+			return;
+		}
+
+		BeastStateSwitchEvent event( this, stateID );
+		g_pitfall.getEventListener()->invokeEvent( event );
+
+		if ( !event.isCancelled() ) {
+			EIBeast_PerformStateSwitch( this, stateID, param1, param2 );
+		}
+	}
+};
 
 GET_METHOD( 0x506170, void, CollectItem, void*, uint32_t );
 static void _CollectItem_custom( void* self, uint32_t itemHash )
@@ -483,6 +508,20 @@ static bool ReturnYes()
 	return true;
 }
 
+static void LateInit()
+{
+	// Beast state change.
+	const type_info_t* beast = get_type_by_vtable( 0x86C3D0 );
+	for ( auto p : get_all_types() ) {
+		if ( p.second.ptleType->m_parent == beast->ptleType ) {
+			void** vtable = (void**) p.first;
+			injector::WriteMemory( &vtable[0xB9], &MyBeast::PerformStateSwitch_custom );
+		}
+	}
+
+	injector::MakeJMP( 0x620053, 0x62006A );
+}
+
 void InjectCode()
 {
 	// Inconveniently spammed prints remaining in the game's code.
@@ -501,6 +540,11 @@ void InjectCode()
 
 		injector::WriteMemory<uint8_t>( 0x489929, 3 );
 	}
+
+	// Late init.
+	injector::MakeRangedNOP( 0x60D439, 0x60D441 );
+	injector::MakeCALL( 0x60D439, LateInit );
+	injector::MakeRangedNOP( 0x60E977, 0x60E97F );
 
 
 	// Collect items & idols.

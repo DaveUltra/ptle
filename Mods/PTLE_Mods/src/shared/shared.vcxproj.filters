@@ -115,6 +115,7 @@
     <ClInclude Include="gizmod\save\SaveManager.h" />
     <ClInclude Include="ptle\EUIHud.h" />
     <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
+    <ClInclude Include="gizmod\event\BeastStateSwitchEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />
