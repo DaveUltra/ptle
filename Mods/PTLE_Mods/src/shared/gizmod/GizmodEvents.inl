@@ -12,6 +12,7 @@ GIZMOD_EVENT( EntitySpawn )
 GIZMOD_EVENT( LevelLoaded )
 GIZMOD_EVENT( LoadLevel )
 GIZMOD_EVENT( PlantRustle )
+GIZMOD_EVENT( ProjectileShoot )
 GIZMOD_EVENT( ShamanPurchase )
 
 

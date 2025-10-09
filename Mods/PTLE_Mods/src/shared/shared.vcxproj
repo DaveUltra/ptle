@@ -95,6 +95,7 @@
     <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
     <ClInclude Include="gizmod\event\CollectItemEvent.h" />
     <ClInclude Include="gizmod\event\PlantRustleEvent.h" />
+    <ClInclude Include="gizmod\event\ProjectileShootEvent.h" />
     <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
     <ClInclude Include="gizmod\item\InventoryItem.h" />
     <ClInclude Include="gizmod\item\ItemModelsCRC.h" />

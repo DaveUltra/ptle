@@ -4,18 +4,22 @@
 
 Additions :
 
+- Gizmod configuration : Bypass legal notice and splash screens on game startup (add `"skipSplashScreens=true"`)
 - Save interface
 	- Tampering with the game's own save variables
 	- Adding custom, arbitrary save data to a game save
-- Override the music played upon starting the level ("LevelLoaded" event)
-- "CollectIdol" event
-- "BreakableBreak" event (stone pillars, pots, hay stacks, etc...)
-- "PlantRustle" event (tallgrass and other plants moving when colliding with Harry or a projectile)
-- "BeastStateSwitch" event (everytime an enemy or NPC changes its AI state)
-- "CinematicPlay" event (anytime a cutscene starts playing)
-- Barebones HUD manipulation
-- Inventory interface (changing hotbar items, item in hand, unlocking shaman notes)
-- Gizmod configuration : Bypass legal notice and splash screens on game startup
+- Events
+  - Override the music played upon starting the level ("LevelLoaded" event)
+  - "BeastStateSwitch" event (everytime an enemy or NPC changes its AI state)
+  - "BreakableBreak" event (stone pillars, pots, hay stacks, etc...)
+  - "CinematicPlay" event (anytime a cutscene starts playing)
+  - "CollectIdol" event
+  - "PlantRustle" event (tallgrass and other plants moving when colliding with Harry or a projectile)
+  - "ProjectileShoot" event (sling rocks, TNT, mangos, coconuts, porcupine spikes, etc...)
+- New interfaces
+  - Barebones HUD manipulation
+  - Inventory interface (changing hotbar items, item in hand, unlocking shaman notes)
+
 
 Fixes :
 

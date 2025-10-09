@@ -295,6 +295,7 @@ enum vccorlibExportsNames
 #include "ptle/EInstance.h"
 #include "ptle/EIBeast.h"
 #include "ptle/EIPlant.h"
+#include "ptle/EIProjectile.h"
 #include "ptle/EITreasureIdol.h"
 #include "ptle/ESDInt.h"
 #include "ptle/EScriptContext.h"
@@ -309,6 +310,7 @@ enum vccorlibExportsNames
 #include "gizmod/event/LevelLoadedEvent.h"
 #include "gizmod/event/LoadLevelEvent.h"
 #include "gizmod/event/PlantRustleEvent.h"
+#include "gizmod/event/ProjectileShootEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
 
 
@@ -476,6 +478,23 @@ static void __declspec(naked) PlantRustleSmall()
 	__asm pop edx
 	__asm ret
 }
+
+
+// Projectile shoot.
+GET_METHOD( 0x559640, void, EIProjectile_Shoot, EIProjectile*, const Vector3f*, const Vector3f*, EInstance*, float );
+static void __stdcall _ProjectileShoot( EIProjectile* self, Vector3f* position, Vector3f* direction, EInstance* source, float accuracy )
+{
+	ProjectileShootEvent event( self, source, *position, *direction );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		EIProjectile_Shoot( self, &event.getPosition(), &event.getDirection(), source, accuracy );
+	}
+	else {
+		self->~EIProjectile();
+	}
+}
+MAKE_THISCALL_WRAPPER( ProjectileShoot, _ProjectileShoot );
 
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
@@ -653,6 +672,12 @@ void InjectCode()
 	injector::MakeCALL( 0x545222, PlantRustleSmall );
 	injector::MakeNOP( 0x545507, 10 );
 	injector::MakeCALL( 0x545507, PlantRustleSmall );
+
+	// Projectile shooting.
+	static const uint32_t callLocations[] = { 0x494253, 0x501F12, 0x556723, 0x559B23, 0x559EA5, 0x559FFA, 0x55E0A4, 0x583711, 0x583B77, 0x595867, 0x595960 };
+	for ( int i = 0; i < _countof(callLocations); i++ ) {
+		injector::MakeCALL( callLocations[i], ProjectileShoot );
+	}
 
 
 	// Not working.
