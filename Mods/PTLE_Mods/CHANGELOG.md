@@ -9,6 +9,10 @@ Additions :
 	- Adding custom, arbitrary save data to a game save
 - Override the music played upon starting the level ("LevelLoaded" event)
 - "CollectIdol" event
+- "BreakableBreak" event (stone pillars, pots, hay stacks, etc...)
+- "PlantRustle" event (tallgrass and other plants moving when colliding with Harry or a projectile)
+- "BeastStateSwitch" event (everytime an enemy or NPC changes its AI state)
+- "CinematicPlay" event (anytime a cutscene starts playing)
 - Barebones HUD manipulation
 - Inventory interface (changing hotbar items, item in hand, unlocking shaman notes)
 - Gizmod configuration : Bypass legal notice and splash screens on game startup
