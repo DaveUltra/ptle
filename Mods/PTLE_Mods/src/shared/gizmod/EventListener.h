@@ -1,6 +1,7 @@
 #pragma once
 
 #include "event/BeastStateSwitchEvent.h"
+#include "event/BreakableBreakEvent.h"
 #include "event/CinematicPlayEvent.h"
 #include "event/CollectExplorerEvent.h"
 #include "event/CollectIdolEvent.h"

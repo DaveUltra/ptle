@@ -79,6 +79,7 @@ void register_types()
 	register_type( 0x87A750, 0x0090F9F4 );   // EGamesUI3dTimer
 	register_type( 0x87D300, 0x0090FBE8 );   // EIHarry
 	register_type( 0x87D618, 0x00910D30 );   // EIPlayer
+	register_type( 0x87FDC0, 0x0090FD78 );   // EIHavokBreakable
 	register_type( 0x881BE8, 0x0090FEB4 );   // EIHenchman
 	register_type( 0x8822D0, 0x00910014 );   // EIHowlerMonkey
 	register_type( 0x889700, 0x00910700 );   // EIMegaMonkeyChild

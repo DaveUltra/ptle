@@ -123,6 +123,7 @@
     <ClInclude Include="ptle\EIPlayerMonkey.h" />
     <ClInclude Include="ptle\EIPlayerScorpion.h" />
     <ClInclude Include="ptle\EIPlayerPenguin.h" />
+    <ClInclude Include="gizmod\event\BreakableBreakEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

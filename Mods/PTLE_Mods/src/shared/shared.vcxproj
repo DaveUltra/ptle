@@ -91,6 +91,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="gizmod\event\BeastStateSwitchEvent.h" />
+    <ClInclude Include="gizmod\event\BreakableBreakEvent.h" />
     <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
     <ClInclude Include="gizmod\event\CollectItemEvent.h" />
     <ClInclude Include="gizmod\event\PlantRustleEvent.h" />

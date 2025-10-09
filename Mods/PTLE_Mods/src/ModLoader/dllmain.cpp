@@ -302,6 +302,7 @@ enum vccorlibExportsNames
 #include "ptle/containers/TreeMap/TreeMap.h"
 
 #include "gizmod/event/BeastStateSwitchEvent.h"
+#include "gizmod/event/BreakableBreakEvent.h"
 #include "gizmod/event/CinematicPlayEvent.h"
 #include "gizmod/event/CollectItemEvent.h"
 #include "gizmod/event/EntitySpawnEvent.h"
@@ -349,6 +350,48 @@ public:
 		}
 	}
 };
+
+enum DamageSource
+{
+	HARRY_PUNCH,
+	HARRY_SPINKICK,
+	HARRY_CROUCHKICK,
+	HARRY_RISING_STRIKE,
+	HARRY_SMASH_STRIKE,
+	HARRY_BREAKDANCE,
+	HARRY_SHIELD,
+	HARRY_PICKAXES,
+
+	SLING_ROCK,
+	SLING_SUPER,
+
+	TNT_BLAST,
+};
+static const char* source( uint32_t s )
+{
+	if ( s & 0x1 ) return "Sling rock";
+	if ( s & 0x4 ) return "Harry punch";
+	if ( s & 0x8 ) return "Breakdance";
+	if ( s & 0x20) return "Rising strike";
+	if ( s & 0x80 ) return "Pickaxes";
+	if ( s & 0x100 ) return "Supersling";
+	if ( s & 0x200 ) return "Shield";
+	if ( s & 0x400 ) return "TNT";
+	if ( s & 0x1000 ) return "Coconut?";
+	if ( s & 0x80000 ) return "Smash strike";
+	return "idk";
+}
+GET_METHOD( 0x4EDF50, void, EIHavokBreakable_Break, EInstance*, uint32_t, Vector4f*, float );
+static void _BreakableBreak( EInstance* self, uint32_t p4, Vector4f* p7, float p6 )
+{
+	BreakableBreakEvent event( self );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		EIHavokBreakable_Break( self, p4, p7, p6 );
+	}
+}
+MAKE_THISCALL_WRAPPER( BreakableBreak, _BreakableBreak );
 
 GET_METHOD( 0x506170, void, CollectItem, void*, uint32_t );
 static void _CollectItem_custom( void* self, uint32_t itemHash )
@@ -590,6 +633,9 @@ void InjectCode()
 	injector::MakeCALL( 0x60D439, LateInit );
 	injector::MakeRangedNOP( 0x60E977, 0x60E97F );
 
+
+	// Breakables.
+	injector::MakeCALL( 0x4EDD91, BreakableBreak );
 
 	// Collect items & idols.
 	injector::MakeCALL( 0x4E9E51, CollectItem_custom );        // Intercept item unlock ("HarryAddInventoryItem" script function).
