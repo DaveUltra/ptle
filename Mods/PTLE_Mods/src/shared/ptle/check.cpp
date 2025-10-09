@@ -14,6 +14,9 @@
 #include "EIMegaMonkeyParent.h"
 #include "EINative.h"
 #include "EINPCBeast.h"
+#include "EIPlayerMonkey.h"
+#include "EIPlayerPenguin.h"
+#include "EIPlayerScorpion.h"
 #include "EIPlayerStart.h"
 #include "EIPointLight.h"
 #include "EIProjectile.h"
@@ -79,6 +82,10 @@ CHECK_TYPE_SIZE( EICameraFollow,     0x7D0 );
 CHECK_TYPE_SIZE( EICameraBossPusca,  0x800 );
 CHECK_TYPE_SIZE( EICharacter,        0x2F0 );
 CHECK_TYPE_SIZE( EIPlayer,           0xB30 );
+CHECK_TYPE_SIZE( EIPlayerBeast,      0xB50 );
+CHECK_TYPE_SIZE( EIPlayerPenguin,    0xBD0 );
+CHECK_TYPE_SIZE( EIPlayerMonkey,     0xC00 );
+CHECK_TYPE_SIZE( EIPlayerScorpion,   0xDC0 );
 CHECK_TYPE_SIZE( EIHarry,            0x1A20 );
 CHECK_TYPE_SIZE( EIStaticModel,      0x1E0 );
 CHECK_TYPE_SIZE( EIDynamicModel,     0x1E0 );

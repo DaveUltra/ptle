@@ -112,6 +112,10 @@
     <ClInclude Include="gizmod\GizmodPlugin.h" />
     <ClInclude Include="ptle\containers\LinkedList\LinkedList.h" />
     <ClInclude Include="ptle\EIEvilHarryP.h" />
+    <ClInclude Include="ptle\EIPlayerBeast.h" />
+    <ClInclude Include="ptle\EIPlayerMonkey.h" />
+    <ClInclude Include="ptle\EIPlayerPenguin.h" />
+    <ClInclude Include="ptle\EIPlayerScorpion.h" />
     <ClInclude Include="ptle\ESaveGameMan.h" />
     <ClInclude Include="ptle\ESaveGameVar.h" />
     <ClInclude Include="ptle\ESDInt.h" />

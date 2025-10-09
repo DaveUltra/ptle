@@ -116,6 +116,10 @@
     <ClInclude Include="ptle\EUIHud.h" />
     <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
     <ClInclude Include="gizmod\event\BeastStateSwitchEvent.h" />
+    <ClInclude Include="ptle\EIPlayerBeast.h" />
+    <ClInclude Include="ptle\EIPlayerMonkey.h" />
+    <ClInclude Include="ptle\EIPlayerScorpion.h" />
+    <ClInclude Include="ptle\EIPlayerPenguin.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />
