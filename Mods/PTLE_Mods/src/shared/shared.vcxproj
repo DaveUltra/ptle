@@ -93,6 +93,7 @@
     <ClInclude Include="gizmod\event\BeastStateSwitchEvent.h" />
     <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
     <ClInclude Include="gizmod\event\CollectItemEvent.h" />
+    <ClInclude Include="gizmod\event\PlantRustleEvent.h" />
     <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
     <ClInclude Include="gizmod\item\InventoryItem.h" />
     <ClInclude Include="gizmod\item\ItemModelsCRC.h" />
@@ -111,7 +112,9 @@
     <ClInclude Include="gizmod\event\LoadLevelEvent.h" />
     <ClInclude Include="gizmod\GizmodPlugin.h" />
     <ClInclude Include="ptle\containers\LinkedList\LinkedList.h" />
+    <ClInclude Include="ptle\EIAnimLod.h" />
     <ClInclude Include="ptle\EIEvilHarryP.h" />
+    <ClInclude Include="ptle\EIPlant.h" />
     <ClInclude Include="ptle\EIPlayerBeast.h" />
     <ClInclude Include="ptle\EIPlayerMonkey.h" />
     <ClInclude Include="ptle\EIPlayerPenguin.h" />

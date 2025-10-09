@@ -8,6 +8,7 @@
 #include "event/EntitySpawnEvent.h"
 #include "event/LevelLoadedEvent.h"
 #include "event/LoadLevelEvent.h"
+#include "event/PlantRustleEvent.h"
 #include "event/ShamanPurchaseEvent.h"
 
 

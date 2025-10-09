@@ -14,6 +14,7 @@
 #include "EIMegaMonkeyParent.h"
 #include "EINative.h"
 #include "EINPCBeast.h"
+#include "EIPlant.h"
 #include "EIPlayerMonkey.h"
 #include "EIPlayerPenguin.h"
 #include "EIPlayerScorpion.h"
@@ -92,6 +93,7 @@ CHECK_TYPE_SIZE( EIDynamicModel,     0x1E0 );
 CHECK_TYPE_SIZE( EITreasureIdol,     0x210 );
 CHECK_TYPE_SIZE( EIEffector,         0x240 );
 CHECK_TYPE_SIZE( EIPlayerStart,      0x240 );
+CHECK_TYPE_SIZE( EIPlant,            0x260 );
 CHECK_TYPE_SIZE( EIProjectile,       0x280 );
 CHECK_TYPE_SIZE( EIBeast,            0x6F0 );
 CHECK_TYPE_SIZE( EIShaman,           0x700 );

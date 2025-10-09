@@ -294,6 +294,7 @@ enum vccorlibExportsNames
 
 #include "ptle/EInstance.h"
 #include "ptle/EIBeast.h"
+#include "ptle/EIPlant.h"
 #include "ptle/EITreasureIdol.h"
 #include "ptle/ESDInt.h"
 #include "ptle/EScriptContext.h"
@@ -306,6 +307,7 @@ enum vccorlibExportsNames
 #include "gizmod/event/EntitySpawnEvent.h"
 #include "gizmod/event/LevelLoadedEvent.h"
 #include "gizmod/event/LoadLevelEvent.h"
+#include "gizmod/event/PlantRustleEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
 
 
@@ -395,6 +397,43 @@ static bool _CinematicCannotPlay( EICinematic* self, bool param )
 	return event.isCancelled();
 }
 MAKE_THISCALL_WRAPPER( CinematicCannotPlay, _CinematicCannotPlay );
+
+
+// Plant rustle.
+static void _PlantRustleBig( EIPlant* plant )
+{
+	// Ignore if already rustling.
+	if ( plant->m_state1 != 0 || plant->m_state0 != 0 ) return;
+
+	PlantRustleEvent event( plant );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		plant->m_state1 = 2;
+	}
+}
+MAKE_THISCALL_WRAPPER( PlantRustleBig, _PlantRustleBig );
+
+static void _PlantRustleSmall( EIPlant* plant )
+{
+	// Ignore if already rustling.
+	if ( plant->m_state1 != 0 || plant->m_state0 != 0 ) return;
+
+	PlantRustleEvent event( plant );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		plant->m_state1 = 1;
+	}
+}
+static void __declspec(naked) PlantRustleSmall()
+{
+	__asm push edx     // "this" pointer is in EDX at the point of injection.
+	__asm call dword ptr _PlantRustleSmall
+	__asm pop edx
+	__asm ret
+}
+
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -560,6 +599,15 @@ void InjectCode()
 
 	// Cinematic playing.
 	injector::MakeCALL( 0x430A20, CinematicCannotPlay );
+
+	// Plants rustling.
+	injector::MakeNOP( 0x5444C6, 10 );
+	injector::MakeCALL( 0x5444C6, PlantRustleBig );
+	injector::MakeNOP( 0x545222, 10 );
+	injector::MakeCALL( 0x545222, PlantRustleSmall );
+	injector::MakeNOP( 0x545507, 10 );
+	injector::MakeCALL( 0x545507, PlantRustleSmall );
+
 
 	// Not working.
 	//injector::MakeJMP( 0x626747, _EntitySpawn );
