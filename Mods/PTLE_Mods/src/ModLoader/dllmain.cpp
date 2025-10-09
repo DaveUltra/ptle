@@ -513,9 +513,12 @@ static bool ReturnYes()
 static void LateInit()
 {
 	// Beast state change.
-	const type_info_t* beast = get_type_by_vtable( 0x86C3D0 );
+	const ETypeInfo* beast = get_type_by_vtable( 0x86C3D0 )->ptleType;
+	const ETypeInfo* flockBeast = get_type_by_vtable( 0x876D28 )->ptleType;
+
 	for ( auto p : get_all_types() ) {
-		if ( p.second.ptleType->m_parent == beast->ptleType ) {
+	const ETypeInfo* baseType = p.second.ptleType->m_parent;
+		if ( baseType == beast || baseType == flockBeast ) {
 			void** vtable = (void**) p.first;
 			injector::WriteMemory( &vtable[0xB9], &MyBeast::PerformStateSwitch_custom );
 		}

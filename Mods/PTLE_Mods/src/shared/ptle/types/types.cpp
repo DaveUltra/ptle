@@ -73,6 +73,7 @@ void register_types()
 	register_type( 0x875240, 0x0090F1A8 );   // EIEvilHarryP
 	register_type( 0x875B30, 0x0090F218 );   // EIEvilHarryS
 	register_type( 0x876400, 0x0090F3E8 );   // EIExplorer
+	register_type( 0x876D28, 0x0090F4C0 );   // EIFlockBeast
 	register_type( 0x8779C0, 0x0090F5D0 );   // EIGamePlatform
 	register_type( 0x87A3D8, 0x0090F9C8 );   // EGamesUI3dScore
 	register_type( 0x87A750, 0x0090F9F4 );   // EGamesUI3dTimer
