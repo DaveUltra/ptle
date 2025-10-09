@@ -334,7 +334,7 @@ public:
 		const char* name = sm->m_states[stateID].m_name;
 		const char* nameEnd = name + strlen( name );
 
-		if ( strcmp(nameEnd - 4, "init") != 0 ) {
+		if ( strcmp(nameEnd - 4, "init") == 0 ) {
 			EIBeast_PerformStateSwitch( this, stateID, param1, param2 );
 			return;
 		}
@@ -428,7 +428,9 @@ static void LevelLoaded()
 	g_pitfall.getEventListener()->invokeEvent( event );
 
 	void* musicManager = (void*) 0x910850;
-	EMusicManager_PlayMusic( musicManager, event.getMusicCRC(), true );
+	if ( event.getMusicCRC() != 0 ) {
+		EMusicManager_PlayMusic( musicManager, event.getMusicCRC(), true );
+	}
 }
 
 GET_METHOD( 0x5EBA90, void, LoadLevel, void*, uint32_t, bool );
