@@ -4,6 +4,8 @@
 
 #include "math/Vector3f.h"
 
+class EIBeast;
+
 
 struct EState
 {
