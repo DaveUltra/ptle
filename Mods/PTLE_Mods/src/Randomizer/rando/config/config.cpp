@@ -31,6 +31,7 @@ static const config_field_t fields[] =
 	CONFIG_FIELD( skipJaguar2,           config_field_type_t::BOOLEAN )
 	CONFIG_FIELD( skipWaterLevels,       config_field_type_t::BOOLEAN )
 	CONFIG_FIELD( immediateSpiritFights, config_field_type_t::BOOLEAN )
+	CONFIG_FIELD( disableMapsInShop,     config_field_type_t::BOOLEAN )
 
 	// Item randomizer.
 	CONFIG_FIELD( itemRandoInventory,    config_field_type_t::BOOLEAN )
@@ -74,6 +75,7 @@ RandoConfig::RandoConfig()
 	, skipJaguar2( false )
 	, skipWaterLevels( false )
 	, immediateSpiritFights( false )
+	, disableMapsInShop( false )
 	, itemRandoInventory( false )
 	, itemRandoIdols( false )
 	, itemRandoExplorers( false )

@@ -363,7 +363,7 @@ public:
 		}
 
 		if ( rando_config.randomizeShamanShop ) {
-			randomize_shaman_shop();
+			init_shaman_shop();
 		}
 
 		// TODO : Load world call (new game).
