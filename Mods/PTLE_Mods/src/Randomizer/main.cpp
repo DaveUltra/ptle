@@ -78,6 +78,7 @@ void hijack_transition( LoadLevelEvent& event )
 
 	switch ( prevAreaCRC )
 	{
+	case 0x1AAF2535: prevAreaCRC = levelCRC::JUNGLE_TRAIL;      break;  // Jungle Trail to Flooded Courtyard (by cave).
 	case 0x402D3708: prevAreaCRC = levelCRC::FLOODED_COURTYARD; break;  // Flooded Courtyard to Jungle Trail (to cave).
 	case 0x83A6748F: prevAreaCRC = levelCRC::JUNGLE_TRAIL;      break;  // Jungle Trail to Flooded Courtyard (by ice wall).
 	//case 0xF3ACDE92:   // Apu Illapu to White Valley.
@@ -345,7 +346,7 @@ public:
 		case ShamanShop::JUNGLE_NOTES: name = "jungle notes"; break;
 		case ShamanShop::NATIVE_NOTES: name = "native notes"; break;
 		case ShamanShop::CAVERN_NOTES: name = "cavern notes"; break;
-		case ShamanShop::MOUTAIN_NOTES: name = "mountain notes"; break;
+		case ShamanShop::MOUNTAIN_NOTES: name = "mountain notes"; break;
 		case ShamanShop::MYSTERY_ITEM: name = "mystery item"; break;
 		}
 
@@ -363,7 +364,7 @@ public:
 		}
 
 		if ( rando_config.randomizeShamanShop ) {
-			randomize_shaman_shop();
+			init_shaman_shop();
 		}
 
 		// TODO : Load world call (new game).

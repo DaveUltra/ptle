@@ -48,5 +48,8 @@ void load_config()
 		else if ( option == "showConsole" ) {
 			if ( value == "true" ) Gizmod::getInstance()->showConsole();
 		}
+		else if ( option == "skipSplashScreens" ) {
+			g_skipSplashScreens = (value == "true");
+		}
 	}
 }

@@ -382,29 +382,6 @@ static void _spawn_evilharry()
 
 
 // --------------------------------------------------------------------------------
-// Idol spawner.
-// --------------------------------------------------------------------------------
-static void _idol_spawn()
-{
-	const type_info_t* type = get_type_by_vtable( 0x89A2F8 );
-	EITreasureIdol* idol = instantiate_object<EITreasureIdol>( type );
-
-	EIHarry* harry = *((EIHarry**) 0x917034);
-
-	Vector3f pos = { 0, 0, 0 };
-	Vector4f rot = { 0, 0, 0, 1 };
-
-	memcpy( &pos, &harry->m_position, sizeof(Vector3f) );
-
-	InitIdol( idol, &pos, &rot, 0x816D97BF, 0x14F14DDC, 0x6061A9B3 );
-
-	AddToWorld( harry->m_world, idol );
-	AddToWorldFancy( harry->m_world, idol->m_particleEmitter, idol, false );
-	ERLevel_SetupEntity( harry->m_world, idol, 0 );
-}
-
-
-// --------------------------------------------------------------------------------
 // Harry spawner (unstable).
 // --------------------------------------------------------------------------------
 static EIProjectile* _harry_spawn( uint32_t code )
@@ -609,6 +586,39 @@ static void _ai_patch()
 
 
 // --------------------------------------------------------------------------------
+// Idol spawner.
+// --------------------------------------------------------------------------------
+static void _idol_spawn( bool explorer )
+{
+	const type_info_t* type = get_type_by_vtable( explorer ? 0x89A420 : 0x89A2F8 );
+	EITreasureIdol* idol = instantiate_object<EITreasureIdol>( type );
+
+	EIHarry* harry = *((EIHarry**) 0x917034);
+
+	Vector3f pos = { 0, 0, 0 };
+	Vector4f rot = { 0, 0, 0, 1 };
+
+	memcpy( &pos, &harry->m_position, sizeof(Vector3f) );
+
+	InitIdol( idol, &pos, &rot, 0x816D97BF, 0x14F14DDC, 0x6061A9B3 );
+
+	AddToWorld( harry->m_world, idol );
+	AddToWorldFancy( harry->m_world, idol->m_particleEmitter, idol, false );
+	ERLevel_SetupEntity( harry->m_world, idol, 0 );
+}
+
+static void _idol_spawn_regular()
+{
+	_idol_spawn( false );
+}
+
+static void _idol_spawn_explorer()
+{
+	_idol_spawn( true );
+}
+
+
+// --------------------------------------------------------------------------------
 // List all loaded models.
 // --------------------------------------------------------------------------------
 static void _list_model_assets()
@@ -646,34 +656,12 @@ static void _list_entities()
 	Gizmod::getInstance()->getLogger()->log_printf( "Total : %d entities.\n", i );
 }
 
-// List entities in second update list.
 
-static void _list_updates_2()
+GET_METHOD( 0x5229B0, void, SetMusic, void*, uint32_t, bool );
+static void _change_music()
 {
-	EIHarry* harry = *((EIHarry**) 0x917034);
-	ERLevel* level = harry->m_world;
-
-	TreeMapNode* node = level->m_updateRegion.m_treeMap.m_iterateFirst;
-
-	while ( node ) {
-		if ( node->m_ptr ) {
-			EInstance* inst = (EInstance*) node->m_ptr;
-			EIBeast* beast = type_cast<EIBeast>( (EStorable*) node->m_ptr, get_type_by_vtable(0x86C3D0) );
-
-			const type_info_t* type = get_object_type( inst );
-
-			if ( beast && beast->m_beastTypeName ) {
-				log_printf( "- 0x%X : %s (%s)\n", beast, type ? type->get_name() : "UnknownType", beast->m_beastTypeName );
-			}
-			else {
-				log_printf( "- 0x%X : %s\n", inst, type ? type->get_name() : "UnknownType" );
-			}
-		}
-		else {
-			log_printf( "- 0x??????? : unknown\n" );
-		}
-		node = node->m_iterateNext;
-	}
+	void* musicManager = (void*) 0x910850;
+	SetMusic(musicManager, 0xB05ADA8F, true);
 }
 
 
@@ -778,6 +766,34 @@ static void _explorer_tracker()
 }
 
 
+static void _tp_to_shaman()
+{
+	std::vector<EIBeast*> shams;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType( shams, get_type_by_vtable(0x896C10)->ptleType );
+
+	if (!shams.empty()) {
+		Matrix4f mat = shams[0]->m_transformMatrix;
+		mat.data[3][2] += 8.0F;
+		EIHarry_Tp( Gizmod::getHarry(), &mat, false, 1.0F );
+	}
+	else {
+		Gizmod::getInstance()->getLogger()->log( "No shaman in this level.\n" );
+	}
+}
+
+
+static void _display_coords()
+{
+	EIHarry* harry = Gizmod::getHarry();
+	if ( !harry ) return;
+
+	Gizmod::getInstance()->getLogger()->log_printf( "Harry's position : [%f, %f, %f]\n",
+		harry->m_position.x,
+		harry->m_position.y,
+		harry->m_position.z );
+}
+
+
 
 //
 // List of available commands / cheats.
@@ -804,16 +820,19 @@ const command_t commands[] =
 	{ "Remove Stuff",         _remove_stuff },
 	{ "Die",                  _die },
 	{ "Spawn Evil Harry",     _spawn_evilharry },
-	{ "Spawn Idol",           _idol_spawn },
 	{ "Spawn Micay",          _micay_spawn },
 	{ "Spawn Native",         _netiv_spawn },
 	{ "AI patch",             _ai_patch },
+	{ "Spawn Idol",           _idol_spawn_regular },
+	{ "Spawn Explorer Idol",  _idol_spawn_explorer },
 	{ "List models",          _list_model_assets },
 	{ "List entities w/ IDs", _list_entities },
-	{ "List updates 2",       _list_updates_2 },
+	{ "Change Music",         _change_music },
 	{ "Log Save UI Contents", _log_saveui_contents },
 	{ "Log Main UI Contents", _log_epausemain },
 	{ "Explorer Tracker",     _explorer_tracker },
+	{ "TP to Shaman",         _tp_to_shaman },
+	{ "Display Coords",       _display_coords },
 };
 
 const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);
@@ -939,23 +958,23 @@ static void PaletteCreate( HWND hwnd )
 		CreateWindow( "BUTTON", cheat->name,
 			WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
 			10 + (i & 1) * (BUTTON_WIDTH+10), y,
-			BUTTON_WIDTH, 20, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
+			BUTTON_WIDTH, 22, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
 		if ( i & 1 ) {
-			y += 30;
+			y += 24;
 		}
 	}
-	y += 20;
+	y += 14;
 	i = 0;
 	for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
 		CreateWindow( "BUTTON", cmd->name,
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 			10 + (i & 1) * (BUTTON_WIDTH+10), y,
-			BUTTON_WIDTH, 20, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
+			BUTTON_WIDTH, 22, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
 		if ( i & 1 ) {
-			y += 30;
+			y += 24;
 		}
 	}
-	y += 20;
+	y += 14;
 	paletteWndData.previous_area_label = CreateWindow("STATIC", "Previous Area: ",
 		WS_CHILD | WS_VISIBLE,
 		10, y, 300, 20,

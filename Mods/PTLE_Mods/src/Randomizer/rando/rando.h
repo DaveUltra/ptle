@@ -162,7 +162,7 @@ extern bool completed_penguin_temple;
 // Load configuration.
 void rando_init();
 
-void randomize_shaman_shop();
+void init_shaman_shop();
 void patch_shaman_shop();
 void log_shaman_shop( std::ostream& os );
 

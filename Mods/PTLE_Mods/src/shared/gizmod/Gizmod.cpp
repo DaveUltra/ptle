@@ -65,7 +65,13 @@ EIHarry* Gizmod::getHarry()
 
 ERLevel* Gizmod::getLevel()
 {
-	return **((ERLevel***) 0x91702C);
+	ERLevel** levelPtr = *((ERLevel***) 0x91702C);
+	return levelPtr ? (*levelPtr) : 0;
+}
+
+EUIHud* Gizmod::getHUD()
+{
+	return *((EUIHud**) (0x917028 + 0x8C));
 }
 
 uint32_t Gizmod::getCurrentLevelCRC()

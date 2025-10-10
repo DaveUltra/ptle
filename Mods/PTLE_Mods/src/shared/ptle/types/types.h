@@ -2,6 +2,8 @@
 
 #include <stdint.h>
 
+#include <map>
+
 class EStorable;
 
 
@@ -42,6 +44,8 @@ T* instantiate_object( const type_info_t* t )
 const type_info_t* get_object_type( EStorable* obj );
 
 const type_info_t* get_type_by_vtable( uint32_t vtableAddr );
+
+const std::map<uint32_t, type_info_t>& get_all_types();
 
 bool is_type_derived_from( const type_info_t* type, const type_info_t* base );
 

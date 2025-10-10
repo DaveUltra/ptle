@@ -28,4 +28,20 @@ public:
 	char* m_uiTypeName;
 
 	char padding5[0x08];
+
+
+	virtual void func_unknown26();
+	virtual void SetPosition( float* );
+	virtual void func_unknown28( float* );
+	virtual void func_unknown29( float* );
+	virtual void func_unknown30( int, int, int );
+	virtual void func_unknown31();
+	virtual void func_unknown32();
+	virtual void func_unknown33();
+	virtual bool func_unknown34();
+	virtual void func_unknown35();
+	virtual void GetPosition( float* out );
+	virtual void func_unknown37();
+	virtual void AddChild( EUIObjectNode* );
+	virtual void func_unknown39();
 };

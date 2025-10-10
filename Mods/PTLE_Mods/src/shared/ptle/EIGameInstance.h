@@ -21,7 +21,7 @@ public:
 	virtual void func_unknown31(float, uint32_t);
 	virtual void func_unknown32(float);
 	virtual float func_unknown33();
-	virtual void func_unknown34();
+	virtual void OnHit(float, EInstance*, uint32_t, Vector3f*, float, int);
 	virtual void func_unknown35();
 	virtual void func_unknown36();
 	virtual void func_unknown37();

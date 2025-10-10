@@ -2,7 +2,9 @@
 
 #include "EventListener.h"
 #include "Logger.h"
+#include "save/SaveManager.h"
 #include "item/InventoryItem.h"
+#include "world/GizmodWorld.h"
 
 #include <string>
 
@@ -10,6 +12,7 @@ class GizmodPlugin;
 
 class EIHarry;
 class ERLevel;
+class EUIHud;
 
 
 class Gizmod
@@ -17,8 +20,8 @@ class Gizmod
 public:
 
 	static const uint32_t VERSION_MAJOR = 0;
-	static const uint32_t VERSION_MINOR = 1;
-	static const uint32_t VERSION_PATCH = 1;
+	static const uint32_t VERSION_MINOR = 2;
+	static const uint32_t VERSION_PATCH = 0;
 
 		/// Returns :
 		/// - +2 if plugin was made for a later version.
@@ -43,6 +46,8 @@ public:
 		/// Mod services.
 	inline EventListener* getEventListener() { return &m_eventListener; }
 	inline Logger* getLogger() { return &m_logger; }
+	inline SaveManager* getSaveManager() { return &m_saveManager; }
+	inline GizmodWorld* getWorld() { return &m_world; }
 
 	inline InventoryItem* getInventoryItem( InventoryItem::Item i ) { return i == InventoryItem::UNKNOWN ? 0 : &m_inventoryItems[i]; };
 
@@ -53,6 +58,7 @@ public:
 		/// Util functions.
 	static EIHarry* getHarry();
 	static ERLevel* getLevel();
+	static EUIHud* getHUD();
 
 	static uint32_t getCurrentLevelCRC();
 
@@ -61,6 +67,8 @@ private:
 
 	EventListener m_eventListener;
 	Logger m_logger;
+	SaveManager m_saveManager;
+	GizmodWorld m_world;
 
 	InventoryItem m_inventoryItems[8];
 };

@@ -4,6 +4,7 @@
 
 #include "math/AABB.h"
 
+class TreeMap;
 class ERLevel;
 class ERScript;
 class Vector3f;
@@ -21,7 +22,12 @@ public:
 	ERLevel* m_world;
 	int unused2;
 
-	char padding0[0x18];
+	char padding0[0x08];
+
+	float unknown0;
+	float unknown1;
+	float unknown2;
+	float m_opacity;
 
 	uint32_t m_flags;
 
@@ -29,8 +35,9 @@ public:
 
 	AABB m_bounds;
 
-	char padding2[0xC];
+	char padding2[0x8];
 
+	TreeMap* unknown3;
 	uint32_t m_frameCount;
 
 
@@ -38,9 +45,9 @@ public:
 	virtual void Init();
 	virtual void Tick();
 	virtual int func_unknown1();
-	virtual void func_unknown2();
+	virtual void Render(void*, void*);
 	virtual void func_unknown3();
-	virtual void func_unknown4();
+	virtual void func_unknown4(Matrix4f*);
 	virtual int func_unknown5();
 	virtual bool func_unknown6(void*, Vector3f*, Vector3f*, uint32_t);
 	virtual bool func_unknown7(void*, Vector3f*, Vector3f*, float, int);

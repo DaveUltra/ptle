@@ -21,5 +21,16 @@ public:
 	Vector3f unknown2;
 	Vector3f unknown3;
 
-	char padding1[0x38];
+	char padding1[0x08];
+
+	bool unknown4;
+	bool unknown5;
+	bool unknown6;
+	bool unknown7;
+
+	char padding2[0x04];
+
+	Array unknown8[3];
+
+	char padding3[0x04];
 };

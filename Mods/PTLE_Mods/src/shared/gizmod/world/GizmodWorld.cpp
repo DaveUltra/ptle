@@ -44,7 +44,8 @@ void GizmodWorld::getEntitiesOfType( std::vector<EInstance*>& out, const ETypeIn
 
 	HashMap& entitiesByID = level->m_entitiesByID;
 
-	for ( HashMapEntry* e = entitiesByID.m_iterateFirst; e != 0; e = e->m_iterateNext ) {
+	int i = entitiesByID.m_size;
+	for ( HashMapEntry* e = entitiesByID.m_iterateFirst; i != 0; e = e->m_iterateNext, i-- ) {
 		if ( !e->m_ptr ) {
 			continue;
 		}

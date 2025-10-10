@@ -14,6 +14,10 @@
 #include "EIMegaMonkeyParent.h"
 #include "EINative.h"
 #include "EINPCBeast.h"
+#include "EIPlant.h"
+#include "EIPlayerMonkey.h"
+#include "EIPlayerPenguin.h"
+#include "EIPlayerScorpion.h"
 #include "EIPlayerStart.h"
 #include "EIPointLight.h"
 #include "EIProjectile.h"
@@ -27,6 +31,7 @@
 #include "EITreasureIdol.h"
 #include "ERAnim.h"
 #include "ERCharacter.h"
+#include "ERDataset.h"
 #include "ERFont.h"
 #include "ERLevel.h"
 #include "ERModel.h"
@@ -78,12 +83,17 @@ CHECK_TYPE_SIZE( EICameraFollow,     0x7D0 );
 CHECK_TYPE_SIZE( EICameraBossPusca,  0x800 );
 CHECK_TYPE_SIZE( EICharacter,        0x2F0 );
 CHECK_TYPE_SIZE( EIPlayer,           0xB30 );
+CHECK_TYPE_SIZE( EIPlayerBeast,      0xB50 );
+CHECK_TYPE_SIZE( EIPlayerPenguin,    0xBD0 );
+CHECK_TYPE_SIZE( EIPlayerMonkey,     0xC00 );
+CHECK_TYPE_SIZE( EIPlayerScorpion,   0xDC0 );
 CHECK_TYPE_SIZE( EIHarry,            0x1A20 );
 CHECK_TYPE_SIZE( EIStaticModel,      0x1E0 );
 CHECK_TYPE_SIZE( EIDynamicModel,     0x1E0 );
 CHECK_TYPE_SIZE( EITreasureIdol,     0x210 );
 CHECK_TYPE_SIZE( EIEffector,         0x240 );
 CHECK_TYPE_SIZE( EIPlayerStart,      0x240 );
+CHECK_TYPE_SIZE( EIPlant,            0x260 );
 CHECK_TYPE_SIZE( EIProjectile,       0x280 );
 CHECK_TYPE_SIZE( EIBeast,            0x6F0 );
 CHECK_TYPE_SIZE( EIShaman,           0x700 );
@@ -104,6 +114,7 @@ CHECK_TYPE_SIZE( EIEvilHarryMM,      0x8B0 );
 CHECK_TYPE_SIZE( EIEvilHarryP,       0x970 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );
 CHECK_TYPE_SIZE( EResource,          0x14 );
+CHECK_TYPE_SIZE( ERDataset,          0x1C );
 CHECK_TYPE_SIZE( ERShader,           0x20 );
 CHECK_TYPE_SIZE( ERCharacter,        0x34 );
 CHECK_TYPE_SIZE( ERScript,           0x44 );
@@ -132,6 +143,7 @@ CHECK_FIELD_OFFSET( EISupai,        m_isTutorialSupai,   0x991 );
 CHECK_FIELD_OFFSET( EIEffector,     m_scriptCRC0,        0x200 );
 
 CHECK_FIELD_OFFSET( ERLevel,        m_updateRegion,      0x440 );
+CHECK_FIELD_OFFSET( ERLevel,        m_entitiesByID,      0x59C );
 
 CHECK_FIELD_OFFSET( EScriptContext, m_scriptStack,       0x24 );
 CHECK_FIELD_OFFSET( EScriptContext, m_currentFunction,   0x884 );

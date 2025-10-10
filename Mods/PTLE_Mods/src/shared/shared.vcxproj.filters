@@ -12,6 +12,10 @@
     <ClCompile Include="gizmod\shaman\ShamanShop.cpp" />
     <ClCompile Include="gizmod\event\ShamanPurchaseEvent.cpp" />
     <ClCompile Include="gizmod\event\CollectItemEvent.cpp" />
+    <ClCompile Include="ptle\src\ESaveGameMan.cpp" />
+    <ClCompile Include="gizmod\save\SaveManager.cpp" />
+    <ClCompile Include="gizmod\item\InventoryItem.cpp" />
+    <ClCompile Include="gizmod\event\CollectIdolEvent.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -106,6 +110,21 @@
     <ClInclude Include="gizmod\item\InventoryItem.h" />
     <ClInclude Include="gizmod\item\ItemModelsCRC.h" />
     <ClInclude Include="ptle\ESaveGameVar.h" />
+    <ClInclude Include="ptle\ESaveGameMan.h" />
+    <ClInclude Include="ptle\stream\EStream.h" />
+    <ClInclude Include="gizmod\save\SaveManager.h" />
+    <ClInclude Include="ptle\EUIHud.h" />
+    <ClInclude Include="gizmod\event\PlantRustleEvent.h" />
+    <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
+    <ClInclude Include="ptle\EIPlant.h" />
+    <ClInclude Include="ptle\EIAnimLod.h" />
+    <ClInclude Include="gizmod\event\BeastStateSwitchEvent.h" />
+    <ClInclude Include="ptle\EIPlayerBeast.h" />
+    <ClInclude Include="ptle\EIPlayerMonkey.h" />
+    <ClInclude Include="ptle\EIPlayerScorpion.h" />
+    <ClInclude Include="ptle\EIPlayerPenguin.h" />
+    <ClInclude Include="gizmod\event\BreakableBreakEvent.h" />
+    <ClInclude Include="gizmod\event\ProjectileShootEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

@@ -1,11 +1,16 @@
 #pragma once
 
+#include "event/BeastStateSwitchEvent.h"
+#include "event/BreakableBreakEvent.h"
+#include "event/CinematicPlayEvent.h"
 #include "event/CollectExplorerEvent.h"
 #include "event/CollectIdolEvent.h"
 #include "event/CollectItemEvent.h"
 #include "event/EntitySpawnEvent.h"
 #include "event/LevelLoadedEvent.h"
 #include "event/LoadLevelEvent.h"
+#include "event/PlantRustleEvent.h"
+#include "event/ProjectileShootEvent.h"
 #include "event/ShamanPurchaseEvent.h"
 
 

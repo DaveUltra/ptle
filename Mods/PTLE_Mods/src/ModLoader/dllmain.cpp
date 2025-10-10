@@ -33,6 +33,7 @@ typedef NTSTATUS(NTAPI* LdrAddRefDll_t)(ULONG, HMODULE);
 extern "C" { Gizmod* gizmodInstance; }
 
 bool g_enabled = true;
+bool g_skipSplashScreens = false;
 
 Gizmod g_pitfall;
 
@@ -293,15 +294,23 @@ enum vccorlibExportsNames
 
 #include "ptle/EInstance.h"
 #include "ptle/EIBeast.h"
+#include "ptle/EIPlant.h"
+#include "ptle/EIProjectile.h"
+#include "ptle/EITreasureIdol.h"
 #include "ptle/ESDInt.h"
 #include "ptle/EScriptContext.h"
 
 #include "ptle/containers/TreeMap/TreeMap.h"
 
+#include "gizmod/event/BeastStateSwitchEvent.h"
+#include "gizmod/event/BreakableBreakEvent.h"
+#include "gizmod/event/CinematicPlayEvent.h"
 #include "gizmod/event/CollectItemEvent.h"
 #include "gizmod/event/EntitySpawnEvent.h"
 #include "gizmod/event/LevelLoadedEvent.h"
 #include "gizmod/event/LoadLevelEvent.h"
+#include "gizmod/event/PlantRustleEvent.h"
+#include "gizmod/event/ProjectileShootEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
 
 
@@ -320,6 +329,72 @@ void Script_SetBeastTarget_Safe( EScriptContext* context )
 }
 
 
+GET_METHOD( 0x4159B0, void, EIBeast_PerformStateSwitch, EIBeast*, uint32_t, bool, bool );
+class MyBeast : public EIBeast
+{
+public:
+	void PerformStateSwitch_custom( uint32_t stateID, bool param1, bool param2 )
+	{
+		EBeastStateMachine* sm = this->GetStateMachine();
+		const char* name = sm->m_states[stateID].m_name;
+		const char* nameEnd = name + strlen( name );
+
+		if ( strcmp(nameEnd - 4, "init") == 0 ) {
+			EIBeast_PerformStateSwitch( this, stateID, param1, param2 );
+			return;
+		}
+
+		BeastStateSwitchEvent event( this, stateID );
+		g_pitfall.getEventListener()->invokeEvent( event );
+
+		if ( !event.isCancelled() ) {
+			EIBeast_PerformStateSwitch( this, stateID, param1, param2 );
+		}
+	}
+};
+
+enum DamageSource
+{
+	HARRY_PUNCH,
+	HARRY_SPINKICK,
+	HARRY_CROUCHKICK,
+	HARRY_RISING_STRIKE,
+	HARRY_SMASH_STRIKE,
+	HARRY_BREAKDANCE,
+	HARRY_SHIELD,
+	HARRY_PICKAXES,
+
+	SLING_ROCK,
+	SLING_SUPER,
+
+	TNT_BLAST,
+};
+static const char* source( uint32_t s )
+{
+	if ( s & 0x1 ) return "Sling rock";
+	if ( s & 0x4 ) return "Harry punch";
+	if ( s & 0x8 ) return "Breakdance";
+	if ( s & 0x20) return "Rising strike";
+	if ( s & 0x80 ) return "Pickaxes";
+	if ( s & 0x100 ) return "Supersling";
+	if ( s & 0x200 ) return "Shield";
+	if ( s & 0x400 ) return "TNT";
+	if ( s & 0x1000 ) return "Coconut?";
+	if ( s & 0x80000 ) return "Smash strike";
+	return "idk";
+}
+GET_METHOD( 0x4EDF50, void, EIHavokBreakable_Break, EInstance*, uint32_t, Vector4f*, float );
+static void _BreakableBreak( EInstance* self, uint32_t p4, Vector4f* p7, float p6 )
+{
+	BreakableBreakEvent event( self );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		EIHavokBreakable_Break( self, p4, p7, p6 );
+	}
+}
+MAKE_THISCALL_WRAPPER( BreakableBreak, _BreakableBreak );
+
 GET_METHOD( 0x506170, void, CollectItem, void*, uint32_t );
 static void _CollectItem_custom( void* self, uint32_t itemHash )
 {
@@ -335,6 +410,92 @@ static void _CollectItem_custom( void* self, uint32_t itemHash )
 	}
 }
 MAKE_THISCALL_WRAPPER( CollectItem_custom, _CollectItem_custom );
+
+// VERY hacky :
+// The original "AddCollectedIdols" function is not a member function. But at the injection point, ECX contains a pointer
+// to the idol, which we can retrieve by pretending that it is a member function.
+GET_FUNC( 0x5E34A0, void, AddCollectedIdols, uint32_t, int );
+static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, int amount )
+{
+	amount = self->GetAmount();
+	CollectIdolEvent event( self, amount );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		AddCollectedIdols( levelCRC, event.getAmount() );
+	}
+}
+MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
+
+// Cutscene start.
+GET_METHOD( 0x4308B0, bool, EICinematic_CheckCannotPlay, EICinematic*, bool );
+static bool _CinematicCannotPlay( EICinematic* self, bool param )
+{
+	// Determine whether the cutscene will play at all, using the original function.
+	bool notPlay = EICinematic_CheckCannotPlay( self, param );
+	if ( notPlay ) return true;
+
+	// If it is going to, forward the event to the manager.
+	CinematicPlayEvent event( self );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	return event.isCancelled();
+}
+MAKE_THISCALL_WRAPPER( CinematicCannotPlay, _CinematicCannotPlay );
+
+
+// Plant rustle.
+static void _PlantRustleBig( EIPlant* plant )
+{
+	// Ignore if already rustling.
+	if ( plant->m_state1 != 0 || plant->m_state0 != 0 ) return;
+
+	PlantRustleEvent event( plant );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		plant->m_state1 = 2;
+	}
+}
+MAKE_THISCALL_WRAPPER( PlantRustleBig, _PlantRustleBig );
+
+static void _PlantRustleSmall( EIPlant* plant )
+{
+	// Ignore if already rustling.
+	if ( plant->m_state1 != 0 || plant->m_state0 != 0 ) return;
+
+	PlantRustleEvent event( plant );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		plant->m_state1 = 1;
+	}
+}
+static void __declspec(naked) PlantRustleSmall()
+{
+	__asm push edx     // "this" pointer is in EDX at the point of injection.
+	__asm call dword ptr _PlantRustleSmall
+	__asm pop edx
+	__asm ret
+}
+
+
+// Projectile shoot.
+GET_METHOD( 0x559640, void, EIProjectile_Shoot, EIProjectile*, const Vector3f*, const Vector3f*, EInstance*, float );
+static void __stdcall _ProjectileShoot( EIProjectile* self, Vector3f* position, Vector3f* direction, EInstance* source, float accuracy )
+{
+	ProjectileShootEvent event( self, source, *position, *direction );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		EIProjectile_Shoot( self, &event.getPosition(), &event.getDirection(), source, accuracy );
+	}
+	else {
+		self->~EIProjectile();
+	}
+}
+MAKE_THISCALL_WRAPPER( ProjectileShoot, _ProjectileShoot );
+
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -355,10 +516,22 @@ static __declspec(naked) void _EntitySpawn()
 	__asm ret 0x4
 }
 
+GET_METHOD( 0x5229B0, void, EMusicManager_PlayMusic, void*, uint32_t, bool );
 static void LevelLoaded()
 {
+	uint32_t globalStruct = 0x917028;
+	uint32_t obj1 =     *(uint32_t*)(globalStruct + 0x4);
+	uint32_t obj2 =     *(uint32_t*)(obj1         + 0x4);
+	uint32_t musicCRC = *(uint32_t*)(obj2         + 0x34);
+
 	LevelLoadedEvent event;
+	event.setMusicOverride( musicCRC );
 	g_pitfall.getEventListener()->invokeEvent( event );
+
+	void* musicManager = (void*) 0x910850;
+	if ( event.getMusicCRC() != 0 ) {
+		EMusicManager_PlayMusic( musicManager, event.getMusicCRC(), true );
+	}
 }
 
 GET_METHOD( 0x5EBA90, void, LoadLevel, void*, uint32_t, bool );
@@ -402,7 +575,7 @@ static ShamanShop::PriceSlot id_to_shaman( int id )
 	case 0x8E: return ShamanShop::JUNGLE_NOTES;
 	case 0x8F: return ShamanShop::NATIVE_NOTES;
 	case 0x90: return ShamanShop::CAVERN_NOTES;
-	case 0x91: return ShamanShop::MOUTAIN_NOTES;
+	case 0x91: return ShamanShop::MOUNTAIN_NOTES;
 	case 0x9C: return ShamanShop::MYSTERY_ITEM;
 	default: return ShamanShop::UNKNOWN;
 	}
@@ -438,6 +611,23 @@ static bool ReturnYes()
 	return true;
 }
 
+static void LateInit()
+{
+	// Beast state change.
+	const ETypeInfo* beast = get_type_by_vtable( 0x86C3D0 )->ptleType;
+	const ETypeInfo* flockBeast = get_type_by_vtable( 0x876D28 )->ptleType;
+
+	for ( auto p : get_all_types() ) {
+	const ETypeInfo* baseType = p.second.ptleType->m_parent;
+		if ( baseType == beast || baseType == flockBeast ) {
+			void** vtable = (void**) p.first;
+			injector::WriteMemory( &vtable[0xB9], &MyBeast::PerformStateSwitch_custom );
+		}
+	}
+
+	injector::MakeJMP( 0x620053, 0x62006A );
+}
+
 void InjectCode()
 {
 	// Inconveniently spammed prints remaining in the game's code.
@@ -450,10 +640,45 @@ void InjectCode()
 	// Protection against explorer softlock.
 	injector::WriteMemory( 0x87659C, ReturnYes );
 
+	// Skip splash screens and trailer.
+	if ( g_skipSplashScreens ) {
+		injector::WriteMemory<uint8_t>( 0x512BC5, 0x22 );
 
-	// Collect item.
+		injector::WriteMemory<uint8_t>( 0x489929, 3 );
+	}
+
+	// Late init.
+	injector::MakeRangedNOP( 0x60D439, 0x60D441 );
+	injector::MakeCALL( 0x60D439, LateInit );
+	injector::MakeRangedNOP( 0x60E977, 0x60E97F );
+
+
+	// Breakables.
+	injector::MakeCALL( 0x4EDD91, BreakableBreak );
+
+	// Collect items & idols.
 	injector::MakeCALL( 0x4E9E51, CollectItem_custom );        // Intercept item unlock ("HarryAddInventoryItem" script function).
-	injector::MakeCALL( 0x598036, CollectItem_custom );        // Intercept item unlock (picking up an EITreasure).
+	injector::MakeCALL( 0x598036, CollectItem_custom );        // Intercept item unlock (picking up an EITreasureIdol).
+	injector::MakeCALL( 0x598004, AddCollectedIdols_custom );  // Intercept idol grab (picking up an EITreasureIdol).
+	injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
+
+	// Cinematic playing.
+	injector::MakeCALL( 0x430A20, CinematicCannotPlay );
+
+	// Plants rustling.
+	injector::MakeNOP( 0x5444C6, 10 );
+	injector::MakeCALL( 0x5444C6, PlantRustleBig );
+	injector::MakeNOP( 0x545222, 10 );
+	injector::MakeCALL( 0x545222, PlantRustleSmall );
+	injector::MakeNOP( 0x545507, 10 );
+	injector::MakeCALL( 0x545507, PlantRustleSmall );
+
+	// Projectile shooting.
+	static const uint32_t callLocations[] = { 0x494253, 0x501F12, 0x556723, 0x559B23, 0x559EA5, 0x559FFA, 0x55E0A4, 0x583711, 0x583B77, 0x595867, 0x595960 };
+	for ( int i = 0; i < _countof(callLocations); i++ ) {
+		injector::MakeCALL( callLocations[i], ProjectileShoot );
+	}
+
 
 	// Not working.
 	//injector::MakeJMP( 0x626747, _EntitySpawn );
@@ -464,6 +689,7 @@ void InjectCode()
 	// Level finished loading.
 	injector::MakeNOP( 0x5EC196, 8 );
 	injector::MakeCALL( 0x5EC196, LevelLoaded );
+	injector::MakeRangedNOP( 0x5096BC, 0x5096ED );             // Defer music playing.
 
 	// EPauseMain_Message() in vtable.
 	injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );

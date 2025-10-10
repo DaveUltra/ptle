@@ -73,23 +73,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="gizmod\event\CollectIdolEvent.cpp" />
     <ClCompile Include="gizmod\event\CollectItemEvent.cpp" />
     <ClCompile Include="gizmod\event\ShamanPurchaseEvent.cpp" />
+    <ClCompile Include="gizmod\item\InventoryItem.cpp" />
+    <ClCompile Include="gizmod\save\SaveManager.cpp" />
     <ClCompile Include="gizmod\shaman\ShamanShop.cpp" />
     <ClCompile Include="gizmod\world\GizmodWorld.cpp" />
     <ClCompile Include="gizmod\Logger.cpp" />
     <ClCompile Include="gizmod\Gizmod.cpp" />
     <ClCompile Include="gizmod\GizmodPlugin.cpp" />
+    <ClCompile Include="ptle\src\ESaveGameMan.cpp" />
     <ClCompile Include="ptle\types\types.cpp" />
     <ClCompile Include="ptle\check.cpp" />
     <ClCompile Include="ptle\levels\level_info.cpp" />
     <ClCompile Include="utils\log.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="gizmod\event\BeastStateSwitchEvent.h" />
+    <ClInclude Include="gizmod\event\BreakableBreakEvent.h" />
+    <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
     <ClInclude Include="gizmod\event\CollectItemEvent.h" />
+    <ClInclude Include="gizmod\event\PlantRustleEvent.h" />
+    <ClInclude Include="gizmod\event\ProjectileShootEvent.h" />
     <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
     <ClInclude Include="gizmod\item\InventoryItem.h" />
     <ClInclude Include="gizmod\item\ItemModelsCRC.h" />
+    <ClInclude Include="gizmod\save\SaveManager.h" />
     <ClInclude Include="gizmod\shaman\ShamanShop.h" />
     <ClInclude Include="gizmod\types\Projectile.h" />
     <ClInclude Include="gizmod\world\GizmodWorld.h" />
@@ -104,9 +114,17 @@
     <ClInclude Include="gizmod\event\LoadLevelEvent.h" />
     <ClInclude Include="gizmod\GizmodPlugin.h" />
     <ClInclude Include="ptle\containers\LinkedList\LinkedList.h" />
+    <ClInclude Include="ptle\EIAnimLod.h" />
     <ClInclude Include="ptle\EIEvilHarryP.h" />
+    <ClInclude Include="ptle\EIPlant.h" />
+    <ClInclude Include="ptle\EIPlayerBeast.h" />
+    <ClInclude Include="ptle\EIPlayerMonkey.h" />
+    <ClInclude Include="ptle\EIPlayerPenguin.h" />
+    <ClInclude Include="ptle\EIPlayerScorpion.h" />
+    <ClInclude Include="ptle\ESaveGameMan.h" />
     <ClInclude Include="ptle\ESaveGameVar.h" />
     <ClInclude Include="ptle\ESDInt.h" />
+    <ClInclude Include="ptle\EUIHud.h" />
     <ClInclude Include="ptle\EUIIcon.h" />
     <ClInclude Include="ptle\EUIObjectNode.h" />
     <ClInclude Include="ptle\EUITextIcon.h" />
@@ -136,6 +154,7 @@
     <ClInclude Include="ptle\EISupai.h" />
     <ClInclude Include="ptle\EScriptContext.h" />
     <ClInclude Include="ptle\math\AABB.h" />
+    <ClInclude Include="ptle\stream\EStream.h" />
     <ClInclude Include="ptle\types\defs.h" />
     <ClInclude Include="utils\func.h" />
     <ClInclude Include="ptle\containers\TreeMap\TreeMap.h" />

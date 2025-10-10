@@ -26,4 +26,8 @@ public:
 	ERModel* m_modelResource;
 
 	char padding4[0x80];
+
+
+	virtual void UpdateBounds();
+	virtual Matrix4f* func_unknown51();
 };

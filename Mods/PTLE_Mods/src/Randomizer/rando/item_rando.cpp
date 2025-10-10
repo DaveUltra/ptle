@@ -23,44 +23,7 @@
 // Definitions.
 //
 
-// TODO : Move all of the save stuff to Gizmod.
-struct SaveLocation
-{
-	void* m_entry0;
-	int unknown0;
-	void* m_entryRoot;
-};
-class ESaveGameMan
-{
-public:
 
-	void** vtable;   // Don't know where it is yet...
-
-	SaveLocation m_saveLocation1;
-	SaveLocation m_saveLocation2;
-};
-#include "ptle/ESaveGameVar.h"
-
-GET_FUNC( 0x6F8EC0, uint32_t, HashStrCaseInsensitive, const char* );
-GET_FUNC( 0x65F9A0, uint32_t, CombineHashes, uint32_t, uint32_t, uint32_t );
-GET_METHOD( 0x6C6D60, bool, FindSaveGameVar, SaveLocation*, uint32_t, ESaveGameVar** );
-
-static bool GetVarCustom( uint32_t levelCRC, uint32_t instanceID, const char* varName, int* out, bool flip = false )
-{
-	ESaveGameMan* saveGameMan = *((ESaveGameMan**) 0x920058);
-
-	int val = *((int*) 0x920084);
-	SaveLocation* saveLocation = ((val == 0) != flip) ? &saveGameMan->m_saveLocation1 : &saveGameMan->m_saveLocation2;
-
-	uint32_t varHash = HashStrCaseInsensitive( varName );
-	uint32_t hash = CombineHashes( levelCRC, instanceID, varHash );
-	ESaveGameVar* sgv;
-	if ( FindSaveGameVar(saveLocation, hash, &sgv) ) {
-		*out = *((int*) &sgv->m_value);
-		return true;
-	}
-	return false;
-}
 
 
 GET_METHOD( 0x506170, void, UnlockItem, void*, uint32_t );
@@ -268,12 +231,7 @@ static void collectItem( CollectItemEvent& event )
 	it->second->grant();
 }
 
-
-// VERY hacky :
-// The original "AddCollectedIdols" function is not a member function. But at the injection point, ECX contains a pointer
-// to the idol, which we can retrieve by pretending that it is a member function.
-// In the process, we override "levelCRC" and "amount", but their values are always known.
-static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, int amount )
+static bool collectIdol( EITreasureIdol* self, uint32_t levelCRC, int amount )
 {
 	levelCRC = Gizmod::getCurrentLevelCRC();
 
@@ -281,8 +239,7 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 	const Idol* idol = get_idol( levelCRC, self->m_uniqueID );
 	if ( idol == 0 ) {
 		log_printf( "No idol found! Was idols_infos.json loaded correctly?\n" );
-		AddCollectedIdols( levelCRC, (self->m_uniqueID == 0x412B274) ? 5 : 1 );
-		return;
+		return false;
 	}
 
 	Unlockable u = { idol->isExplorerIdol() ? IDOL_EXPLORER : IDOL_SINGLE, (uint32_t) idol };
@@ -290,14 +247,12 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 
 	// No override.
 	if ( it == g_unlockablesMap.end() ) {
-		AddCollectedIdols( levelCRC, idol->isExplorerIdol() ? 5 : 1 );
-		return;
+		return false;
 	}
 
 	it->second->grant();
+	return true;
 }
-MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
-
 
 static void _EITreasureIdol_InitValues_custom( EITreasureIdol* self, Vector3f* pos, Vector4f* rot, uint32_t modelCRC, uint32_t particleCRC, uint32_t soundCRC )
 {
@@ -340,13 +295,13 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 {
 	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
 
-	// Plane cockpit cutscene checks if we have canteen, just spoof the answer with "no".
+	// Plane cockpit cutscene checks if we have canteen.
 	if ( currentAreaCRC == levelCRC::PLANE_COCKPIT ) {
 		PopScriptVariable_Int( context );
 		int* out = GetOutVariable( context );
 
 		*out = 0;
-		GetVarCustom( 0x4A3E4058, 0x07BC40E8, "numTimesPlayed", out, true );
+		Gizmod::getInstance()->getSaveManager()->getNativeManager()->GetVar( levelCRC::PLANE_COCKPIT, 0x07BC40E8, "numTimesPlayed", out, true );
 	}
 	// Native Village's shield cutscene will be gone if we enter with shield already.
 	else if ( currentAreaCRC == levelCRC::NATIVE_VILLAGE ) {
@@ -354,7 +309,7 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 		int* out = GetOutVariable( context );
 
 		*out = 0;
-		GetVarCustom( 0x05AA726C, 0x07BC40E8, "numTimesPlayed", out );
+		Gizmod::getInstance()->getSaveManager()->getNativeManager()->GetVar( levelCRC::NATIVE_VILLAGE, 0x07BC40E8, "numTimesPlayed", out, false );
 	}
 	else {
 		Script_HarryIsInInventory( context );
@@ -362,13 +317,23 @@ static void Script_HarryIsInInventory_custom( EScriptContext* context )
 }
 
 
-class ItemRandoListener : public ICollectItemListener
+class ItemRandoListener
+	: public ICollectItemListener
+	, public ICollectIdolListener
 {
 public:
 
 	virtual void onCollectItem( CollectItemEvent& event ) override
 	{
 		collectItem( event );
+	}
+
+	virtual void onCollectIdol( CollectIdolEvent& event ) override
+	{
+		bool overriden = collectIdol( event.getEntity(), Gizmod::getCurrentLevelCRC(), event.getAmount() );
+		if ( overriden ) {
+			event.setCancelled( true );
+		}
 	}
 }
 g_itemRandoListener;
@@ -450,13 +415,9 @@ void item_rando_init()
 
 
 	Gizmod::getInstance()->getEventListener()->registerEvent<CollectItemEvent>( &g_itemRandoListener );
+	Gizmod::getInstance()->getEventListener()->registerEvent<CollectIdolEvent>( &g_itemRandoListener );
 
 	// Code injection.
-
-	// Intercept idol grab.
-	injector::MakeCALL( 0x598004, AddCollectedIdols_custom );
-	injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
-	injector::MakeNOP( 0x598009, 3 );
 
 	// Misc.
 	injector::MakeCALL( 0x5973E9, EITreasureIdol_InitValues_custom );     // Set correct model on EITreasureIdol instances (regular idols).

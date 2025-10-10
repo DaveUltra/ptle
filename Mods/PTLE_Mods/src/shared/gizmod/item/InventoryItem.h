@@ -36,7 +36,21 @@ public:
 		UNKNOWN = -1
 	};
 
+	enum Notes
+	{
+		JUNGLE_NOTES,
+		NATIVE_NOTES,
+		CAVERN_NOTES,
+		MOUNTAIN_NOTES,
+	};
+
 	static inline Item getItemByHash( uint32_t itemHash );
+
+	static bool isNotesUnlocked( Notes notes );
+	static void setNotesUnlocked( Notes notes, bool b );
+	
+	static bool setItemInHand( Item item );
+	static bool setItemInHotbar( int slotID, Item item );
 
 
 private:

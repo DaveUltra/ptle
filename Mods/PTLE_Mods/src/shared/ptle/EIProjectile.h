@@ -27,7 +27,7 @@ public:
 	char padding5[0x04];
 
 	Vector3f unknown9;
-	Vector3f unknown10;
+	Vector3f m_direction;
 	Vector3f unknown11;
 	Vector3f unknown12;
 

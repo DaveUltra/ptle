@@ -7,8 +7,6 @@ class EStorable
 {
 public:
 
-	//void* vtable;
-
 	virtual ~EStorable();
 
 	virtual uint32_t    GetSizeInBytes();
