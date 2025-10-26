@@ -7,7 +7,7 @@ class EUIIcon : public EUIObjectNode
 {
 public:
 
-	char padding6[0x04];
+	char padding6[0x08];
 
 	int unknown8;
 	int m_colorIndex0;
