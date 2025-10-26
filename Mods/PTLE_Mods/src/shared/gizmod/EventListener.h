@@ -7,6 +7,7 @@
 #include "event/CollectIdolEvent.h"
 #include "event/CollectItemEvent.h"
 #include "event/EntitySpawnEvent.h"
+#include "event/HeroicUnlockEvent.h"
 #include "event/LevelLoadedEvent.h"
 #include "event/LoadLevelEvent.h"
 #include "event/PlantRustleEvent.h"

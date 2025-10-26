@@ -19,6 +19,7 @@ public:
 
 	int m_idolsCollected;
 
+	// TODO : replace those by EHeroicSkill structures.
 	int      m_risingStrike;
 	uint32_t m_risingStrikeHash;
 	int      m_superSling;

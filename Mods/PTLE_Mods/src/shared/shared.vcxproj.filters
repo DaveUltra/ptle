@@ -17,6 +17,7 @@
     <ClCompile Include="gizmod\item\InventoryItem.cpp" />
     <ClCompile Include="gizmod\event\CollectIdolEvent.cpp" />
     <ClCompile Include="gizmod\PluginConfig.cpp" />
+    <ClCompile Include="ptle\src\EHeroicSkill.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -130,9 +131,14 @@
     <ClInclude Include="ptle\EUIMenu.h" />
     <ClInclude Include="ptle\EUIDDMenu.h" />
     <ClInclude Include="gizmod\PluginConfig.h" />
+    <ClInclude Include="ptle\EHarryActions.h" />
+    <ClInclude Include="gizmod\event\HeroicUnlockEvent.h" />
+    <ClInclude Include="ptle\EHeroicSkill.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />
     <None Include="gizmod\item\InventoryItem.inl" />
+    <None Include="ptle\src\EHarryAction.inl" />
+    <None Include="ptle\src\EHeroicSkill.inl" />
   </ItemGroup>
 </Project>

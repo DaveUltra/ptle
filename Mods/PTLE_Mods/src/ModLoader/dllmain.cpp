@@ -298,6 +298,7 @@ enum vccorlibExportsNames
 #include "ptle/EIPlant.h"
 #include "ptle/EIProjectile.h"
 #include "ptle/EITreasureIdol.h"
+#include "ptle/EIHarry.h"
 #include "ptle/ESDInt.h"
 #include "ptle/EScriptContext.h"
 
@@ -446,6 +447,26 @@ static bool _CinematicCannotPlay( EICinematic* self, bool param )
 MAKE_THISCALL_WRAPPER( CinematicCannotPlay, _CinematicCannotPlay );
 
 
+// Heroic skill unlock.
+GET_FUNC( 0x4EA0D0, void, Script_HarryAddHeroic, EScriptContext* );
+static void HarryAddHeroic_Custom( EScriptContext* context )
+{
+	ESDInt* skillHashVar = (ESDInt*) context->m_scriptStack[context->m_stackPointer - 1];
+
+	HeroicUnlockEvent event( EHeroicSkill::getSkillFromHash(skillHashVar->m_value) );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		// Patch value if desired skill was changed.
+		skillHashVar->m_value = EHeroicSkill::getSkillHash( event.getSkill() );
+		Script_HarryAddHeroic( context );
+	}
+	else {
+		context->m_stackPointer--;
+	}
+}
+
+
 // Plant rustle.
 static void _PlantRustleBig( EIPlant* plant )
 {
@@ -582,13 +603,6 @@ static ShamanShop::PriceSlot id_to_shaman( int id )
 	default: return ShamanShop::UNKNOWN;
 	}
 }
-static bool OnShamanPurchase( int id )
-{
-	ShamanPurchaseEvent event( id_to_shaman(id) );
-	g_pitfall.getEventListener()->invokeEvent( event );
-
-	return event.isCancelled();
-}
 
 class EPauseMain;
 GET_METHOD( 0x52C590, void, EPauseMain_Message, EPauseMain*, int, void*, int );
@@ -598,8 +612,12 @@ static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* p
 	{
 	// Shaman purchase.
 	case 0x89: case 0x8A: case 0x8B: case 0x8C: case 0x8D: case 0x8E: case 0x8F: case 0x90: case 0x91: case 0x9C:
-		if ( OnShamanPurchase( messageID ) ) {
-			return;
+		{
+			ShamanShop::PriceSlot slot = id_to_shaman(messageID);
+			ShamanPurchaseEvent event( slot );
+			g_pitfall.getEventListener()->invokeEvent( event );
+
+			if ( event.isCancelled() ) return;
 		}
 		break;
 	}
@@ -607,6 +625,30 @@ static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* p
 	EPauseMain_Message( self, messageID, param1, param2 );
 }
 MAKE_THISCALL_WRAPPER( EPauseMain_Message_custom, _EPauseMain_Message_custom );
+
+static void BoughtSkill( EHeroicSkill::Enum skill )
+{
+	if ( skill == EHeroicSkill::UNKNOWN ) return;
+
+	HeroicUnlockEvent heroicEvent( skill );
+	g_pitfall.getEventListener()->invokeEvent( heroicEvent );
+
+	if ( !heroicEvent.isCancelled() ) {
+		EIHarry* harry = Gizmod::getHarry();
+
+		switch ( skill )
+		{
+		case EHeroicSkill::SMASH_STRIKE: harry->m_smashStrike = 1; break;
+		case EHeroicSkill::SUPER_SLING:  harry->m_superSling  = 1; break;
+		case EHeroicSkill::BREAKDANCE:   harry->m_breakdance  = 1; break;
+		}
+	}
+}
+static void BoughtSmashStrike() { BoughtSkill( EHeroicSkill::SMASH_STRIKE ); }
+static void BoughtSuperSling()  { BoughtSkill( EHeroicSkill::SUPER_SLING ); }
+static void BoughtBreakdance()  { BoughtSkill( EHeroicSkill::BREAKDANCE ); }
+
+
 
 static bool ReturnYes()
 {
@@ -670,6 +712,9 @@ void InjectCode()
 		// Cinematic playing.
 		injector::MakeCALL( 0x430A20, CinematicCannotPlay );
 
+		// Heroic skill unlock.
+		injector::WriteMemory( 0x8EFF1C, HarryAddHeroic_Custom );  // "HarryAddHeroic" script function.
+
 		// Plants rustling.
 		injector::MakeNOP( 0x5444C6, 10 );
 		injector::MakeCALL( 0x5444C6, PlantRustleBig );
@@ -696,8 +741,14 @@ void InjectCode()
 		injector::MakeCALL( 0x5EC196, LevelLoaded );
 		injector::MakeRangedNOP( 0x5096BC, 0x5096ED );             // Defer music playing.
 
-		// EPauseMain_Message() in vtable.
-		injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );
+		// Shaman purchases & skill unlock (partial).
+		injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );   // EPauseMain_Message() in vtable.
+		injector::MakeRangedNOP( 0x52E9E7, 0x52EA4D );
+		injector::MakeRangedNOP( 0x52ED61, 0x52EDC7 );
+		injector::MakeRangedNOP( 0x52F064, 0x52F0CA );
+		injector::MakeCALL( 0x52E9E7, BoughtSmashStrike );
+		injector::MakeCALL( 0x52ED61, BoughtSuperSling );
+		injector::MakeCALL( 0x52F064, BoughtBreakdance );
 	}
 }
 

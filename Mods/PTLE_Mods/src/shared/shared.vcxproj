@@ -84,6 +84,7 @@
     <ClCompile Include="gizmod\Logger.cpp" />
     <ClCompile Include="gizmod\Gizmod.cpp" />
     <ClCompile Include="gizmod\GizmodPlugin.cpp" />
+    <ClCompile Include="ptle\src\EHeroicSkill.cpp" />
     <ClCompile Include="ptle\src\ESaveGameMan.cpp" />
     <ClCompile Include="ptle\types\types.cpp" />
     <ClCompile Include="ptle\check.cpp" />
@@ -95,6 +96,7 @@
     <ClInclude Include="gizmod\event\BreakableBreakEvent.h" />
     <ClInclude Include="gizmod\event\CinematicPlayEvent.h" />
     <ClInclude Include="gizmod\event\CollectItemEvent.h" />
+    <ClInclude Include="gizmod\event\HeroicUnlockEvent.h" />
     <ClInclude Include="gizmod\event\PlantRustleEvent.h" />
     <ClInclude Include="gizmod\event\ProjectileShootEvent.h" />
     <ClInclude Include="gizmod\event\ShamanPurchaseEvent.h" />
@@ -116,6 +118,8 @@
     <ClInclude Include="gizmod\event\LoadLevelEvent.h" />
     <ClInclude Include="gizmod\GizmodPlugin.h" />
     <ClInclude Include="ptle\containers\LinkedList\LinkedList.h" />
+    <ClInclude Include="ptle\EHarryActions.h" />
+    <ClInclude Include="ptle\EHeroicSkill.h" />
     <ClInclude Include="ptle\EIAnimLod.h" />
     <ClInclude Include="ptle\EIEvilHarryP.h" />
     <ClInclude Include="ptle\EIPlant.h" />
@@ -206,6 +210,8 @@
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />
     <None Include="gizmod\item\InventoryItem.inl" />
+    <None Include="ptle\src\EHarryAction.inl" />
+    <None Include="ptle\src\EHeroicSkill.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
