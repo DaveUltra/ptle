@@ -33,6 +33,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TreasureHunt", "src\Treasur
 		{A4AB7382-2627-4C92-9F52-44ECD723880B} = {A4AB7382-2627-4C92-9F52-44ECD723880B}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PlayAsAnyone", "src\PlayAsAnyone\PlayAsAnyone.vcxproj", "{C5C2E050-316C-4B4B-8591-AD2E76BEA353}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A4AB7382-2627-4C92-9F52-44ECD723880B} = {A4AB7382-2627-4C92-9F52-44ECD723880B}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -67,6 +72,10 @@ Global
 		{4FD73A7C-47CB-4332-8FB8-32F7B57FA8F7}.Debug|Win32.Build.0 = Debug|Win32
 		{4FD73A7C-47CB-4332-8FB8-32F7B57FA8F7}.Release|Win32.ActiveCfg = Release|Win32
 		{4FD73A7C-47CB-4332-8FB8-32F7B57FA8F7}.Release|Win32.Build.0 = Release|Win32
+		{C5C2E050-316C-4B4B-8591-AD2E76BEA353}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C5C2E050-316C-4B4B-8591-AD2E76BEA353}.Debug|Win32.Build.0 = Debug|Win32
+		{C5C2E050-316C-4B4B-8591-AD2E76BEA353}.Release|Win32.ActiveCfg = Release|Win32
+		{C5C2E050-316C-4B4B-8591-AD2E76BEA353}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

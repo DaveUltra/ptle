@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="PlayAsAnyone.cpp" />
+    <ClCompile Include="Characters\Bittenbinder.cpp" />
+    <ClCompile Include="Characters\Leech.cpp" />
+    <ClCompile Include="MoreMath.cpp" />
+    <ClCompile Include="Characters\Micay.cpp" />
+    <ClCompile Include="Characters\Chief.cpp" />
+    <ClCompile Include="Characters\BushNinja.cpp" />
+    <ClCompile Include="Characters\Shaman.cpp" />
+    <ClCompile Include="Characters\Spinja.cpp" />
+    <ClCompile Include="Characters\Mole.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Characters\CharacterInfo.h" />
+    <ClInclude Include="MoreMath.h" />
+    <ClInclude Include="Characters\Bittenbinder.h" />
+    <ClInclude Include="Characters\Leech.h" />
+    <ClInclude Include="Characters\Micay.h" />
+    <ClInclude Include="Characters\Chief.h" />
+    <ClInclude Include="Characters\BushNinja.h" />
+    <ClInclude Include="Characters\Shaman.h" />
+    <ClInclude Include="Characters\Spinja.h" />
+    <ClInclude Include="Characters\Mole.h" />
+  </ItemGroup>
+</Project>
