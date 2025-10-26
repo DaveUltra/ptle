@@ -16,6 +16,7 @@
     <ClCompile Include="gizmod\save\SaveManager.cpp" />
     <ClCompile Include="gizmod\item\InventoryItem.cpp" />
     <ClCompile Include="gizmod\event\CollectIdolEvent.cpp" />
+    <ClCompile Include="gizmod\PluginConfig.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ptle\EICharacter.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="ptle\EUIDDStoreItem.h" />
     <ClInclude Include="ptle\EUIMenu.h" />
     <ClInclude Include="ptle\EUIDDMenu.h" />
+    <ClInclude Include="gizmod\PluginConfig.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />
