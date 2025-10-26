@@ -124,8 +124,11 @@
     <ClInclude Include="ptle\ESaveGameMan.h" />
     <ClInclude Include="ptle\ESaveGameVar.h" />
     <ClInclude Include="ptle\ESDInt.h" />
+    <ClInclude Include="ptle\EUIDDMenu.h" />
+    <ClInclude Include="ptle\EUIDDStoreItem.h" />
     <ClInclude Include="ptle\EUIHud.h" />
     <ClInclude Include="ptle\EUIIcon.h" />
+    <ClInclude Include="ptle\EUIMenu.h" />
     <ClInclude Include="ptle\EUIObjectNode.h" />
     <ClInclude Include="ptle\EUITextIcon.h" />
     <ClInclude Include="ptle\EIEvilHarryMM.h" />

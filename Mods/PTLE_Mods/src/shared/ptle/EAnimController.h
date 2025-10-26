@@ -13,8 +13,6 @@ class EAnimController
 {
 public:
 
-	void* vtable;
-
 	// This is a matrix array.
 	Matrix4f* m_pose;
 
@@ -22,7 +20,7 @@ public:
 
 	Matrix4f* unknown1;
 
-	char padding0[0x08];
+	Matrix4f* m_poseBuffers[2];
 
 	ERCharacter* m_characterResource;
 
@@ -42,4 +40,8 @@ public:
 	bool unknown6;
 
 	char padding3[0x05];
+
+
+	virtual ~EAnimController();
+	virtual void func_unknown0(Matrix4f*);
 };

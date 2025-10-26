@@ -22,9 +22,10 @@ public:
 
 	bool m_onGround;
 	Vector4f unused4;
-	int unused5;
-	
+
+	uint32_t m_characterCRC;
 	uint32_t m_modelCRC;
+
 	Vector3f m_position;
 	Vector3f m_rotationEuler;
 	Vector3f m_scale;

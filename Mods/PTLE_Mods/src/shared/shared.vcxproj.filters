@@ -125,6 +125,9 @@
     <ClInclude Include="ptle\EIPlayerPenguin.h" />
     <ClInclude Include="gizmod\event\BreakableBreakEvent.h" />
     <ClInclude Include="gizmod\event\ProjectileShootEvent.h" />
+    <ClInclude Include="ptle\EUIDDStoreItem.h" />
+    <ClInclude Include="ptle\EUIMenu.h" />
+    <ClInclude Include="ptle\EUIDDMenu.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

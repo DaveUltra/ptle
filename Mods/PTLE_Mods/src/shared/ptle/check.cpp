@@ -39,6 +39,8 @@
 #include "ERScript.h"
 #include "ERShader.h"
 #include "EScriptContext.h"
+#include "EUIDDMenu.h"
+#include "EUIDDStoreItem.h"
 #include "EUITextIcon.h"
 
 
@@ -127,6 +129,9 @@ CHECK_TYPE_SIZE( EScriptContext,     0x890 );
 CHECK_TYPE_SIZE( EUIObjectNode,      0xB0 );
 CHECK_TYPE_SIZE( EUIIcon,            0xE4 );
 CHECK_TYPE_SIZE( EUITextIcon,        0x110 );
+CHECK_TYPE_SIZE( EUIMenu,            0x15C );
+CHECK_TYPE_SIZE( EUIDDStoreItem,     0x19C );
+CHECK_TYPE_SIZE( EUIDDMenu,          0x1A0 );
 
 
 CHECK_FIELD_OFFSET( EIHarry,        m_breakdance,        0x1914 );
