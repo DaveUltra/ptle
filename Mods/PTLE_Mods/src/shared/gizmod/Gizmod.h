@@ -70,5 +70,5 @@ private:
 	SaveManager m_saveManager;
 	GizmodWorld m_world;
 
-	InventoryItem m_inventoryItems[8];
+	InventoryItem m_inventoryItems[9];
 };

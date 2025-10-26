@@ -32,6 +32,7 @@ public:
 		RAFT,
 		GAS_MASK,
 		CANTEEN,
+		STINK_BOMB,
 
 		UNKNOWN = -1
 	};
