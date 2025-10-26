@@ -1,0 +1,71 @@
+[CheatLab] Found Bush Ninja!
+[CheatLab] - 0 : Bip01
+[CheatLab] - 1 : Bip01 Pelvis
+[CheatLab] - 2 : Bip01 Spine
+[CheatLab] - 3 : Bip01 L Thigh
+[CheatLab] - 4 : Bip01 L Calf
+[CheatLab] - 5 : Bip01 L Foot
+[CheatLab] - 6 : Bip01 L Toe0
+[CheatLab] - 7 : Bip01 L Toe0Nub
+[CheatLab] - 8 : Bip01 R Thigh
+[CheatLab] - 9 : Bip01 R Calf
+[CheatLab] - 10 : Bip01 R Foot
+[CheatLab] - 11 : Bip01 R Toe0
+[CheatLab] - 12 : Bip01 R Toe0Nub
+[CheatLab] - 13 : Bip01 Spine1
+[CheatLab] - 14 : Bip01 Neck
+[CheatLab] - 15 : Bip01 L Clavicle
+[CheatLab] - 16 : Bip01 L UpperArm
+[CheatLab] - 17 : Bip01 L Forearm
+[CheatLab] - 18 : Bip01 L Hand
+[CheatLab] - 19 : Bip01 L Finger0
+[CheatLab] - 20 : Bip01 L Finger01
+[CheatLab] - 21 : Bip01 L Finger0Nub
+[CheatLab] - 22 : Bip01 L Finger1
+[CheatLab] - 23 : Bip01 L Finger11
+[CheatLab] - 24 : Bip01 L Finger1Nub
+[CheatLab] - 25 : Bip01 L Finger2
+[CheatLab] - 26 : Bip01 L Finger21
+[CheatLab] - 27 : Bip01 L Finger2Nub
+[CheatLab] - 28 : Bip01 Neck1
+[CheatLab] - 29 : Bip01 Head
+[CheatLab] - 30 : Bip01 HeadNub
+[CheatLab] - 31 : Face
+[CheatLab] - 32 : Face_MaskBone
+[CheatLab] - 33 : Face_L_EyeBrowBone
+[CheatLab] - 34 : Face_Mouth_FrownBone
+[CheatLab] - 35 : Face_Mouth_OhBone
+[CheatLab] - 36 : Face_R_EyeBrowBone
+[CheatLab] - 37 : WigMaster
+[CheatLab] - 38 : Bone_wigBase_1
+[CheatLab] - 39 : Bone_wigMid_1
+[CheatLab] - 40 : Bone_wigTIP_1
+[CheatLab] - 41 : Bone_wigBase_3
+[CheatLab] - 42 : Bone_wigMid_3
+[CheatLab] - 43 : Bone_wigTIP_3
+[CheatLab] - 44 : Bone_wigBase_Back04
+[CheatLab] - 45 : Bone_wigMid_Back04
+[CheatLab] - 46 : Bone_wigTIP_Back04
+[CheatLab] - 47 : Bone_wigBase_Left02
+[CheatLab] - 48 : Bone_wigMid_Left02
+[CheatLab] - 49 : Bone_wigTIP_Left02
+[CheatLab] - 50 : Bone_wigBase_Lfrnt05
+[CheatLab] - 51 : Bone_wigMid_Lfrnt05
+[CheatLab] - 52 : Bone_wigTIP_Lfrnt05
+[CheatLab] - 53 : Bip01 R Clavicle
+[CheatLab] - 54 : Bip01 R UpperArm
+[CheatLab] - 55 : Bip01 R Forearm
+[CheatLab] - 56 : Bip01 R Hand
+[CheatLab] - 57 : Bip01 R Finger0
+[CheatLab] - 58 : Bip01 R Finger01
+[CheatLab] - 59 : Bip01 R Finger0Nub
+[CheatLab] - 60 : Bip01 R Finger1
+[CheatLab] - 61 : Bip01 R Finger11
+[CheatLab] - 62 : Bip01 R Finger1Nub
+[CheatLab] - 63 : Bip01 R Finger2
+[CheatLab] - 64 : Bip01 R Finger21
+[CheatLab] - 65 : Bip01 R Finger2Nub
+[CheatLab] - 66 : R_HandHold
+[CheatLab] - 67 : PouchBone_1
+[CheatLab] - 68 : PouchBone_2
+[CheatLab] - 69 : Bush_BIPlink_ANIMnode

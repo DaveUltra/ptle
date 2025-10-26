@@ -1,0 +1,74 @@
+[CheatLab] Found Chief!
+[CheatLab] - 0 : Bip02
+[CheatLab] - 1 : Bip02 Footsteps
+[CheatLab] - 2 : Bip02 Pelvis
+[CheatLab] - 3 : Bip02 Spine
+[CheatLab] - 4 : Bip02 L Thigh
+[CheatLab] - 5 : Bip02 L Calf
+[CheatLab] - 6 : Bip02 L Foot
+[CheatLab] - 7 : Bip02 L Toe0
+[CheatLab] - 8 : Bip02 L Toe0Nub
+[CheatLab] - 9 : Bip02 R Thigh
+[CheatLab] - 10 : Bip02 R Calf
+[CheatLab] - 11 : Bip02 R Foot
+[CheatLab] - 12 : Bip02 R Toe0
+[CheatLab] - 13 : Bip02 R Toe0Nub
+[CheatLab] - 14 : Bip02 Spine1
+[CheatLab] - 15 : Bip02 Neck
+[CheatLab] - 16 : Bip02 Head
+[CheatLab] - 17 : Bip02 HeadNub
+[CheatLab] - 18 : Bip02 Ponytail1
+[CheatLab] - 19 : Bip02 Ponytail11
+[CheatLab] - 20 : Bip02 Ponytail1Nub
+[CheatLab] - 21 : Bone_CenterBrow
+[CheatLab] - 22 : Bone_Earing_L
+[CheatLab] - 23 : Bone_Earing_R
+[CheatLab] - 24 : Bone_EyeAim_L
+[CheatLab] - 25 : Bone_EyeAim_R
+[CheatLab] - 26 : Bone_Eyebrow_L
+[CheatLab] - 27 : Bone_Eyebrow_R
+[CheatLab] - 28 : Bone_Headdress
+[CheatLab] - 29 : Bone_Jaw
+[CheatLab] - 30 : Bone_LowerLip
+[CheatLab] - 31 : Bone_Mouth_L
+[CheatLab] - 32 : Bone_Mouth_R
+[CheatLab] - 33 : Bone_UpperLip
+[CheatLab] - 34 : Bip02 L Clavicle
+[CheatLab] - 35 : Bip02 L UpperArm
+[CheatLab] - 36 : Bip02 L Forearm
+[CheatLab] - 37 : Bip02 L Hand
+[CheatLab] - 38 : Bip02 L Finger0
+[CheatLab] - 39 : Bip02 L Finger01
+[CheatLab] - 40 : Bip02 L Finger0Nub
+[CheatLab] - 41 : Bip02 L Finger1
+[CheatLab] - 42 : Bip02 L Finger11
+[CheatLab] - 43 : Bip02 L Finger1Nub
+[CheatLab] - 44 : Bip02 L Finger2
+[CheatLab] - 45 : Bip02 L Finger21
+[CheatLab] - 46 : Bip02 L Finger2Nub
+[CheatLab] - 47 : Bip02 R Clavicle
+[CheatLab] - 48 : Bip02 R UpperArm
+[CheatLab] - 49 : Bip02 R Forearm
+[CheatLab] - 50 : Bip02 R Hand
+[CheatLab] - 51 : Bip02 R Finger0
+[CheatLab] - 52 : Bip02 R Finger01
+[CheatLab] - 53 : Bip02 R Finger0Nub
+[CheatLab] - 54 : Bip02 R Finger1
+[CheatLab] - 55 : Bip02 R Finger11
+[CheatLab] - 56 : Bip02 R Finger1Nub
+[CheatLab] - 57 : Bip02 R Finger2
+[CheatLab] - 58 : Bip02 R Finger21
+[CheatLab] - 59 : Bip02 R Finger2Nub
+[CheatLab] - 60 : Bone_SkirtBack_01_L
+[CheatLab] - 61 : Bone_SkirtBack_02_L
+[CheatLab] - 62 : Bone_SkirtBack_01_Mid
+[CheatLab] - 63 : Bone_SkirtBack_02_Mid
+[CheatLab] - 64 : Bone_SkirtBack_03_Mid
+[CheatLab] - 65 : Bone_SkirtBack_01_R
+[CheatLab] - 66 : Bone_SkirtBack_02_R
+[CheatLab] - 67 : Bone_SkirtFront_01_L
+[CheatLab] - 68 : Bone_SkirtFront_02_L
+[CheatLab] - 69 : Bone_SkirtFront_03_L
+[CheatLab] - 70 : Bone_SkirtFront_01_R
+[CheatLab] - 71 : Bone_SkirtFront_02_R
+[CheatLab] - 72 : Bone_SkirtFront_03_R

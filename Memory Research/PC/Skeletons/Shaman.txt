@@ -1,0 +1,54 @@
+[CheatLab] Found Shaman!
+[CheatLab] - 0 : Bip01
+[CheatLab] - 1 : Bip01 Pelvis
+[CheatLab] - 2 : Bip01 Spine
+[CheatLab] - 3 : Bip01 L Thigh
+[CheatLab] - 4 : Bip01 L Calf
+[CheatLab] - 5 : Bip01 L Foot
+[CheatLab] - 6 : Bip01 L Toe0
+[CheatLab] - 7 : Bip01 L Toe0Nub
+[CheatLab] - 8 : Bip01 R Thigh
+[CheatLab] - 9 : Bip01 R Calf
+[CheatLab] - 10 : Bip01 R Foot
+[CheatLab] - 11 : Bip01 R Toe0
+[CheatLab] - 12 : Bip01 R Toe0Nub
+[CheatLab] - 13 : Bip01 Spine1
+[CheatLab] - 14 : Bip01 Neck
+[CheatLab] - 15 : Bip01 L Clavicle
+[CheatLab] - 16 : Bip01 L UpperArm
+[CheatLab] - 17 : Bip01 L Forearm
+[CheatLab] - 18 : Bip01 L Hand
+[CheatLab] - 19 : Bip01 L Finger0
+[CheatLab] - 20 : Bip01 L Finger01
+[CheatLab] - 21 : Bip01 L Finger0Nub
+[CheatLab] - 22 : Bip01 L Finger1
+[CheatLab] - 23 : Bip01 L Finger11
+[CheatLab] - 24 : Bone06
+[CheatLab] - 25 : Bip01 L Finger2
+[CheatLab] - 26 : Bip01 L Finger21
+[CheatLab] - 27 : Bip01 L Finger2Nub
+[CheatLab] - 28 : Bip01 Neck1
+[CheatLab] - 29 : Bip01 Head
+[CheatLab] - 30 : Bip01 HeadNub
+[CheatLab] - 31 : Bone_Mask
+[CheatLab] - 32 : Bip01 R Clavicle
+[CheatLab] - 33 : Bip01 R UpperArm
+[CheatLab] - 34 : Bip01 R Forearm
+[CheatLab] - 35 : Bip01 R Hand
+[CheatLab] - 36 : Bip01 R Finger0
+[CheatLab] - 37 : Bip01 R Finger01
+[CheatLab] - 38 : Bip01 R Finger0Nub
+[CheatLab] - 39 : Bip01 R Finger1
+[CheatLab] - 40 : Bip01 R Finger11
+[CheatLab] - 41 : Bip01 R Finger1Nub
+[CheatLab] - 42 : Bip01 R Finger2
+[CheatLab] - 43 : Bip01 R Finger21
+[CheatLab] - 44 : Bip01 R Finger2Nub
+[CheatLab] - 45 : Bone_StrapBk
+[CheatLab] - 46 : Bone_StrapFrnt
+[CheatLab] - 47 : Bone_Bag_01
+[CheatLab] - 48 : Bone_Bag_02
+[CheatLab] - 49 : Bone_BagFlap_01
+[CheatLab] - 50 : Bone_BagFlap_02
+[CheatLab] - 51 : Bone_Skirt_01
+[CheatLab] - 52 : Bone_Skirt_02

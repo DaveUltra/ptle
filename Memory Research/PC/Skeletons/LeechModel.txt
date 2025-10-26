@@ -1,0 +1,64 @@
+[CheatLab] Found Leech!
+[CheatLab] - 0 : Bip01
+[CheatLab] - 1 : Bip01 Footsteps
+[CheatLab] - 2 : Bip01 Pelvis
+[CheatLab] - 3 : Bip01 Spine
+[CheatLab] - 4 : Bip01 L Thigh
+[CheatLab] - 5 : Bip01 L Calf
+[CheatLab] - 6 : Bip01 L Foot
+[CheatLab] - 7 : Bip01 L Toe0
+[CheatLab] - 8 : Dummy04
+[CheatLab] - 9 : Bip01 R Thigh
+[CheatLab] - 10 : Bip01 R Calf
+[CheatLab] - 11 : Bip01 R Foot
+[CheatLab] - 12 : Bip01 R Toe0
+[CheatLab] - 13 : Dummy03
+[CheatLab] - 14 : Bip01 Spine1
+[CheatLab] - 15 : Bip01 Spine2
+[CheatLab] - 16 : Bip01 Neck
+[CheatLab] - 17 : Bip01 L Clavicle
+[CheatLab] - 18 : Bip01 L UpperArm
+[CheatLab] - 19 : Bip01 L Forearm
+[CheatLab] - 20 : Bip01 L Hand
+[CheatLab] - 21 : Bip01 L Finger0
+[CheatLab] - 22 : Bip01 L Finger01
+[CheatLab] - 23 : Dummy02
+[CheatLab] - 24 : Bip01 L Finger1
+[CheatLab] - 25 : Bip01 L Finger11
+[CheatLab] - 26 : Bip01 L Finger1Nub
+[CheatLab] - 27 : Bip01 L Finger2
+[CheatLab] - 28 : Bip01 L Finger21
+[CheatLab] - 29 : Bip01 L Finger2Nub
+[CheatLab] - 30 : Bip01 Neck1
+[CheatLab] - 31 : Bip01 Head
+[CheatLab] - 32 : Dummy05
+[CheatLab] - 33 : EyeLidBone
+[CheatLab] - 34 : F_L_HairBone
+[CheatLab] - 35 : F_R_HairBone
+[CheatLab] - 36 : Glass_Bone
+[CheatLab] - 37 : JawBone
+[CheatLab] - 38 : BottomLipBone
+[CheatLab] - 39 : L_EyeBall
+[CheatLab] - 40 : L_EyeBrowBone
+[CheatLab] - 41 : L_HairBone
+[CheatLab] - 42 : L_LipBone
+[CheatLab] - 43 : R_EyeBall
+[CheatLab] - 44 : R_EyeBrowBone
+[CheatLab] - 45 : R_HairBone
+[CheatLab] - 46 : R_HairBone2
+[CheatLab] - 47 : R_LipBone
+[CheatLab] - 48 : R_LipBone_end
+[CheatLab] - 49 : UpperLipBone
+[CheatLab] - 50 : Bip01 R Clavicle
+[CheatLab] - 51 : Bip01 R UpperArm
+[CheatLab] - 52 : Bip01 R Forearm
+[CheatLab] - 53 : Bip01 R Hand
+[CheatLab] - 54 : Bip01 R Finger0
+[CheatLab] - 55 : Bip01 R Finger01
+[CheatLab] - 56 : Dummy01
+[CheatLab] - 57 : Bip01 R Finger1
+[CheatLab] - 58 : Bip01 R Finger11
+[CheatLab] - 59 : Bip01 R Finger1Nub
+[CheatLab] - 60 : Bip01 R Finger2
+[CheatLab] - 61 : Bip01 R Finger21
+[CheatLab] - 62 : Bip01 R Finger2Nub
