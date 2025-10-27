@@ -46,6 +46,7 @@
 #include "ptle/levels/level_info.h"
 
 #include "ptle/EIBeast.h"
+#include "ptle/EIHarry.h"
 #include "ptle/EScriptContext.h"
 
 #include "injector/injector.hpp"
@@ -324,6 +325,10 @@ public:
 	virtual void onLevelLoaded( LevelLoadedEvent& event ) override
 	{
 		ensure_item_swap();
+
+		if ( rando_config.instaDash ) {
+			Gizmod::getHarry()->m_heroicDash = 1;
+		}
 
 		if ( rando_config.randomizeShamanShop ) {
 			patch_shaman_shop();
