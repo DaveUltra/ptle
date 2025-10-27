@@ -625,8 +625,6 @@ static void LateInit()
 			injector::WriteMemory( &vtable[0xB9], &MyBeast::PerformStateSwitch_custom );
 		}
 	}
-
-	injector::MakeJMP( 0x620053, 0x62006A );
 }
 
 void InjectCode()
