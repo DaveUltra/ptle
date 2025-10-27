@@ -330,6 +330,7 @@ void Script_SetBeastTarget_Safe( EScriptContext* context )
 
 
 GET_METHOD( 0x4159B0, void, EIBeast_PerformStateSwitch, EIBeast*, uint32_t, bool, bool );
+GET_METHOD( 0x428A80, void, EIBushNinja_PerformStateSwitch, EIBeast*, uint32_t, bool, bool );
 class MyBeast : public EIBeast
 {
 public:
@@ -339,16 +340,16 @@ public:
 		const char* name = sm->m_states[stateID].m_name;
 		const char* nameEnd = name + strlen( name );
 
-		if ( strcmp(nameEnd - 4, "init") == 0 ) {
-			EIBeast_PerformStateSwitch( this, stateID, param1, param2 );
-			return;
-		}
-
 		BeastStateSwitchEvent event( this, stateID );
 		g_pitfall.getEventListener()->invokeEvent( event );
 
-		if ( !event.isCancelled() ) {
-			EIBeast_PerformStateSwitch( this, stateID, param1, param2 );
+		if ( !event.isCancelled() || strcmp(nameEnd - 4, "init") == 0 ) {
+			if ( this->GetType() == get_type_by_vtable(0x86D1D8)->ptleType ) {
+				EIBushNinja_PerformStateSwitch( this, stateID, param1, param2 );
+			}
+			else {
+				EIBeast_PerformStateSwitch( this, stateID, param1, param2 );
+			}
 		}
 	}
 };
