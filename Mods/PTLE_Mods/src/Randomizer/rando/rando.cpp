@@ -440,7 +440,7 @@ void RandoMap::generateLinkedTransitions()
 			levelTo = rand() % availNotMaster.size();
 
 			// Favor remaining areas with more than one exit.
-			if ( availNotMaster.size() > 1 ) {
+			if ( availablePorts[availNotMaster[levelTo]].size() == 1 && availNotMaster.size() > 1 ) {
 				bool onlyDeadEnds = true;
 				for ( int i = 0; i < availNotMaster.size(); i++ ) {
 					if ( availablePorts[availNotMaster[i]].size() != 1 ) {
@@ -459,10 +459,6 @@ void RandoMap::generateLinkedTransitions()
 
 			levelFromCRC = strictAvail[levelFrom];
 			levelToCRC = availNotMaster[levelTo];
-
-			if ( levelFromCRC == levelToCRC ) {
-				Gizmod::getInstance()->getLogger()->log_printf( "WARN : %s is going to connect with itself!\n", level_get_name(level_get_by_crc(levelToCRC)) );
-			}
 		}
 
 		int fromExit = 0;
@@ -471,7 +467,7 @@ void RandoMap::generateLinkedTransitions()
 			toEntrance = 1;
 		}
 
-		//PitfallPlugin::getInstance()->log_printf( " - %s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
+		//Gizmod::getInstance()->getLogger()->log_printf( " - %s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
 
 		// Form linked transition.
 		Transition original( levelFromCRC, availablePorts[levelFromCRC][fromExit] );

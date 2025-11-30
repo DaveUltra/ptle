@@ -26,8 +26,7 @@ public:
 	char padding4[0x0C];
 
 	char* m_uiTypeName;
-
-	char padding5[0x08];
+	char* unknown8;
 
 
 	virtual void func_unknown26();

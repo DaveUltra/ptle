@@ -51,5 +51,8 @@ void load_config()
 		else if ( option == "skipSplashScreens" ) {
 			g_skipSplashScreens = (value == "true");
 		}
+		else if ( option == "speedrunFriendly" ) {
+			g_speedrunFriendly = (value == "true");
+		}
 	}
 }

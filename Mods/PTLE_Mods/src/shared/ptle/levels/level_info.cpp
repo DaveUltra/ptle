@@ -73,10 +73,27 @@ static level_info_t level_info[] =
 
 static level_info_t level_info_beta[] =
 {
-	{ 0xE9809967, "gym",      "gym" },
-	{ 0x47508760, "0-justin", "0-justin (Beta Volcano Crash Site)" },
-	{ 0x303E8832, "0-Brad",   "0-Brad (Beta Mama-Oullo Tower)" },
-	{ 0x9FB1EC73, "0-Lacy",   "0-Lacy (Shaman Horde)" },
+	{ 0xE9809967, "gym",          "gym" },
+	{ 0xD4E640B8, "0-alan",       "0-alan (Beta Characters)" },
+	{ 0xC7ADF2B9, "0-beasties",   "0-beasties (Hedge Arenas)" },
+	{ 0xBE1EAE73, "0-derek",      "0-derek (Sand Pit & Disco Ball)" },
+	{ 0x4A35F149, "0-evan",       "0-evan (Physics Test Level)" },
+	{ 0xB8DCCBFE, "0-geoff",      "0-geoff (Terrain and Pusca Test Level)" },
+	{ 0x47508760, "0-justin",     "0-justin (Beta Volcano Crash Site)" },
+	{ 0x3C621331, "0-karl",       "0-karl (Unbroken Spruce Moose Plane)" },
+	{ 0xBA96749A, "0-kreitler",   "0-kreitler (Tunnel Gameplay Test Level)" },
+	{ 0x9F499B32, "0-lonnie",     "0-lonnie (Small Gameplay Test Level)" },
+	{ 0xF5C60CE9, "0-mike",       "0-mike (Full Gameplay Test Level)" },
+	{ 0xE0F109CC, "0-quentin",    "0-quentin (Beta Characters)" },
+	{ 0x7567D75A, "0-sound",      "0-sound (Sound Range Test Level)" },
+	{ 0xE11B11B7, "0-stanBeasts", "0-stanBeasts (Hedge Arenas)" },
+	{ 0x8CA7D952, "0-ryan",       "0-ryan (Trees and a rock wall)" },
+	{ 0x29C6E554, "0-Andy",       "0-Andy (Beta Mountain Village)" },
+	{ 0x303E8832, "0-Brad",       "0-Brad (Beta Mama-Oullo Tower)" },
+	{ 0x720F5230, "0-Joe",        "0-Joe (Models Test Level)" },
+	{ 0x9FB1EC73, "0-Lacy",       "0-Lacy (Shaman Horde)" },
+	{ 0xC6E6D851, "0-Michael",    "0-Michael (Critters Test Level)" },
+	{ 0xB252EE26, "0jacobm",      "0jacobm (Interactions Test Level)" },
 };
 
 

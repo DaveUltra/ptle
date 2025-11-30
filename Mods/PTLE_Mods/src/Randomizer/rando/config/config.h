@@ -38,6 +38,7 @@ struct RandoConfig
 	bool skipWaterLevels;         // Remove Mysterious Temple, Flooded Cave and Twin Outposts cave.
 	bool immediateSpiritFights;   // Transform Harry into the spirit immediately upon entering the temple.
 	bool disableMapsInShop;       // Remove the area notes from the Shaman shop, and use alternate prices.
+	bool instaDash;               // Dash is granted right at the start, replacing the check by stink bomb instead.
 
 	bool itemRandoInventory;      // Shuffle unlockable items as part of item rando.
 	bool itemRandoIdols;          // Shuffle idols.

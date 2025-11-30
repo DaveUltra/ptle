@@ -24,8 +24,6 @@
 //
 
 
-
-
 GET_METHOD( 0x506170, void, UnlockItem, void*, uint32_t );
 GET_FUNC( 0x5E34A0, void, AddCollectedIdols, uint32_t, int );
 GET_METHOD( 0x597400, void, EITreasureIdol_InitValues, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );

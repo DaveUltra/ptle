@@ -124,7 +124,7 @@ CHECK_TYPE_SIZE( ERModel,            0x98 );
 CHECK_TYPE_SIZE( ERParticleType,     0x168 );
 CHECK_TYPE_SIZE( ERLevel,            0x644 );
 CHECK_TYPE_SIZE( EScriptContext,     0x890 );
-CHECK_TYPE_SIZE( EUIObjectNode,      0xB4 );
+CHECK_TYPE_SIZE( EUIObjectNode,      0xB0 );
 CHECK_TYPE_SIZE( EUIIcon,            0xE4 );
 CHECK_TYPE_SIZE( EUITextIcon,        0x110 );
 

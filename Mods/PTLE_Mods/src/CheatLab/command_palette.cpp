@@ -48,6 +48,30 @@ GET_METHOD( 0x559640, void, EIProjectile_Spawn, EIProjectile*, Vector3f*, Vector
 
 
 
+static void log_state_machine_info( EBeastStateMachine* sm )
+{
+	if ( !sm->m_states ) return;
+
+	log_printf( "\"%s\"\n", sm->m_beastTypeName );
+	log_printf( "%d states :\n", sm->m_numStates );
+	for ( int i = 0; i < sm->m_numStates; i++ ) {
+		log_printf( "- %d : \"%s\"\n", i, sm->m_states[i].m_name );
+	}
+
+	log_printf( "%d conditions :\n", sm->m_numConditions );
+	for ( int i = 0; i < sm->m_numConditions; i++ ) {
+		log_printf( "- %d : \"%s\" (0x%.6X)\n", i, sm->m_conditions[i].m_name, sm->m_conditions[i].m_func.m_func );
+	}
+
+	log_printf( "%d transitions :\n", sm->m_numTransitions );
+	for ( int i = 0; i < sm->m_numTransitions; i++ ) {
+		EBeastTransition& t = sm->m_transitions[i];
+		log_printf( "- %d : %d -> %d (%d)\n", i, t.m_stateA->m_index, t.m_stateB->m_index, t.m_condition->m_index );
+	}
+}
+
+
+
 // Stub functions for empty cheat slots.
 static void _empty()
 {
@@ -172,27 +196,76 @@ static void _all_tnt( bool enable )
 
 
 // --------------------------------------------------------------------------------
-// Natives tick faster.
+// Free camera mode.
 // --------------------------------------------------------------------------------
-GET_METHOD( 0x414F80, void, EINative_Tick, EInstance* );
+float g_freeCameraPos[4] = { 0.0F, 0.0F, 10000.0F, 1.0F };
+float g_freeCameraFOV = 1.0F;
+#define FOV_MIN 2.0F
+#define FOV_MAX 100.0F
 
-void _native_tick_loop( EInstance* inst )
+GET_METHOD( 0x649F80, void, ECameraManager_SetFOV, void*, float );
+
+static void Mat4_Ortho( Matrix4f* out, float width, float height, float n, float f )
 {
-	for ( int i = 0; i < 3; i++ ) {
-		EINative_Tick( inst );
-	}
+	memset( out->data, 0, 16 * sizeof(float) );
+	out->data[0][0] = 2.0F / width;
+	out->data[1][1] = 2.0F / height;
+	out->data[2][2] = 1.0F / (f - n);
+	out->data[3][3] = 1.0F;
+	//out->data[3][2] = n / (f - n);
 }
 
-MAKE_THISCALL_WRAPPER( _native_func, _native_tick_loop );
-static void _fast_native( bool enable )
+static Matrix4f* __stdcall _Mat_LookDown( Matrix4f* self, Vector3f*, Vector3f*, Vector3f* )
+{
+	// Hardcoded keyboard controls.
+	if ( GetAsyncKeyState('I') & 0x8000 ) g_freeCameraPos[1] += 1.0F;
+	if ( GetAsyncKeyState('K') & 0x8000 ) g_freeCameraPos[1] -= 1.0F;
+	if ( GetAsyncKeyState('L') & 0x8000 ) g_freeCameraPos[0] += 1.0F;
+	if ( GetAsyncKeyState('J') & 0x8000 ) g_freeCameraPos[0] -= 1.0F;
+
+	if ( GetAsyncKeyState('O') & 0x8000 ) g_freeCameraPos[2] += 100.0F;
+	if ( GetAsyncKeyState('U') & 0x8000 ) g_freeCameraPos[2] -= 100.0F;
+
+	if ( GetAsyncKeyState('Y') & 0x8000 ) { g_freeCameraFOV += 0.5F; if (g_freeCameraFOV > FOV_MAX) g_freeCameraFOV = FOV_MAX; }
+	if ( GetAsyncKeyState('H') & 0x8000 ) { g_freeCameraFOV -= 0.5F; if (g_freeCameraFOV < FOV_MIN) g_freeCameraFOV = FOV_MIN; }
+
+	// Making our own transform matrix.
+	memset( self->data, 0, 16 * sizeof(float) );
+	self->data[0][0] = 1.0F;
+	self->data[1][1] = 1.0F;
+	self->data[2][2] = 1.0F;
+	memcpy( self->data[3], g_freeCameraPos, 4 * sizeof(float) );
+
+	// Custom FOV.
+	uint32_t camManager = *((uint32_t*) 0x90F0AC);
+	ECameraManager_SetFOV( (void*) camManager, g_freeCameraFOV );
+	*((float*)(camManager + 0x5d60)) = (g_freeCameraPos[2]) - 2000.0F;
+	*((float*)(camManager + 0x5d64)) = (g_freeCameraPos[2]) + 200.0F;
+	//0x634B1C : This calls the function that makes the perspective matrix.
+
+	return self;
+}
+MAKE_THISCALL_WRAPPER( Mat_LookDown, _Mat_LookDown );
+
+static Matrix4f* __stdcall _Mat_Ortho( Matrix4f* self, float, float, float, float )
+{
+	Mat4_Ortho( self, 160.0F, 120.0F, 1.0F, 2000.0F);
+
+	return self;
+}
+MAKE_THISCALL_WRAPPER( Mat_Ortho, _Mat_Ortho );
+
+static void _free_camera( bool enable )
 {
 	if ( enable ) {
-		void* func = &_native_func;
-		injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
+		injector::MakeCALL( 0x449B9A, Mat_LookDown );
+		//injector::MakeCALL( 0x634B1C, Mat_Ortho );
 	}
 	else {
-		void* func = (void*) 0x414F80;
-		injector::WriteMemoryRaw( 0x88B014, &func, 4, true );
+		static uint8_t origCamera[5] = { 0xE8, 0xC1, 0x49, 0x2A, 0x00 };
+		static uint8_t origPersp[5] = { 0xE8, 0x6F, 0x9E, 0x0B, 0x00 };
+		injector::WriteMemoryRaw( 0x449B9A, origCamera, 5, true );
+		//injector::WriteMemoryRaw( 0x634B1C, origPersp, 5, true );
 	}
 }
 
@@ -253,7 +326,7 @@ static void _give_stuff()
 
 
 // --------------------------------------------------------------------------------
-// Max out Harry's HP (and set it to game maximum, 10).
+// Restore Harry's health.
 // --------------------------------------------------------------------------------
 static void _heal()
 {
@@ -263,8 +336,7 @@ static void _heal()
 		return;
 	}
 
-	harry->m_healthMax = 10;
-	harry->m_healthValue = 10;
+	harry->m_healthValue = harry->m_healthMax;
 }
 
 
@@ -504,93 +576,11 @@ static void _micay_spawn()
 
 
 // --------------------------------------------------------------------------------
-// AI state machine modification.
-// --------------------------------------------------------------------------------
-static void log_state_machine_info( EBeastStateMachine* sm )
-{
-	if ( !sm->m_states ) return;
-
-	log_printf( "\"%s\"\n", sm->m_beastTypeName );
-	log_printf( "%d states :\n", sm->m_numStates );
-	for ( int i = 0; i < sm->m_numStates; i++ ) {
-		log_printf( "- %d : \"%s\"\n", i, sm->m_states[i].m_name );
-	}
-
-	log_printf( "%d conditions :\n", sm->m_numConditions );
-	for ( int i = 0; i < sm->m_numConditions; i++ ) {
-		log_printf( "- %d : \"%s\" (0x%.6X)\n", i, sm->m_conditions[i].m_name, sm->m_conditions[i].m_func.m_func );
-	}
-
-	log_printf( "%d transitions :\n", sm->m_numTransitions );
-	for ( int i = 0; i < sm->m_numTransitions; i++ ) {
-		EBeastTransition& t = sm->m_transitions[i];
-		log_printf( "- %d : %d -> %d (%d)\n", i, t.m_stateA->m_index, t.m_stateB->m_index, t.m_condition->m_index );
-	}
-}
-static void _ai_patch()
-{
-	// St.Claire super throw.
-	void* dummy = (void*) (0x899130);
-	EBeastStateMachine* stc = ((EIBeast*)(&dummy))->GetStateMachine();
-
-	if ( stc->m_states ) {
-		// Get animation complete.
-		EBeastCondition* condAnimComplete = stc->m_conditions + 6;
-
-		// Get both states to loop in.
-		EBeastState* stateTntThrowStart = stc->m_states + 5;
-		EBeastState* stateDoubleThrow = stc->m_states + 1;
-
-		// Tighten loop between TNT throw start & TNT throw.
-		EBeastTransition aToB = { 0, condAnimComplete, stateTntThrowStart, stateDoubleThrow };
-		EBeastTransition bToA = { 0, condAnimComplete, stateDoubleThrow, stateTntThrowStart };
-
-		// Inject our transitions.
-		stc->m_transitions[0] = aToB;
-		stc->m_transitions[1] = bToA;
-	}
-
-
-	// Pusca minions.
-	dummy = (void*) (0x894398);
-	EBeastStateMachine* puscaMinion = ((EIBeast*)(&dummy))->GetStateMachine();
-
-	if ( puscaMinion->m_states ) {
-		EBeastCondition* condAnimComplete = puscaMinion->m_conditions + 0;
-		EBeastCondition* condYes = puscaMinion->m_conditions + 5;
-
-		EBeastState* stateFire = puscaMinion->m_states + 1;
-		EBeastState* stateLoad = puscaMinion->m_states + 6;
-
-		// Repeatedly fire.
-		puscaMinion->m_transitions[0].m_stateA = stateLoad;
-		puscaMinion->m_transitions[0].m_stateB = stateFire;
-		puscaMinion->m_transitions[0].m_condition = condYes;
-
-		puscaMinion->m_transitions[1].m_stateA = stateFire;
-		puscaMinion->m_transitions[1].m_stateB = stateLoad;
-		puscaMinion->m_transitions[1].m_condition = condAnimComplete;
-	}
-
-
-	// Penguin Evil Harry.
-	dummy = (void*) (0x875240);
-	EBeastStateMachine* evilHarryP = ((EIBeast*)(&dummy))->GetStateMachine();
-
-	// Disable dancing on victory.
-	EBeastCondition* condNo = evilHarryP->m_conditions + 10;
-	evilHarryP->m_transitions[5].m_condition = condNo;
-
-	log_state_machine_info( evilHarryP );
-}
-
-
-// --------------------------------------------------------------------------------
 // Idol spawner.
 // --------------------------------------------------------------------------------
-static void _idol_spawn( bool explorer )
+static void _idol_spawn()
 {
-	const type_info_t* type = get_type_by_vtable( explorer ? 0x89A420 : 0x89A2F8 );
+	const type_info_t* type = get_type_by_vtable( 0x89A2F8 );
 	EITreasureIdol* idol = instantiate_object<EITreasureIdol>( type );
 
 	EIHarry* harry = *((EIHarry**) 0x917034);
@@ -609,12 +599,7 @@ static void _idol_spawn( bool explorer )
 
 static void _idol_spawn_regular()
 {
-	_idol_spawn( false );
-}
-
-static void _idol_spawn_explorer()
-{
-	_idol_spawn( true );
+	_idol_spawn();
 }
 
 
@@ -654,14 +639,6 @@ static void _list_entities()
 	}
 
 	Gizmod::getInstance()->getLogger()->log_printf( "Total : %d entities.\n", i );
-}
-
-
-GET_METHOD( 0x5229B0, void, SetMusic, void*, uint32_t, bool );
-static void _change_music()
-{
-	void* musicManager = (void*) 0x910850;
-	SetMusic(musicManager, 0xB05ADA8F, true);
 }
 
 
@@ -724,6 +701,9 @@ static void _log_epausemain()
 }
 
 
+// --------------------------------------------------------------------------------
+// Explorer tracker & teleport to explorer.
+// --------------------------------------------------------------------------------
 #include "ptle/EIExplorer.h"
 static Matrix4f m;
 
@@ -765,7 +745,25 @@ static void _explorer_tracker()
 	EIHarry_Tp(Gizmod::getHarry(), &mat, false, 1.0F);
 }
 
+static void _tp_to_explorer()
+{
+	std::vector<EIBeast*> expl;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType( expl, get_type_by_vtable(0x876400)->ptleType );
 
+	if (!expl.empty()) {
+		Matrix4f mat = expl[0]->m_transformMatrix;
+		mat.data[3][2] += 8.0F;
+		EIHarry_Tp( Gizmod::getHarry(), &mat, false, 1.0F );
+	}
+	else {
+		Gizmod::getInstance()->getLogger()->log( "No explorer in this level.\n" );
+	}
+}
+
+
+// --------------------------------------------------------------------------------
+// Teleport to shaman.
+// --------------------------------------------------------------------------------
 static void _tp_to_shaman()
 {
 	std::vector<EIBeast*> shams;
@@ -782,6 +780,9 @@ static void _tp_to_shaman()
 }
 
 
+// --------------------------------------------------------------------------------
+// Display Harry's position.
+// --------------------------------------------------------------------------------
 static void _display_coords()
 {
 	EIHarry* harry = Gizmod::getHarry();
@@ -794,6 +795,10 @@ static void _display_coords()
 }
 
 
+static void _give_five_idols()
+{
+	Gizmod::getHarry()->m_idolsCollected += 5;
+}
 
 //
 // List of available commands / cheats.
@@ -808,7 +813,7 @@ const cheat_t cheats[] =
 	{ "Infinite Jump",        _infinite_jump },
 	{ "TNT Rain",             _tnt_rain },
 	{ "All TNT",              _all_tnt },
-	{ "Crack Native",         _fast_native },
+	{ "Free Camera",          _free_camera },
 	{ "Deactivate Effectors", _deactivate_effectors },
 };
 
@@ -822,17 +827,13 @@ const command_t commands[] =
 	{ "Spawn Evil Harry",     _spawn_evilharry },
 	{ "Spawn Micay",          _micay_spawn },
 	{ "Spawn Native",         _netiv_spawn },
-	{ "AI patch",             _ai_patch },
 	{ "Spawn Idol",           _idol_spawn_regular },
-	{ "Spawn Explorer Idol",  _idol_spawn_explorer },
 	{ "List models",          _list_model_assets },
 	{ "List entities w/ IDs", _list_entities },
-	{ "Change Music",         _change_music },
-	{ "Log Save UI Contents", _log_saveui_contents },
-	{ "Log Main UI Contents", _log_epausemain },
-	{ "Explorer Tracker",     _explorer_tracker },
+	{ "TP to Explorer",       _tp_to_explorer },
 	{ "TP to Shaman",         _tp_to_shaman },
-	{ "Display Coords",       _display_coords },
+	{ "Display Harry Pos",    _display_coords },
+	{ "Give 5 idols",         _give_five_idols },
 };
 
 const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);
@@ -946,8 +947,10 @@ static const char className[] = "PaletteWindow";
 #define ID_ITEMSWAP (ID_ITEMS+9)
 #define ID_SKILLS   (ID_ITEMSWAP+1)
 
-#define ID_SAVESLOT_LOAD 620
-#define ID_SAVESLOT_SAVE 630
+#define ID_INGAMECHEAT 500
+
+#define ID_SAVESLOT_LOAD 700
+#define ID_SAVESLOT_SAVE (700+10)
 
 
 static void PaletteCreate( HWND hwnd )
@@ -1045,6 +1048,13 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 			}
 		}
 	}
+	else if ( id >= ID_INGAMECHEAT && id < ID_INGAMECHEAT+3 ) {
+		switch ( id - ID_INGAMECHEAT ) {
+		case 0: *((bool*) 0x90DA18) ^= 1; break;
+		case 1: *((bool*) 0x90DA1F) ^= 1; break;
+		case 2: *((bool*) 0x90DA19) ^= 1; break;
+		}
+	}
 	else if ( id >= ID_SAVESLOT_LOAD && id < ID_SAVESLOT_LOAD+10 ) {
 		load_saveslot( id - ID_SAVESLOT_LOAD );
 	}
@@ -1077,6 +1087,11 @@ static void PaletteUpdateMenuChecks( HWND hwnd, WPARAM wparam, LPARAM lparam )
 			CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
+			break;
+		case 3:
+			CheckMenuItem( subMenu, ID_INGAMECHEAT,   *((bool*) 0x90DA18) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_INGAMECHEAT+1, *((bool*) 0x90DA1F) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_INGAMECHEAT+2, *((bool*) 0x90DA19) ? MF_CHECKED : MF_UNCHECKED );
 			break;
 		}
 	}
@@ -1192,6 +1207,14 @@ static HMENU create_menu()
 		AppendMenu( skills, MF_STRING, ID_SKILLS+5, "Breakdance" );
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) skills, "Skills" );
+	}
+
+	HMENU cheats = CreateMenu(); {
+		AppendMenu( cheats, MF_STRING, ID_INGAMECHEAT,   "Nicole Outfit" );
+		AppendMenu( cheats, MF_STRING, ID_INGAMECHEAT+1, "Retro Outfit" );
+		AppendMenu( cheats, MF_STRING, ID_INGAMECHEAT+2, "Native Outfit" );
+
+		AppendMenu( menu, MF_POPUP, (UINT_PTR) cheats, "Cheats" );
 	}
 
 	HMENU saveSlots = CreateMenu(); {
