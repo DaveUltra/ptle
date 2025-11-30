@@ -34,6 +34,7 @@ extern "C" { Gizmod* gizmodInstance; }
 
 bool g_enabled = true;
 bool g_skipSplashScreens = false;
+bool g_speedrunFriendly = false;
 
 Gizmod g_pitfall;
 
@@ -614,15 +615,17 @@ static bool ReturnYes()
 
 static void LateInit()
 {
-	// Beast state change.
-	const ETypeInfo* beast = get_type_by_vtable( 0x86C3D0 )->ptleType;
-	const ETypeInfo* flockBeast = get_type_by_vtable( 0x876D28 )->ptleType;
+	if ( !g_speedrunFriendly ) {
+		// Beast state change.
+		const ETypeInfo* beast = get_type_by_vtable( 0x86C3D0 )->ptleType;
+		const ETypeInfo* flockBeast = get_type_by_vtable( 0x876D28 )->ptleType;
 
-	for ( auto p : get_all_types() ) {
-	const ETypeInfo* baseType = p.second.ptleType->m_parent;
-		if ( baseType == beast || baseType == flockBeast ) {
-			void** vtable = (void**) p.first;
-			injector::WriteMemory( &vtable[0xB9], &MyBeast::PerformStateSwitch_custom );
+		for ( auto p : get_all_types() ) {
+		const ETypeInfo* baseType = p.second.ptleType->m_parent;
+			if ( baseType == beast || baseType == flockBeast ) {
+				void** vtable = (void**) p.first;
+				injector::WriteMemory( &vtable[0xB9], &MyBeast::PerformStateSwitch_custom );
+			}
 		}
 	}
 }
@@ -633,8 +636,10 @@ void InjectCode()
 	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
 	injector::MakeRangedNOP( 0x60D1B6, 0x60D1C3 );    // "ACTIVATE!!!!"
 
-	// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
-	injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
+	if ( !g_speedrunFriendly ) {
+		// Bonus : Replace this script function with one that null-checks first. This protects against Monkey Temple crash.
+		injector::WriteMemory( 0x8F0A0C, &Script_SetBeastTarget_Safe );
+	}
 
 	// Protection against explorer softlock.
 	injector::WriteMemory( 0x87659C, ReturnYes );
@@ -652,46 +657,48 @@ void InjectCode()
 	injector::MakeRangedNOP( 0x60E977, 0x60E97F );
 
 
-	// Breakables.
-	injector::MakeCALL( 0x4EDD91, BreakableBreak );
+	if ( !g_speedrunFriendly ) {
+		// Breakables.
+		injector::MakeCALL( 0x4EDD91, BreakableBreak );
 
-	// Collect items & idols.
-	injector::MakeCALL( 0x4E9E51, CollectItem_custom );        // Intercept item unlock ("HarryAddInventoryItem" script function).
-	injector::MakeCALL( 0x598036, CollectItem_custom );        // Intercept item unlock (picking up an EITreasureIdol).
-	injector::MakeCALL( 0x598004, AddCollectedIdols_custom );  // Intercept idol grab (picking up an EITreasureIdol).
-	injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
+		// Collect items & idols.
+		injector::MakeCALL( 0x4E9E51, CollectItem_custom );        // Intercept item unlock ("HarryAddInventoryItem" script function).
+		injector::MakeCALL( 0x598036, CollectItem_custom );        // Intercept item unlock (picking up an EITreasureIdol).
+		injector::MakeCALL( 0x598004, AddCollectedIdols_custom );  // Intercept idol grab (picking up an EITreasureIdol).
+		injector::MakeRangedNOP( 0x597FE8, 0x597FFF );
 
-	// Cinematic playing.
-	injector::MakeCALL( 0x430A20, CinematicCannotPlay );
+		// Cinematic playing.
+		injector::MakeCALL( 0x430A20, CinematicCannotPlay );
 
-	// Plants rustling.
-	injector::MakeNOP( 0x5444C6, 10 );
-	injector::MakeCALL( 0x5444C6, PlantRustleBig );
-	injector::MakeNOP( 0x545222, 10 );
-	injector::MakeCALL( 0x545222, PlantRustleSmall );
-	injector::MakeNOP( 0x545507, 10 );
-	injector::MakeCALL( 0x545507, PlantRustleSmall );
+		// Plants rustling.
+		injector::MakeNOP( 0x5444C6, 10 );
+		injector::MakeCALL( 0x5444C6, PlantRustleBig );
+		injector::MakeNOP( 0x545222, 10 );
+		injector::MakeCALL( 0x545222, PlantRustleSmall );
+		injector::MakeNOP( 0x545507, 10 );
+		injector::MakeCALL( 0x545507, PlantRustleSmall );
 
-	// Projectile shooting.
-	static const uint32_t callLocations[] = { 0x494253, 0x501F12, 0x556723, 0x559B23, 0x559EA5, 0x559FFA, 0x55E0A4, 0x583711, 0x583B77, 0x595867, 0x595960 };
-	for ( int i = 0; i < _countof(callLocations); i++ ) {
-		injector::MakeCALL( callLocations[i], ProjectileShoot );
+		// Projectile shooting.
+		static const uint32_t callLocations[] = { 0x494253, 0x501F12, 0x556723, 0x559B23, 0x559EA5, 0x559FFA, 0x55E0A4, 0x583711, 0x583B77, 0x595867, 0x595960 };
+		for ( int i = 0; i < _countof(callLocations); i++ ) {
+			injector::MakeCALL( callLocations[i], ProjectileShoot );
+		}
+
+
+		// Not working.
+		//injector::MakeJMP( 0x626747, _EntitySpawn );
+
+		// Load level.
+		injector::MakeCALL( 0x5ECC70, LoadLevel_custom );
+
+		// Level finished loading.
+		injector::MakeNOP( 0x5EC196, 8 );
+		injector::MakeCALL( 0x5EC196, LevelLoaded );
+		injector::MakeRangedNOP( 0x5096BC, 0x5096ED );             // Defer music playing.
+
+		// EPauseMain_Message() in vtable.
+		injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );
 	}
-
-
-	// Not working.
-	//injector::MakeJMP( 0x626747, _EntitySpawn );
-
-	// Load level.
-	injector::MakeCALL( 0x5ECC70, LoadLevel_custom );
-
-	// Level finished loading.
-	injector::MakeNOP( 0x5EC196, 8 );
-	injector::MakeCALL( 0x5EC196, LevelLoaded );
-	injector::MakeRangedNOP( 0x5096BC, 0x5096ED );             // Defer music playing.
-
-	// EPauseMain_Message() in vtable.
-	injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );
 }
 
 
@@ -928,7 +935,11 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 
 		load_config();
 
-		log_printf( "Gizmod %s\n", g_pitfall.getVersionString().c_str() );
+		log_printf( "Gizmod %s", g_pitfall.getVersionString().c_str() );
+		if ( g_speedrunFriendly ) {
+			log_printf( " (SPEEDRUN-FRIENDLY MODE ACTIVE)" );
+		}
+		log_printf( "\n" );
 
 		hm = hModule;
 		GetModuleFileNameW( hm, filename, sizeof(filename) );
