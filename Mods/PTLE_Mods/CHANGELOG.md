@@ -1,5 +1,20 @@
 # Gizmod Changelog
 
+## v0.2.1
+
+Additions :
+
+- Added "speedrunFriendly" option (disables all mod features we're not sure are affecting gameplay or not)
+- Randomizer : Insta-dash option (grant the player dash at the start for quicker games)
+- CheatLab : Added a simple top-down camera mode
+- CheatLab : "Teleport to explorer" cheat + "Give 5 idols" cheat
+
+Fixes :
+
+- Bushes not moving along with bush ninjas
+- Incorrect reported size for `EUIObjectNode` type
+- Randomizer : Starting area systematically had Valley of Spirits and Mama-Oullo Tower connected
+
 ## v0.2.0
 
 Additions :
