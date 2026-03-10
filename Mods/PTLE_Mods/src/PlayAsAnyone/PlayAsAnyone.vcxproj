@@ -107,6 +107,7 @@
       <AdditionalIncludeDirectories>$(ProjectDir);$(SolutionDir)src\shared;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>None</DebugInformationFormat>
+      <LanguageStandard>Default</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,6 +145,7 @@
   <ItemGroup>
     <ClCompile Include="Characters\Bittenbinder.cpp" />
     <ClCompile Include="Characters\BushNinja.cpp" />
+    <ClCompile Include="Characters\CharacterInfo.cpp" />
     <ClCompile Include="Characters\Chief.cpp" />
     <ClCompile Include="Characters\Leech.cpp" />
     <ClCompile Include="Characters\Micay.cpp" />
@@ -164,6 +166,7 @@
     <ClInclude Include="Characters\Shaman.h" />
     <ClInclude Include="Characters\Spinja.h" />
     <ClInclude Include="MoreMath.h" />
+    <ClInclude Include="PlayAsAnyone.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

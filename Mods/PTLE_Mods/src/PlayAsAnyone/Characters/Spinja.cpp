@@ -29,8 +29,12 @@ const int bonesMap_spinja[] = {
 	26,
 	27,
 	28,
-	29,  // End of left arm
-	-1,  // Sickle L
+	29,
+	30,
+	31,
+	32,
+	33,  // End of left arm
+	24,  // Sickle L
 	-1,
 	37,  // Neck1
 	38,  // Head
@@ -51,7 +55,7 @@ const int bonesMap_spinja[] = {
 	65,
 	66,
 	67,  // End of right arm
-	-1,  // R_HandHold
+	71,  // R_HandHold
 	-1,  // Sickle R
 	-1,
 };
@@ -67,8 +71,18 @@ void CharacterSpinja::postProcessPose( Transform* destPose, const Transform* har
 	static float timer = 0.0F;
 
 	// Hide the picks.
-	destPose[28].m_scale = { 0.0F, 0.0F, 0.0F };
-	destPose[50].m_scale = { 0.0F, 0.0F, 0.0F };
+	// TODO : Scaling is ignored in this step.
+	//destPose[28].m_scale = { 0.0F, 0.0F, 0.0F };
+	//destPose[50].m_scale = { 0.0F, 0.0F, 0.0F };
+
+	// Combine spine segments.
+	/*destPose[14] = harryPose[14];
+	TransformMul( &destPose[14], &harryPose[15] );
+	TransformMul( &destPose[14], &harryPose[19] );
+
+	// Combine neck segments.
+	destPose[15] = harryPose[20];
+	TransformMul( &destPose[15], &harryPose[37] );*/
 
 	// Rotate eyes.
 	float c = cos( timer * 0.5F ), s = sin( timer * 0.5F );
