@@ -26,6 +26,7 @@
 #include "EIShaman.h"
 #include "EISnowBowler.h"
 #include "EISnowScarab.h"
+#include "EISpinja.h"
 #include "EIStClair.h"
 #include "EISupai.h"
 #include "EITreasureIdol.h"
@@ -112,6 +113,7 @@ CHECK_TYPE_SIZE( EIHenchman,         0x7E0 );
 CHECK_TYPE_SIZE( EIPusca,            0x7E0 );
 CHECK_TYPE_SIZE( EIStClair,          0x7F0 );
 CHECK_TYPE_SIZE( EIBushNinja,        0x850 );
+CHECK_TYPE_SIZE( EISpinja,           0x8B0 );
 CHECK_TYPE_SIZE( EIEvilHarryMM,      0x8B0 );
 CHECK_TYPE_SIZE( EIEvilHarryP,       0x970 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );

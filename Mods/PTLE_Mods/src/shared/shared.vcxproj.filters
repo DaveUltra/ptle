@@ -134,6 +134,7 @@
     <ClInclude Include="ptle\EHarryActions.h" />
     <ClInclude Include="gizmod\event\HeroicUnlockEvent.h" />
     <ClInclude Include="ptle\EHeroicSkill.h" />
+    <ClInclude Include="ptle\EISpinja.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

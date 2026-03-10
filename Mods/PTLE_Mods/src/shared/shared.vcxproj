@@ -127,6 +127,7 @@
     <ClInclude Include="ptle\EIPlayerMonkey.h" />
     <ClInclude Include="ptle\EIPlayerPenguin.h" />
     <ClInclude Include="ptle\EIPlayerScorpion.h" />
+    <ClInclude Include="ptle\EISpinja.h" />
     <ClInclude Include="ptle\ESaveGameMan.h" />
     <ClInclude Include="ptle\ESaveGameVar.h" />
     <ClInclude Include="ptle\ESDInt.h" />
