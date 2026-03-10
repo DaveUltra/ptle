@@ -104,27 +104,27 @@ bool load_idols_infos()
 				}
 
 				// Requirements.
-				/*json::JSONField& requires = exitObj["requires"];
+				json::JSONField& requires = idolObj["requires"];
 				if ( requires.IsUndefined() || requires.Type() != json::JSON_ARRAY ) continue;
 				if ( requires->GetArrayValue().IsEmpty() ) continue;
 
 				for ( json::JSONValue& req : requires->GetArrayValue() ) {
 					if ( req.Type() == json::JSON_ARRAY ) {
-						e.requires.push_back( std::vector<std::string>() );
-						std::vector<std::string>& reqlist = e.requires.back();
+						data.requires.push_back( std::vector<std::string>() );
+						std::vector<std::string>& reqlist = data.requires.back();
 						for ( json::JSONValue& partreq : req.GetArrayValue() ) {
 							if ( partreq.Type() != json::JSON_STRING ) continue;
 							reqlist.push_back( partreq.GetStringValue() );
 						}
 					}
 					else if ( req.Type() == json::JSON_STRING ) {
-						if ( e.requires.empty() ) {
-							e.requires.push_back( std::vector<std::string>() );
+						if ( data.requires.empty() ) {
+							data.requires.push_back( std::vector<std::string>() );
 						}
-						std::vector<std::string>& reqlist = e.requires[0];
+						std::vector<std::string>& reqlist = data.requires[0];
 						reqlist.push_back( req.GetStringValue() );
 					}
-				}*/
+				}
 			}
 		}
 	}

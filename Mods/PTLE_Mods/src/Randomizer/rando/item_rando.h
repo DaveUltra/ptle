@@ -4,6 +4,9 @@
 #include <stdint.h>
 
 
+extern uint32_t g_itemRando_harryActions;
+
+
 void item_rando_init();
 
 void log_item_rando( std::ostream& os );

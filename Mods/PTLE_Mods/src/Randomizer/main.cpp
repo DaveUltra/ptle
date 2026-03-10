@@ -42,6 +42,8 @@
 #include "gizmod/event/LevelLoadedEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
 
+#include "ptle/EHarryActions.h"
+
 #include "ptle/types/types.h"
 #include "ptle/levels/level_info.h"
 
@@ -324,6 +326,10 @@ public:
 	// Level finished loading.
 	virtual void onLevelLoaded( LevelLoadedEvent& event ) override
 	{
+		if ( rando_config.itemRandoHarryActions ) {
+			EHarryActions::setActionsBitfield( g_itemRando_harryActions );
+		}
+
 		ensure_item_swap();
 
 		if ( rando_config.instaDash ) {

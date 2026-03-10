@@ -1,3 +1,10 @@
+/*
+ * Shaman prices randomization.
+ * 
+ * This does not participate in the randomization of what the shaman sells!
+ * It is part of item randomizer. Refer to "item_rando.cpp".
+ */
+
 #include "gizmod/Gizmod.h"
 
 #include "gizmod/shaman/ShamanShop.h"
