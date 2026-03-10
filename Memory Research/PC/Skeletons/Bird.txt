@@ -1,0 +1,5 @@
+[CheatLab] Found Bird!
+[CheatLab] - 0 : Bone_Bird_Root
+[CheatLab]  - 1 : Bone_Tail
+[CheatLab]  - 2 : Bone_Wing02_L
+[CheatLab]  - 3 : Bone_Wing02_R

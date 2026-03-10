@@ -1,0 +1,70 @@
+[CheatLab] Found guardmodel!
+[CheatLab] - 0 : Bip01
+[CheatLab]  - 1 : Bip01 Footsteps
+[CheatLab]  - 2 : Bip01 Pelvis
+[CheatLab]   - 3 : Bip01 Spine
+[CheatLab]    - 4 : Bip01 L Thigh
+[CheatLab]     - 5 : Bip01 L Calf
+[CheatLab]      - 6 : Bip01 L Foot
+[CheatLab]       - 7 : Bip01 L Toe0
+[CheatLab]        - 8 : Bip01 L Toe0Nub
+[CheatLab]    - 9 : Bip01 R Thigh
+[CheatLab]     - 10 : Bip01 R Calf
+[CheatLab]      - 11 : Bip01 R Foot
+[CheatLab]       - 12 : Bip01 R Toe0
+[CheatLab]        - 13 : Bip01 R Toe0Nub
+[CheatLab]    - 14 : Bip01 Spine1
+[CheatLab]     - 15 : Bip01 Neck
+[CheatLab]      - 16 : Bip01 Head
+[CheatLab]       - 17 : Bip01 HeadNub
+[CheatLab]        - 18 : Head_HELP
+[CheatLab]         - 19 : face_Jaw_BONE
+[CheatLab]          - 20 : face_LowerLip_BONE
+[CheatLab]         - 21 : face_LeftBrow_BONE
+[CheatLab]          - 22 : face_LefttBrowTip_BONE
+[CheatLab]         - 23 : face_LeftLip_BONE
+[CheatLab]         - 24 : face_Lid_BONE
+[CheatLab]         - 25 : face_RightBrow_BONE
+[CheatLab]          - 26 : face_RightBrowTip_BONE
+[CheatLab]         - 27 : face_RightLip_BONE
+[CheatLab]         - 28 : face_UpperLip_BONE
+[CheatLab]         - 29 : Point01
+[CheatLab]          - 30 : face_LeftEye_BONE
+[CheatLab]         - 31 : Point02
+[CheatLab]          - 32 : face_RightEye_BONE
+[CheatLab]         - 33 : Tail01_BONE
+[CheatLab]          - 34 : Tail02_BONE
+[CheatLab]           - 35 : Tail03_L_BONE
+[CheatLab]            - 36 : Tail04_L_BONE
+[CheatLab]             - 37 : Tail05_L_BONE
+[CheatLab]           - 38 : Tail03_R_BONE
+[CheatLab]            - 39 : Tail04_R_BONE
+[CheatLab]             - 40 : Tail05_R_BONE
+[CheatLab]       - 41 : Bone01
+[CheatLab]      - 42 : Bip01 L Clavicle
+[CheatLab]       - 43 : Bip01 L UpperArm
+[CheatLab]        - 44 : Bip01 L Forearm
+[CheatLab]         - 45 : Bip01 L Hand
+[CheatLab]          - 46 : Bip01 L Finger0
+[CheatLab]           - 47 : Bip01 L Finger01
+[CheatLab]            - 48 : Bip01 L Finger0Nub
+[CheatLab]          - 49 : Bip01 L Finger1
+[CheatLab]           - 50 : Bip01 L Finger11
+[CheatLab]            - 51 : Bip01 L Finger1Nub
+[CheatLab]      - 52 : Bip01 R Clavicle
+[CheatLab]       - 53 : Bip01 R UpperArm
+[CheatLab]        - 54 : Bip01 R Forearm
+[CheatLab]         - 55 : Bip01 R Hand
+[CheatLab]          - 56 : Bip01 R Finger0
+[CheatLab]           - 57 : Bip01 R Finger01
+[CheatLab]            - 58 : Bip01 R Finger0Nub
+[CheatLab]          - 59 : Bip01 R Finger1
+[CheatLab]           - 60 : Bip01 R Finger11
+[CheatLab]            - 61 : Bip01 R Finger1Nub
+[CheatLab]   - 62 : Cloth_HELP
+[CheatLab]    - 63 : Back_Cloth01_BONE
+[CheatLab]     - 64 : Back_Cloth02_BONE
+[CheatLab]      - 65 : Back_Cloth03_BONE
+[CheatLab]    - 66 : Front_Cloth01_BONE
+[CheatLab]     - 67 : Front_Cloth02_BONE
+[CheatLab]      - 68 : Front_Cloth03_BONE

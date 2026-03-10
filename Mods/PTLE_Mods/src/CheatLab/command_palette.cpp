@@ -800,6 +800,38 @@ static void _give_five_idols()
 	Gizmod::getHarry()->m_idolsCollected += 5;
 }
 
+
+#include "ptle/ERCharacter.h"
+#include <set>
+static void _displayBone(ERCharacter* ch, CharacterBoneInfo* bone, int myIndex = 0, int r = 0)
+{
+	Logger* logger = Gizmod::getInstance()->getLogger();
+	logger->log_printf( "%*s- %d : %s\n", r, "", myIndex, bone->m_name );
+
+	for ( int i = 0; i < bone->m_childBoneIndices.m_size; i++ ) {
+		int index = ((int*) bone->m_childBoneIndices.m_data)[i];
+		_displayBone( ch, &ch->m_boneList[index], index, r + 1 );
+	}
+}
+static void _displaySkeleton()
+{
+	std::vector<EICharacter*> characters;
+	std::set<ERCharacter*> charTypes;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EICharacter>( characters, get_type_by_vtable(0x8A5000)->ptleType );
+
+	for ( EICharacter* charInst : characters ) {
+		ERCharacter* ch = charInst->m_animController.m_characterResource;
+		charTypes.insert( ch );
+	}
+
+	Logger* logger = Gizmod::getInstance()->getLogger();
+	for ( ERCharacter* ch : charTypes ) {
+		logger->log_printf( "\nFound %s!\n", ch->m_name );
+		_displayBone( ch, &ch->m_boneList[0] );
+	}
+}
+
+
 //
 // List of available commands / cheats.
 //
@@ -834,6 +866,7 @@ const command_t commands[] =
 	{ "TP to Shaman",         _tp_to_shaman },
 	{ "Display Harry Pos",    _display_coords },
 	{ "Give 5 idols",         _give_five_idols },
+	{ "Display Skeletons",    _displaySkeleton },
 };
 
 const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);
@@ -907,8 +940,10 @@ bool load_saveslot( int i )
 
 void save_saveslot( int i )
 {
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
+	uint32_t levelCRC = Gizmod::getCurrentLevelCRC();
 
+	save_slots[i].levelID = levelCRC;
 	save_slots[i].playerTransform = harry->m_rigidBodyMatrix;
 
 	log_printf( "Saved state %d.\n", i );

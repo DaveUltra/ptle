@@ -1,0 +1,5 @@
+[CheatLab] Found batreal!
+[CheatLab] - 0 : Bone_Bat_ROOT
+[CheatLab]  - 1 : Bone_Extra
+[CheatLab]  - 2 : Bone_WingTipL
+[CheatLab]  - 3 : Bone_WingTipR

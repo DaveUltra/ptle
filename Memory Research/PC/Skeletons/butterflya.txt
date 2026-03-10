@@ -1,0 +1,5 @@
+[CheatLab] Found butterflya!
+[CheatLab] - 0 : Bone_Butterfly_ROOT
+[CheatLab]  - 1 : Butterfly_Body
+[CheatLab]   - 2 : Bone_WingL
+[CheatLab]   - 3 : Bone_WingR

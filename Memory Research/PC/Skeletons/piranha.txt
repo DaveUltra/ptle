@@ -1,0 +1,5 @@
+[CheatLab] Found piranha!
+[CheatLab] - 0 : Bone_Pir_Base
+[CheatLab]  - 1 : Bone_jawLOW
+[CheatLab]  - 2 : Bone_jawUP
+[CheatLab]  - 3 : Bone_tail
