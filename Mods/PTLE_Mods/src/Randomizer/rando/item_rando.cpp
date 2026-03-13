@@ -620,6 +620,7 @@ void item_rando_init()
 	// Shuffle and assign.
 	// - We map the shaman shop first to avoid mapping idols to... more idols.
 	// - Then process what is left in the pool.
+	EHarryActions::enableAll();
 	if ( rando_config.itemRandoHeroicSkills /* || rando_config.itemRandoNotes */ ) {
 		if ( rando_config.itemRandoInventory ) for ( int i = 0; i < _countof(g_unlockableItems); i++ ) { original.push_back( g_unlockableItems + i ); }
 		if ( rando_config.itemRandoHeroicSkills ) stageUnlockablesCategory( original, g_unlockableHeroicSkills );
@@ -637,6 +638,15 @@ void item_rando_init()
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[1]) );
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[4]) );
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[5]) );
+		
+
+		for (size_t i = shuffled.size() - 1; i > shuffled.size() - 4; i--) {
+			const UnlockableType shType = shuffled[i]->m_type;
+			if ( shType == HARRY_ACTION ) {
+				EHarryActions::disableAction( shuffled[i]->m_harryAction );
+			}
+		}
+
 		shuffled.erase( shuffled.end() - 3, shuffled.end() );
 
 		// Prepare to randomize the rest.
@@ -658,7 +668,7 @@ void item_rando_init()
 	std::random_shuffle( shuffled.begin(), shuffled.end() );
 
 
-	EHarryActions::enableAll();
+	
 
 	for ( size_t i = 0; i < original.size(); i++ ) {
 		g_unlockablesMap.emplace( original[i], shuffled[i] );
