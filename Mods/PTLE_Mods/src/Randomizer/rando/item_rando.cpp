@@ -638,9 +638,8 @@ void item_rando_init()
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[1]) );
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[4]) );
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[5]) );
-		
 
-		for (size_t i = shuffled.size() - 1; i > shuffled.size() - 4; i--) {
+		for ( size_t i = shuffled.size() - 1; i > shuffled.size() - 4; i-- ) {
 			const UnlockableType shType = shuffled[i]->m_type;
 			if ( shType == HARRY_ACTION ) {
 				EHarryActions::disableAction( shuffled[i]->m_harryAction );
@@ -667,8 +666,6 @@ void item_rando_init()
 
 	std::random_shuffle( shuffled.begin(), shuffled.end() );
 
-
-	
 
 	for ( size_t i = 0; i < original.size(); i++ ) {
 		g_unlockablesMap.emplace( original[i], shuffled[i] );
