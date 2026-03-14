@@ -4,6 +4,7 @@
 
 #include "injector/injector.hpp"
 
+#include "ptle/EHarryActions.h"
 #include "ptle/ERLevel.h"
 #include "ptle/EIHarry.h"
 #include "ptle/EIProjectile.h"
@@ -1082,6 +1083,20 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 			case 5: harry->m_breakdance   = !harry->m_breakdance;   break;
 			}
 		}
+
+
+	}
+	else if (id >= ID_SKILLS + 6 && id < ID_SKILLS + 8) {
+		switch (id - (ID_SKILLS + 6)) {
+		case 0:
+			if (EHarryActions::isActionEnabled(EHarryActions::ATTACK)) { EHarryActions::disableAction(EHarryActions::ATTACK); }
+			else { EHarryActions::enableAction(EHarryActions::ATTACK); }
+			break;
+		case 1:
+			if (EHarryActions::isActionEnabled(EHarryActions::CROUCH)) { EHarryActions::disableAction(EHarryActions::CROUCH); }
+			else { EHarryActions::enableAction(EHarryActions::CROUCH); }
+			break;
+		}
 	}
 	else if ( id >= ID_INGAMECHEAT && id < ID_INGAMECHEAT+3 ) {
 		switch ( id - ID_INGAMECHEAT ) {
@@ -1116,12 +1131,16 @@ static void PaletteUpdateMenuChecks( HWND hwnd, WPARAM wparam, LPARAM lparam )
 			for ( int i = 0; i < 6; i++ ) {
 				EnableMenuItem( subMenu, ID_SKILLS + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
 			}
+
 			CheckMenuItem( subMenu, ID_SKILLS,   (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+1, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+2, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+6, (EHarryActions::isActionEnabled(EHarryActions::ATTACK)) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+7, (EHarryActions::isActionEnabled(EHarryActions::CROUCH)) ? MF_CHECKED : MF_UNCHECKED );
+
 			break;
 		case 3:
 			CheckMenuItem( subMenu, ID_INGAMECHEAT,   *((bool*) 0x90DA18) ? MF_CHECKED : MF_UNCHECKED );
@@ -1225,6 +1244,7 @@ static HMENU create_menu()
 		AppendMenu( items, MF_STRING, 602, "Pickaxes" );
 		AppendMenu( items, MF_STRING, 603, "TNT" );
 		AppendMenu( items, MF_STRING, 608, "Stink Bomb" );   // TODO : doesn't work.
+		
 
 		AppendMenu( items, MF_SEPARATOR, 0, 0 );
 
@@ -1240,6 +1260,8 @@ static HMENU create_menu()
 		AppendMenu( skills, MF_STRING, ID_SKILLS+3, "Heroic Dive" );
 		AppendMenu( skills, MF_STRING, ID_SKILLS+4, "Super Sling" );
 		AppendMenu( skills, MF_STRING, ID_SKILLS+5, "Breakdance" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+6, "Punch" );   
+		AppendMenu( skills, MF_STRING, ID_SKILLS+7, "Roll" );   
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) skills, "Skills" );
 	}
