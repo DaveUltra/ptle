@@ -1083,18 +1083,20 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 			case 5: harry->m_breakdance   = !harry->m_breakdance;   break;
 			}
 		}
-
-
 	}
-	else if (id >= ID_SKILLS + 6 && id < ID_SKILLS + 8) {
+	else if (id >= ID_SKILLS + 6 && id < ID_SKILLS + 9) {
 		switch (id - (ID_SKILLS + 6)) {
 		case 0:
-			if (EHarryActions::isActionEnabled(EHarryActions::ATTACK)) { EHarryActions::disableAction(EHarryActions::ATTACK); }
+			if ( EHarryActions::isActionEnabled(EHarryActions::ATTACK) ) { EHarryActions::disableAction(EHarryActions::ATTACK); }
 			else { EHarryActions::enableAction(EHarryActions::ATTACK); }
 			break;
 		case 1:
-			if (EHarryActions::isActionEnabled(EHarryActions::CROUCH)) { EHarryActions::disableAction(EHarryActions::CROUCH); }
+			if ( EHarryActions::isActionEnabled(EHarryActions::CROUCH) ) { EHarryActions::disableAction(EHarryActions::CROUCH); }
 			else { EHarryActions::enableAction(EHarryActions::CROUCH); }
+			break;
+		case 2:
+			if ( EHarryActions::isActionEnabled(EHarryActions::SNEAK) ) { EHarryActions::disableAction(EHarryActions::SNEAK); }
+			else { EHarryActions::enableAction(EHarryActions::SNEAK); }
 			break;
 		}
 	}
@@ -1140,6 +1142,7 @@ static void PaletteUpdateMenuChecks( HWND hwnd, WPARAM wparam, LPARAM lparam )
 			CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+6, (EHarryActions::isActionEnabled(EHarryActions::ATTACK)) ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+7, (EHarryActions::isActionEnabled(EHarryActions::CROUCH)) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+8, (EHarryActions::isActionEnabled(EHarryActions::SNEAK))  ? MF_CHECKED : MF_UNCHECKED );
 
 			break;
 		case 3:
@@ -1244,7 +1247,6 @@ static HMENU create_menu()
 		AppendMenu( items, MF_STRING, 602, "Pickaxes" );
 		AppendMenu( items, MF_STRING, 603, "TNT" );
 		AppendMenu( items, MF_STRING, 608, "Stink Bomb" );   // TODO : doesn't work.
-		
 
 		AppendMenu( items, MF_SEPARATOR, 0, 0 );
 
@@ -1260,8 +1262,9 @@ static HMENU create_menu()
 		AppendMenu( skills, MF_STRING, ID_SKILLS+3, "Heroic Dive" );
 		AppendMenu( skills, MF_STRING, ID_SKILLS+4, "Super Sling" );
 		AppendMenu( skills, MF_STRING, ID_SKILLS+5, "Breakdance" );
-		AppendMenu( skills, MF_STRING, ID_SKILLS+6, "Punch" );   
-		AppendMenu( skills, MF_STRING, ID_SKILLS+7, "Roll" );   
+		AppendMenu( skills, MF_STRING, ID_SKILLS+6, "Punch" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+7, "Roll" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+8, "Sneak" );
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) skills, "Skills" );
 	}
