@@ -12,6 +12,7 @@
 
 #include "gizmod/Gizmod.h"
 #include "gizmod/event/HeroicUnlockEvent.h"
+#include "gizmod/event/ShamanPurchaseEvent.h"
 
 #include "ptle/EIHarry.h"
 #include "ptle/EScriptContext.h"
@@ -57,6 +58,7 @@ enum UnlockableType
 	ARTIFACT,            // Temple artifacts.
 	HEROIC_SKILL,        // Harry abilities, excluding base moves.
 	HARRY_ACTION,        // Base moves (rolling, punching...).
+	NOTES,			  	 // Notes in the shaman shop.
 };
 
 struct Unlockable
@@ -66,6 +68,7 @@ struct Unlockable
 		uint32_t m_itemHash;
 		EHeroicSkill::Enum m_heroicSkill;
 		EHarryActions::Enum m_harryAction;
+		InventoryItem::Notes m_note;
 		const Idol* m_idol;
 	};
 	const char* m_displayName;
@@ -109,6 +112,10 @@ struct Unlockable
 			g_itemRando_harryActions = EHarryActions::getActionsBitfield();
 			Gizmod::getInstance()->getLogger()->log_printf( "Collected %s!\n", m_displayName );
 			break;
+		case NOTES:
+			InventoryItem::setNotesUnlocked( m_note, true );
+			Gizmod::getInstance()->getLogger()->log_printf( "Collected %s!\n", m_displayName );
+			break;
 		}
 	}
 
@@ -132,6 +139,7 @@ struct Unlockable
 		//case IDOL_EXPLORER:  return Gizmod::getInstance()->getSaveManager()->getNativeManager()->GetVar();
 		case HEROIC_SKILL:   return EHeroicSkill::isSkillUnlocked( m_heroicSkill );
 		case HARRY_ACTION:   return EHarryActions::isActionEnabled( m_harryAction );
+		case NOTES:          return InventoryItem::isNotesUnlocked( m_note );
 		}
 		return false;
 	}
@@ -161,6 +169,7 @@ struct Unlockable
 		case IDOL_EXPLORER:  return ItemModelsCRC::IDOL_EXPLORER;
 		case HEROIC_SKILL:   return ItemModelsCRC::ARTIFACT_CHAMELEON;//return 0x4AF495E1;   // TODO : Heroic handbook? Or something else?
 		case HARRY_ACTION:   return ItemModelsCRC::ARTIFACT_CHAMELEON;//return 0x4AF495E1;   //
+		case NOTES:  	     return ItemModelsCRC::ARTIFACT_CHAMELEON;
 		}
 		return 0;
 	}
@@ -174,7 +183,8 @@ struct Unlockable
 		//case IDOL_SINGLE:     Purchasing idols
 		//case IDOL_EPLORER:    makes no sense.
 		case HEROIC_SKILL:
-		case HARRY_ACTION:      return 0xDEB3BFDA;    // Default icon, which is a drawn Harry face.
+		case HARRY_ACTION:
+		case NOTES:              return 0xDEB3BFDA;    // Default icon, which is a drawn Harry face.
 		}
 		return 0;
 	}
@@ -225,6 +235,7 @@ static std::vector<Unlockable> g_unlockableIdols;
 static std::vector<Unlockable> g_unlockableExplorers;
 static std::vector<Unlockable> g_unlockableHeroicSkills;
 static std::vector<Unlockable> g_unlockableHarryActions;
+static std::vector<Unlockable> g_unlockableNotes;
 
 static std::map<uint32_t, uint32_t> g_itemLocations;
 
@@ -304,6 +315,7 @@ static uint32_t get_skill_default_location( EHeroicSkill::Enum skill )
 //
 // Code injection section.
 //
+
 
 static void collectItem( CollectItemEvent& event )
 {
@@ -424,8 +436,15 @@ static void __stdcall _EUIDDStoreItem_InitItem_Custom( EUIDDStoreItem* self, int
 	// Find mapping.
 	UnlockableType origType;
 	EHeroicSkill::Enum origSkill;
+	InventoryItem::Notes origNote;
+
 	switch ( slot )
 	{
+	case 2: origType = NOTES; origNote = InventoryItem::JUNGLE_NOTES; break;
+	case 3: origType = NOTES; origNote = InventoryItem::NATIVE_NOTES; break;
+	case 4: origType = NOTES; origNote = InventoryItem::CAVERN_NOTES; break;
+	case 5: origType = NOTES; origNote = InventoryItem::MOUNTAIN_NOTES; break;
+
 	case 6: origType = HEROIC_SKILL; origSkill = EHeroicSkill::SMASH_STRIKE; break;
 	case 7: origType = HEROIC_SKILL; origSkill = EHeroicSkill::SUPER_SLING; break;
 	case 8: origType = HEROIC_SKILL; origSkill = EHeroicSkill::BREAKDANCE; break;
@@ -434,10 +453,12 @@ static void __stdcall _EUIDDStoreItem_InitItem_Custom( EUIDDStoreItem* self, int
 		return;
 	}
 
-	Unlockable* mapped = mapUnlockable( origType, origSkill );
-	if ( !mapped ) {
-		EUIDDStoreItem_InitItem( self, p2, p3 );
-		return;
+	Unlockable* mapped = nullptr;
+	if ( origType == HEROIC_SKILL ) {
+		mapped = mapUnlockable(origType, origSkill);
+	} 
+	else if ( origType == NOTES ) {
+		mapped = mapUnlockable(origType, origNote);
 	}
 
 	// Icon.
@@ -463,6 +484,7 @@ class ItemRandoListener
 	: public ICollectItemListener
 	, public ICollectIdolListener
 	, public IHeroicUnlockListener
+	, public IShamanPurchaseListener
 {
 public:
 
@@ -471,6 +493,7 @@ public:
 		el->registerEvent<CollectItemEvent>( &g_itemRandoListener );
 		el->registerEvent<CollectIdolEvent>( &g_itemRandoListener );
 		el->registerEvent<HeroicUnlockEvent>( &g_itemRandoListener );
+		el->registerEvent<ShamanPurchaseEvent>( &g_itemRandoListener );
 	}
 
 	virtual void onCollectItem( CollectItemEvent& event ) override
@@ -502,6 +525,30 @@ public:
 			event.setCancelled( true );
 			u->grant();
 		}
+	}
+
+	virtual void onShamanPurchase( ShamanPurchaseEvent& event ) override
+	{
+		ShamanShop::PriceSlot item = event.getItem();
+		Unlockable* u = 0;
+
+		if (rando_config.itemRandoNotesSlots)
+		{
+			switch ( item )
+			{
+			case ShamanShop::NATIVE_NOTES:    u = mapUnlockable( NOTES, InventoryItem::NATIVE_NOTES ); break;
+			case ShamanShop::CAVERN_NOTES:    u = mapUnlockable( NOTES, InventoryItem::CAVERN_NOTES ); break;
+			case ShamanShop::MOUNTAIN_NOTES:  u = mapUnlockable( NOTES, InventoryItem::MOUNTAIN_NOTES ); break;
+			case ShamanShop::JUNGLE_NOTES:    u = mapUnlockable( NOTES, InventoryItem::JUNGLE_NOTES ); break;
+			}
+			
+			if ( u ) {
+				// TODO: still gives the notes as event isn't cancelled
+				u->grant();
+				Gizmod::getInstance()->getLogger()->log_printf( "Purchased Shaman Notes, Replaced with %s\n", u->m_displayName);
+			}
+			}
+		
 	}
 }
 g_itemRandoListener;
@@ -569,6 +616,15 @@ static void createUnlockables()
 		g_unlockableHeroicSkills.emplace_back( HEROIC_SKILL,       EHeroicSkill::SUPER_SLING,   NAME("Super Sling") );
 	}
 
+	// Notes
+	g_unlockableNotes.emplace_back( NOTES,       InventoryItem::JUNGLE_NOTES, NAME("Jungle Notes") );
+	g_unlockableNotes.emplace_back( NOTES,       InventoryItem::NATIVE_NOTES, NAME("Native Notes") );
+	g_unlockableNotes.emplace_back( NOTES,       InventoryItem::CAVERN_NOTES, NAME("Cavern Notes") );
+	g_unlockableNotes.emplace_back( NOTES,       InventoryItem::MOUNTAIN_NOTES, NAME("Mountain Notes") );
+
+
+
+
 	/* Base moves (punch, roll, sneak). */
 	if ( rando_config.itemRandoHarryActions ) {
 		// Stage actions.
@@ -625,28 +681,49 @@ void item_rando_init()
 		if ( rando_config.itemRandoInventory ) for ( int i = 0; i < _countof(g_unlockableItems); i++ ) { original.push_back( g_unlockableItems + i ); }
 		if ( rando_config.itemRandoHeroicSkills ) stageUnlockablesCategory( original, g_unlockableHeroicSkills );
 		if ( rando_config.itemRandoHarryActions ) stageUnlockablesCategory( original, g_unlockableHarryActions );
+		if ( rando_config.itemRandoNotesSlots ) stageUnlockablesCategory( original, g_unlockableNotes );
 
 		shuffled = original;
 		std::random_shuffle( shuffled.begin(), shuffled.end() );
+		
+
+		int shamanSlots = 3;
 
 		// Map the 3 shaman skills.
 		g_unlockablesMap.emplace( &g_unlockableHeroicSkills[1], shuffled[shuffled.size() - 1] );
 		g_unlockablesMap.emplace( &g_unlockableHeroicSkills[4], shuffled[shuffled.size() - 2] );
 		g_unlockablesMap.emplace( &g_unlockableHeroicSkills[5], shuffled[shuffled.size() - 3] );
 
+
+		// Map the 4 notes.
+		if (rando_config.itemRandoNotesSlots) {
+			shamanSlots += 4;
+			g_unlockablesMap.emplace( &g_unlockableNotes[0], shuffled[shuffled.size() - 4] );
+			g_unlockablesMap.emplace( &g_unlockableNotes[1], shuffled[shuffled.size() - 5] );
+			g_unlockablesMap.emplace( &g_unlockableNotes[2], shuffled[shuffled.size() - 6] );
+			g_unlockablesMap.emplace( &g_unlockableNotes[3], shuffled[shuffled.size() - 7] );
+		}
+
+
 		// Unstage randomized shaman items manually.
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[1]) );
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[4]) );
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[5]) );
+		original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[0]) );
+		original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[1]) );
+		original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[2]) );
+		original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[3]) );
 
-		for ( size_t i = shuffled.size() - 1; i > shuffled.size() - 4; i-- ) {
+
+
+		for ( size_t i = shuffled.size() - 1; i > shuffled.size() - shamanSlots - 1; i-- ) {
 			const UnlockableType shType = shuffled[i]->m_type;
 			if ( shType == HARRY_ACTION ) {
 				EHarryActions::disableAction( shuffled[i]->m_harryAction );
 			}
 		}
-
-		shuffled.erase( shuffled.end() - 3, shuffled.end() );
+		
+		shuffled.erase( shuffled.end() - shamanSlots, shuffled.end() );
 
 		// Prepare to randomize the rest.
 		stageUnlockablesCategory( original, g_unlockableIdols );
@@ -708,9 +785,9 @@ void log_item_rando( std::ostream& os )
 		Unlockable* original = p.first;
 		Unlockable* shuffled = p.second;
 		const UnlockableType ogType = original->m_type, shType = shuffled->m_type;
-		const bool ogIsShaman = original->m_type == UnlockableType::HEROIC_SKILL && (original->m_heroicSkill == EHeroicSkill::SMASH_STRIKE || original->m_heroicSkill == EHeroicSkill::SUPER_SLING || original->m_heroicSkill == EHeroicSkill::BREAKDANCE);
+		const bool ogIsShaman = original->m_type == UnlockableType::HEROIC_SKILL && (original->m_heroicSkill == EHeroicSkill::SMASH_STRIKE || original->m_heroicSkill == EHeroicSkill::SUPER_SLING || original->m_heroicSkill == EHeroicSkill::BREAKDANCE) || (original->m_type == UnlockableType::NOTES);
 
-		if ( shType == INVENTORY_ITEM || shType == HARRY_ACTION || shType == HEROIC_SKILL ) {
+		if ( shType == INVENTORY_ITEM || shType == HARRY_ACTION || shType == HEROIC_SKILL || shType == NOTES ) {
 			os << " - " << shuffled->m_displayName;
 			int pad = spacePad - strlen(shuffled->m_displayName);
 			for ( ; pad > 0; pad-- ) os << ' ';
