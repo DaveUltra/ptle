@@ -6,13 +6,13 @@
  * - Base moves (rolling, striking...)
  */
 
-#include "item_rando.h"
 
 #include "rando.h"
 
 #include "gizmod/Gizmod.h"
 #include "gizmod/event/HeroicUnlockEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
+#include "item_rando.h"
 
 #include "ptle/EIHarry.h"
 #include "ptle/EScriptContext.h"
@@ -28,6 +28,7 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <string>
 
 
 
@@ -59,6 +60,7 @@ enum UnlockableType
 	HEROIC_SKILL,        // Harry abilities, excluding base moves.
 	HARRY_ACTION,        // Base moves (rolling, punching...).
 	NOTES,			  	 // Notes in the shaman shop.
+	MYSTERY_ITEM,        // Mystery item.
 };
 
 struct Unlockable
@@ -695,6 +697,7 @@ void item_rando_init()
 		g_unlockablesMap.emplace( &g_unlockableHeroicSkills[5], shuffled[shuffled.size() - 3] );
 
 
+
 		// Map the 4 notes.
 		if (rando_config.itemRandoNotesSlots) {
 			shamanSlots += 4;
@@ -778,7 +781,13 @@ void log_item_rando( std::ostream& os )
 {
 	if ( g_unlockablesMap.empty() ) return;
 
-	const int spacePad = 13;
+	const int spacePad = 14;
+	std::string loggedText;
+
+	std::string InventoryItems;
+	std::string HarryActions;
+	std::string HeroicSkills;
+	std::string Notes;
 
 	os << "Item Rando :\n";
 	for ( const auto& p : g_unlockablesMap ) {
@@ -786,26 +795,37 @@ void log_item_rando( std::ostream& os )
 		Unlockable* shuffled = p.second;
 		const UnlockableType ogType = original->m_type, shType = shuffled->m_type;
 		const bool ogIsShaman = original->m_type == UnlockableType::HEROIC_SKILL && (original->m_heroicSkill == EHeroicSkill::SMASH_STRIKE || original->m_heroicSkill == EHeroicSkill::SUPER_SLING || original->m_heroicSkill == EHeroicSkill::BREAKDANCE) || (original->m_type == UnlockableType::NOTES);
+		
+		loggedText = "";
 
 		if ( shType == INVENTORY_ITEM || shType == HARRY_ACTION || shType == HEROIC_SKILL || shType == NOTES ) {
-			os << " - " << shuffled->m_displayName;
+			loggedText += " - " + std::string(shuffled->m_displayName);
+		
 			int pad = spacePad - strlen(shuffled->m_displayName);
-			for ( ; pad > 0; pad-- ) os << ' ';
+			for ( ; pad > 0; pad-- ) loggedText += ' ';
 
 			if ( ogIsShaman ) {
-				os << " from   Shaman (" << original->m_displayName << ")";
+				loggedText += " from   Shaman (" + std::string(original->m_displayName) + ")";
 			}
 			else {
-				os << " from   " << original->m_displayName;
+				loggedText += " from   " + std::string(original->m_displayName);
 				pad = spacePad - strlen(original->m_displayName);
-				for ( ; pad > 0; pad-- ) os << ' ';
-				os << " -->   " << level_get_name(level_get_by_crc(original->getDefaultLocationCRC()));
+				for ( ; pad > 0; pad-- ) loggedText += ' ';
+				loggedText += " -->   " + std::string(level_get_name(level_get_by_crc(original->getDefaultLocationCRC())));
 			}
 
-			os << '\n';
+			loggedText += '\n';
+		}
+		
+		switch( shType ){
+			case INVENTORY_ITEM: InventoryItems += loggedText; break;
+			case HARRY_ACTION: HarryActions += loggedText; break;
+			case HEROIC_SKILL: HeroicSkills += loggedText; break;
+			case NOTES: Notes += loggedText; break;
+			default: break;
 		}
 	}
-	os << '\n';
+	os << HarryActions << '\n' << InventoryItems << '\n' << HeroicSkills << '\n' << Notes << '\n';
 }
 
 void get_item_locations( uint32_t (&out)[8] )
