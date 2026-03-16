@@ -30,7 +30,7 @@ bool InventoryItem::isNotesUnlocked( Notes notes )
 		return false;
 	}
 
-	int val;
+	int val = 0;
 	uint32_t hash = GetHarrySaveGameVariable(id);
 	Gizmod::getInstance()->getSaveManager()->getNativeManager()->GetVar( 0, hash, &val );
 	return val != 0;
