@@ -318,7 +318,6 @@ static uint32_t get_skill_default_location( EHeroicSkill::Enum skill )
 // Code injection section.
 //
 
-
 static void collectItem( CollectItemEvent& event )
 {
 	uint32_t currentAreaCRC = Gizmod::getCurrentLevelCRC();
@@ -534,8 +533,7 @@ public:
 		ShamanShop::PriceSlot item = event.getItem();
 		Unlockable* u = 0;
 
-		if (rando_config.itemRandoNotesSlots)
-		{
+		if ( rando_config.itemRandoNotesSlots ) {
 			switch ( item )
 			{
 			case ShamanShop::NATIVE_NOTES:    u = mapUnlockable( NOTES, InventoryItem::NATIVE_NOTES ); break;
@@ -543,14 +541,13 @@ public:
 			case ShamanShop::MOUNTAIN_NOTES:  u = mapUnlockable( NOTES, InventoryItem::MOUNTAIN_NOTES ); break;
 			case ShamanShop::JUNGLE_NOTES:    u = mapUnlockable( NOTES, InventoryItem::JUNGLE_NOTES ); break;
 			}
-			
+
 			if ( u ) {
 				// TODO: still gives the notes as event isn't cancelled
 				u->grant();
 				Gizmod::getInstance()->getLogger()->log_printf( "Purchased Shaman Notes, Replaced with %s\n", u->m_displayName);
 			}
-			}
-		
+		}
 	}
 }
 g_itemRandoListener;
@@ -567,7 +564,8 @@ static inline bool isItemRandoActive()
 		rando_config.itemRandoIdols ||
 		rando_config.itemRandoExplorers ||
 		rando_config.itemRandoHeroicSkills ||
-		rando_config.itemRandoHarryActions;
+		rando_config.itemRandoHarryActions ||
+		rando_config.itemRandoNotesSlots;
 }
 
 static void createUnlockables()
@@ -618,14 +616,11 @@ static void createUnlockables()
 		g_unlockableHeroicSkills.emplace_back( HEROIC_SKILL,       EHeroicSkill::SUPER_SLING,   NAME("Super Sling") );
 	}
 
-	// Notes
+	/* Notes */
 	g_unlockableNotes.emplace_back( NOTES,       InventoryItem::JUNGLE_NOTES, NAME("Jungle Notes") );
 	g_unlockableNotes.emplace_back( NOTES,       InventoryItem::NATIVE_NOTES, NAME("Native Notes") );
 	g_unlockableNotes.emplace_back( NOTES,       InventoryItem::CAVERN_NOTES, NAME("Cavern Notes") );
 	g_unlockableNotes.emplace_back( NOTES,       InventoryItem::MOUNTAIN_NOTES, NAME("Mountain Notes") );
-
-
-
 
 	/* Base moves (punch, roll, sneak). */
 	if ( rando_config.itemRandoHarryActions ) {
@@ -687,7 +682,6 @@ void item_rando_init()
 
 		shuffled = original;
 		std::random_shuffle( shuffled.begin(), shuffled.end() );
-		
 
 		int shamanSlots = 3;
 
@@ -696,10 +690,8 @@ void item_rando_init()
 		g_unlockablesMap.emplace( &g_unlockableHeroicSkills[4], shuffled[shuffled.size() - 2] );
 		g_unlockablesMap.emplace( &g_unlockableHeroicSkills[5], shuffled[shuffled.size() - 3] );
 
-
-
 		// Map the 4 notes.
-		if (rando_config.itemRandoNotesSlots) {
+		if ( rando_config.itemRandoNotesSlots ) {
 			shamanSlots += 4;
 			g_unlockablesMap.emplace( &g_unlockableNotes[0], shuffled[shuffled.size() - 4] );
 			g_unlockablesMap.emplace( &g_unlockableNotes[1], shuffled[shuffled.size() - 5] );
@@ -707,17 +699,17 @@ void item_rando_init()
 			g_unlockablesMap.emplace( &g_unlockableNotes[3], shuffled[shuffled.size() - 7] );
 		}
 
-
 		// Unstage randomized shaman items manually.
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[1]) );
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[4]) );
 		original.erase( std::remove(original.begin(), original.end(), &g_unlockableHeroicSkills[5]) );
-		original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[0]) );
-		original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[1]) );
-		original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[2]) );
-		original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[3]) );
 
-
+		if ( rando_config.itemRandoNotesSlots ) {
+			original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[0]) );
+			original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[1]) );
+			original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[2]) );
+			original.erase( std::remove(original.begin(), original.end(), &g_unlockableNotes[3]) );
+		}
 
 		for ( size_t i = shuffled.size() - 1; i > shuffled.size() - shamanSlots - 1; i-- ) {
 			const UnlockableType shType = shuffled[i]->m_type;
@@ -725,7 +717,7 @@ void item_rando_init()
 				EHarryActions::disableAction( shuffled[i]->m_harryAction );
 			}
 		}
-		
+
 		shuffled.erase( shuffled.end() - shamanSlots, shuffled.end() );
 
 		// Prepare to randomize the rest.
@@ -794,35 +786,42 @@ void log_item_rando( std::ostream& os )
 		Unlockable* original = p.first;
 		Unlockable* shuffled = p.second;
 		const UnlockableType ogType = original->m_type, shType = shuffled->m_type;
-		const bool ogIsShaman = original->m_type == UnlockableType::HEROIC_SKILL && (original->m_heroicSkill == EHeroicSkill::SMASH_STRIKE || original->m_heroicSkill == EHeroicSkill::SUPER_SLING || original->m_heroicSkill == EHeroicSkill::BREAKDANCE) || (original->m_type == UnlockableType::NOTES);
-		
+
+		// Unlockable is from shaman (heroic skill, notes).
+		// TODO: Add Mysterious item when it'll be randomized.
+		const bool ogIsShaman =
+			(original->m_type == UnlockableType::HEROIC_SKILL && (original->m_heroicSkill == EHeroicSkill::SMASH_STRIKE || original->m_heroicSkill == EHeroicSkill::SUPER_SLING || original->m_heroicSkill == EHeroicSkill::BREAKDANCE))
+			|| (original->m_type == UnlockableType::NOTES);
+
 		loggedText = "";
 
 		if ( shType == INVENTORY_ITEM || shType == HARRY_ACTION || shType == HEROIC_SKILL || shType == NOTES ) {
-			loggedText += " - " + std::string(shuffled->m_displayName);
-		
-			int pad = spacePad - strlen(shuffled->m_displayName);
+			std::string displayName = std::string(shuffled->m_displayName);
+			loggedText += " - " + displayName;
+
+			int pad = spacePad - displayName.size();
 			for ( ; pad > 0; pad-- ) loggedText += ' ';
 
 			if ( ogIsShaman ) {
-				loggedText += " from   Shaman (" + std::string(original->m_displayName) + ")";
+				loggedText += " from   Shaman (" + displayName + ")";
 			}
 			else {
-				loggedText += " from   " + std::string(original->m_displayName);
-				pad = spacePad - strlen(original->m_displayName);
+				loggedText += " from   " + displayName;
+				pad = spacePad - displayName.size();
 				for ( ; pad > 0; pad-- ) loggedText += ' ';
 				loggedText += " -->   " + std::string(level_get_name(level_get_by_crc(original->getDefaultLocationCRC())));
 			}
 
 			loggedText += '\n';
 		}
-		
-		switch( shType ){
-			case INVENTORY_ITEM: InventoryItems += loggedText; break;
-			case HARRY_ACTION: HarryActions += loggedText; break;
-			case HEROIC_SKILL: HeroicSkills += loggedText; break;
-			case NOTES: Notes += loggedText; break;
-			default: break;
+
+		switch ( shType )
+		{
+		case INVENTORY_ITEM: InventoryItems += loggedText; break;
+		case HARRY_ACTION: HarryActions += loggedText; break;
+		case HEROIC_SKILL: HeroicSkills += loggedText; break;
+		case NOTES: Notes += loggedText; break;
+		default: break;
 		}
 	}
 	os << HarryActions << '\n' << InventoryItems << '\n' << HeroicSkills << '\n' << Notes << '\n';
