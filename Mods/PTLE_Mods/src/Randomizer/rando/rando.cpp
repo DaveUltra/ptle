@@ -546,6 +546,244 @@ void RandoMap::generateLinkedTransitions()
 }
 
 
+static const Exit* findExitInfo(uint32_t areaFrom, uint32_t areaTo)
+{
+	Area* area = level_infos[areaFrom];
+	for ( const Exit& exit : area->exits ) {
+		if ( exit.areaCRC == areaTo ) {
+			return &exit;
+		}
+	}
+	return 0;
+}
+
+void getAccessibleAreas( std::vector<uint32_t>& out, const std::set<uint32_t>& avail )
+{
+
+}
+
+void RandoMap::generateLinkedTransitions2()
+{
+	std::set<Transition> transitionsOneWay;
+	std::set<Transition> transitionsTwoWay;
+	std::set<uint32_t> deadEnds;
+
+	std::set<uint32_t> knownAreas;                               // Set of all known areas.
+	std::map<uint32_t, std::vector<uint32_t>> availablePorts;    // All remaining unconnected exits for each area.
+
+	// Sorting.
+	// We list all accessible areas, as well as all undirected transitions (transitions that can be crossed both ways).
+	// We leave one-way transitions (geysers, cavern lake to jungle canyon, etc...) unrandomized for now.
+	for ( auto& p : level_infos ) {
+		uint32_t levelFrom = p.first;
+		Area* area = p.second;
+		if ( is_area_excluded(levelFrom) ) continue;
+
+		if ( knownAreas.find(levelFrom) == knownAreas.end() ) {
+			knownAreas.emplace( levelFrom );
+		}
+
+		for ( const Exit& exit : area->exits ) {
+			uint32_t levelTo = exit.areaCRC;
+
+			Transition actual( levelFrom, levelTo );
+			Transition reverse = actual.mirror();
+
+			if ( is_area_excluded(levelTo) ) continue;
+			if ( is_transition_disabled(actual) || is_transition_disabled(reverse) ) continue;
+
+			if ( knownAreas.find(levelTo) == knownAreas.end() ) {
+				knownAreas.emplace( levelTo );
+			}
+
+			// Promote to two-way.
+			if ( transitionsOneWay.find(reverse) != transitionsOneWay.end() ) {
+				transitionsOneWay.erase( reverse );
+				transitionsTwoWay.emplace( actual );
+
+				availablePorts[levelFrom].push_back( levelTo );
+				availablePorts[levelTo].push_back( levelFrom );
+			}
+			else {
+				transitionsOneWay.emplace( actual );
+			}
+		}
+
+		if ( availablePorts[levelFrom].size() == 1 ) {
+			deadEnds.emplace( levelFrom );
+		}
+	}
+
+	// Get rid of any area with no exits to process.
+	std::vector<uint32_t> purgeList;
+	for ( auto& p : availablePorts ) {
+		if ( p.second.empty() ) {
+			purgeList.push_back( p.first );
+			continue;
+		}
+	}
+	log_printf( " - %d levels purged (no exits)\n", purgeList.size() );
+	for ( uint32_t i : purgeList ) {
+		knownAreas.erase( i );
+		availablePorts.erase( i );
+	}
+
+	std::vector<uint32_t> strictAvail;       // "Strictly available" areas. These areas don't have all of their exits assigned and are reachable.
+	std::vector<uint32_t> availNotMaster;    // "Non-attached available" areas. These areas don't have all of their exits assigned and are NOT reachable.
+
+	// Mark starting area as accessible (duh).
+	m_accessibleAreas.insert( rando_config.startingArea );
+	strictAvail.push_back( rando_config.startingArea );
+
+	// List all other zones as non-reachable.
+	log_printf( " - %d known areas.\n", knownAreas.size() );
+	knownAreas.erase( rando_config.startingArea );
+	availNotMaster.insert( availNotMaster.begin(), knownAreas.begin(), knownAreas.end() );
+
+	// Process.
+	while ( !strictAvail.empty() || !availNotMaster.empty() ) {
+		int levelFrom, levelTo;
+		uint32_t levelFromCRC, levelToCRC;
+
+		if ( strictAvail.size() == 0 && availNotMaster.size() > 0 ) {
+			log_printf( "GENERATION ERROR : Reachable map has no more ports left, but some areas are still unassigned.\n" );
+			break;
+		}
+
+		// No more unconnected zones, now we just need to connect the remaining available exits.
+		if ( availNotMaster.size() == 0 ) {
+			levelFrom = rand() % strictAvail.size();
+			levelTo = rand() % strictAvail.size();
+
+			// Prevent level from looping onto itself.
+			if ( levelFrom == levelTo ) {
+				if ( strictAvail.size() == 1 ) {
+					log_printf( "WARN : %s will loop onto itself!\n", level_get_name(level_get_by_crc(strictAvail[0])) );
+				}
+				else {
+					if ( levelFrom == 0 ) levelFrom++;
+					else levelFrom--;
+				}
+			}
+
+			levelFromCRC = strictAvail[levelFrom];
+			levelToCRC = strictAvail[levelTo];
+		}
+		else {
+			levelFrom = rand() % strictAvail.size();
+			levelTo = rand() % availNotMaster.size();
+
+			// Favor remaining areas with more than one exit.
+			if ( availNotMaster.size() > 1 ) {
+				bool onlyDeadEnds = true;
+				for ( int i = 0; i < availNotMaster.size(); i++ ) {
+					if ( availablePorts[availNotMaster[i]].size() != 1 ) {
+						onlyDeadEnds = false;
+						levelTo = i;
+						break;
+					}
+				}
+			}
+
+			// Prevent level from looping onto itself.
+			if ( strictAvail[levelFrom] == availNotMaster[levelTo] ) {
+				if ( levelFrom == 0 ) levelFrom++;
+				else levelFrom--;
+			}
+
+			levelFromCRC = strictAvail[levelFrom];
+			levelToCRC = availNotMaster[levelTo];
+
+			if ( levelFromCRC == levelToCRC ) {
+				log_printf( "WARN : %s is going to connect with itself!\n", level_get_name(level_get_by_crc(levelToCRC)) );
+			}
+		}
+
+		int fromExit = 0;
+		int toEntrance = 0;
+		if ( levelFromCRC == levelToCRC ) { // TODO : Temporary, levels shouldn't loop onto themselves.
+			toEntrance = 1;
+		}
+
+		//log_printf( " - %s (0x%X)   -->   %s (0x%X)\n", level_get_name(level_get_by_crc(levelFromCRC)), levelFromCRC, level_get_name(level_get_by_crc(levelToCRC)), levelToCRC );
+
+		// Form linked transition.
+		Transition original( levelFromCRC, availablePorts[levelFromCRC][fromExit] );
+		Transition redirect( availablePorts[levelToCRC][toEntrance], levelToCRC );
+		m_transitionsMap[original] = redirect;
+		m_transitionsMap[mirror(redirect)] = mirror(original);
+
+		// We've just made this area reachable.
+		if ( std::find(strictAvail.begin(), strictAvail.end(), levelToCRC) == strictAvail.end() && m_accessibleAreas.find(levelToCRC) == m_accessibleAreas.end() ) {
+			strictAvail.push_back( levelToCRC );
+			m_accessibleAreas.insert( levelToCRC );
+			vector_remove( availNotMaster, levelToCRC );
+		}
+
+		// Mark exits as used.
+		if ( levelFromCRC == levelToCRC ) { // TODO : Temporary, levels shouldn't loop onto themselves.
+			vector_removeAt( availablePorts[levelFromCRC], 0 );
+			vector_removeAt( availablePorts[levelFromCRC], 0 );
+		} else {
+			vector_removeAt( availablePorts[levelFromCRC], fromExit );
+			vector_removeAt( availablePorts[levelToCRC], toEntrance );
+		}
+
+		// Remove filled up areas from available list.
+		if ( availablePorts[levelFromCRC].empty() ) {
+			availablePorts.erase( levelFromCRC );
+			vector_remove( strictAvail, levelFromCRC );
+		}
+		if ( availablePorts[levelToCRC].empty() ) {
+			availablePorts.erase( levelToCRC );
+			vector_remove( strictAvail, levelToCRC );
+		}
+	}
+
+	log_printf( " - Main process done.\n" );
+
+	if ( strictAvail.size() == 1 && availNotMaster.empty() ) {
+		log_printf( "GENERATION ERROR : This area wasn't processed correctly : %s\n", level_get_name(level_get_by_crc(strictAvail[0])) );
+		//log_printf( "        Level has %d unconnected exits!\n", accessibleAreas[0] );
+	}
+
+	if ( !availablePorts.empty() ) {
+		log_printf( "GENERATION ERROR : Some exits are still not connected!\n" );
+		for ( auto& p : availablePorts ) {
+			log_printf( " - %s : %d exits\n", level_get_name(level_get_by_crc(p.first)), p.second.size() );
+		}
+		//return;
+	}
+
+
+	// Add these manually since at least one unrandomized zone is reachable from them.
+	m_accessibleAreas.insert( levelCRC::MOUNTAIN_SLED_RUN );
+	m_accessibleAreas.insert( levelCRC::APU_ILLAPU_SHRINE );
+	m_accessibleAreas.insert( levelCRC::CRASH_SITE );
+	m_accessibleAreas.insert( levelCRC::TELEPORT );
+
+	// Remove water levels.
+	// We do it after generation to avoid changing the random seed.
+	if ( rando_config.skipWaterLevels ) {
+		log_printf( " - Skipping water levels...\n" );
+
+		remove_line_level( levelCRC::FLOODED_CAVE,      levelCRC::BITTENBINDER_CAMP, levelCRC::RENEGADE_FORT );
+		remove_line_level( levelCRC::MYSTERIOUS_TEMPLE, levelCRC::BITTENBINDER_CAMP, levelCRC::ALTAR_OF_AGES );
+
+		m_accessibleAreas.erase( levelCRC::FLOODED_CAVE );
+		m_accessibleAreas.erase( levelCRC::MYSTERIOUS_TEMPLE );
+	}
+
+	// Skip Jag 2 : Warp straight to the Pusca fight.
+	if ( rando_config.skipJaguar2 ) {
+		const Transition puscaRedirect = Transition(levelCRC::GATES_OF_EL_DORADO, levelCRC::ANCIENT_EL_DORADO);
+		m_transitionsMap[Transition(levelCRC::GATES_OF_EL_DORADO, levelCRC::RUINS_OF_EL_DORADO)] = puscaRedirect;
+	}
+
+	log_printf( " - Generation ended.\n" );
+}
+
+
 
 // Legacy rando map generator.
 // Although it isn't the same algorithm as the original Dolphin Scripting version, the idea

@@ -705,7 +705,7 @@
         {
           "area_id": "0xDEDA69BC",
           "area_name": "Jungle Canyon",
-          "requires": []
+          "requires": ["raft"]
         },
         {
           "area_id": "0xEA667977",
@@ -846,7 +846,9 @@
         {
           "area_id": "0x1B8833D3",
           "area_name": "Mountain Sled Run",
-          "requires": []
+          "requires": [
+            "SPEEDRUN"
+          ]
         },
         {
           "area_id": "0xE97CB47C",
@@ -895,7 +897,7 @@
               "SPEEDRUN"
             ],
             [
-              "packaxes",
+              "pickaxes",
               "raft"
             ]
           ]
@@ -926,7 +928,9 @@
           "area_id": "0x08E3C641",
           "area_name": "Valley of the Spirits",
           "requires": [
-            "too complex, I'll change how these are done"
+            ["item slide"],
+            ["smash strike"],
+            ["penguin temple"]
           ]
         }
       ]
@@ -966,7 +970,10 @@
         {
           "area_id": "0x3E7EE822",
           "area_name": "Ekkeko Ice Cavern",
-          "requires": []
+          "requires": [
+            ["item slide"],
+            ["tnt"]
+          ]
         }
       ]
     },
@@ -994,7 +1001,10 @@
               "SPEEDRUN"
             ],
             [
-              "TAZ"
+              "pickaxes"
+            ],
+            [
+              "dash"
             ]
           ]
         }

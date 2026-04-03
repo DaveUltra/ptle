@@ -26,6 +26,7 @@
 #include "EIShaman.h"
 #include "EISnowBowler.h"
 #include "EISnowScarab.h"
+#include "EISpinja.h"
 #include "EIStClair.h"
 #include "EISupai.h"
 #include "EITreasureIdol.h"
@@ -39,6 +40,8 @@
 #include "ERScript.h"
 #include "ERShader.h"
 #include "EScriptContext.h"
+#include "EUIDDMenu.h"
+#include "EUIDDStoreItem.h"
 #include "EUITextIcon.h"
 
 
@@ -110,6 +113,7 @@ CHECK_TYPE_SIZE( EIHenchman,         0x7E0 );
 CHECK_TYPE_SIZE( EIPusca,            0x7E0 );
 CHECK_TYPE_SIZE( EIStClair,          0x7F0 );
 CHECK_TYPE_SIZE( EIBushNinja,        0x850 );
+CHECK_TYPE_SIZE( EISpinja,           0x8B0 );
 CHECK_TYPE_SIZE( EIEvilHarryMM,      0x8B0 );
 CHECK_TYPE_SIZE( EIEvilHarryP,       0x970 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );
@@ -127,6 +131,9 @@ CHECK_TYPE_SIZE( EScriptContext,     0x890 );
 CHECK_TYPE_SIZE( EUIObjectNode,      0xB0 );
 CHECK_TYPE_SIZE( EUIIcon,            0xE4 );
 CHECK_TYPE_SIZE( EUITextIcon,        0x110 );
+CHECK_TYPE_SIZE( EUIMenu,            0x15C );
+CHECK_TYPE_SIZE( EUIDDStoreItem,     0x19C );
+CHECK_TYPE_SIZE( EUIDDMenu,          0x1A0 );
 
 
 CHECK_FIELD_OFFSET( EIHarry,        m_breakdance,        0x1914 );

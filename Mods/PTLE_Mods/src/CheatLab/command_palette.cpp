@@ -4,6 +4,7 @@
 
 #include "injector/injector.hpp"
 
+#include "ptle/EHarryActions.h"
 #include "ptle/ERLevel.h"
 #include "ptle/EIHarry.h"
 #include "ptle/EIProjectile.h"
@@ -800,6 +801,38 @@ static void _give_five_idols()
 	Gizmod::getHarry()->m_idolsCollected += 5;
 }
 
+
+#include "ptle/ERCharacter.h"
+#include <set>
+static void _displayBone(ERCharacter* ch, CharacterBoneInfo* bone, int myIndex = 0, int r = 0)
+{
+	Logger* logger = Gizmod::getInstance()->getLogger();
+	logger->log_printf( "%*s- %d : %s\n", r, "", myIndex, bone->m_name );
+
+	for ( int i = 0; i < bone->m_childBoneIndices.m_size; i++ ) {
+		int index = ((int*) bone->m_childBoneIndices.m_data)[i];
+		_displayBone( ch, &ch->m_boneList[index], index, r + 1 );
+	}
+}
+static void _displaySkeleton()
+{
+	std::vector<EICharacter*> characters;
+	std::set<ERCharacter*> charTypes;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EICharacter>( characters, get_type_by_vtable(0x8A5000)->ptleType );
+
+	for ( EICharacter* charInst : characters ) {
+		ERCharacter* ch = charInst->m_animController.m_characterResource;
+		charTypes.insert( ch );
+	}
+
+	Logger* logger = Gizmod::getInstance()->getLogger();
+	for ( ERCharacter* ch : charTypes ) {
+		logger->log_printf( "\nFound %s!\n", ch->m_name );
+		_displayBone( ch, &ch->m_boneList[0] );
+	}
+}
+
+
 //
 // List of available commands / cheats.
 //
@@ -834,6 +867,7 @@ const command_t commands[] =
 	{ "TP to Shaman",         _tp_to_shaman },
 	{ "Display Harry Pos",    _display_coords },
 	{ "Give 5 idols",         _give_five_idols },
+	{ "Display Skeletons",    _displaySkeleton },
 };
 
 const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);
@@ -907,8 +941,10 @@ bool load_saveslot( int i )
 
 void save_saveslot( int i )
 {
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
+	uint32_t levelCRC = Gizmod::getCurrentLevelCRC();
 
+	save_slots[i].levelID = levelCRC;
 	save_slots[i].playerTransform = harry->m_rigidBodyMatrix;
 
 	log_printf( "Saved state %d.\n", i );
@@ -1048,6 +1084,22 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 			}
 		}
 	}
+	else if (id >= ID_SKILLS + 6 && id < ID_SKILLS + 9) {
+		switch (id - (ID_SKILLS + 6)) {
+		case 0:
+			if ( EHarryActions::isActionEnabled(EHarryActions::ATTACK) ) { EHarryActions::disableAction(EHarryActions::ATTACK); }
+			else { EHarryActions::enableAction(EHarryActions::ATTACK); }
+			break;
+		case 1:
+			if ( EHarryActions::isActionEnabled(EHarryActions::CROUCH) ) { EHarryActions::disableAction(EHarryActions::CROUCH); }
+			else { EHarryActions::enableAction(EHarryActions::CROUCH); }
+			break;
+		case 2:
+			if ( EHarryActions::isActionEnabled(EHarryActions::SNEAK) ) { EHarryActions::disableAction(EHarryActions::SNEAK); }
+			else { EHarryActions::enableAction(EHarryActions::SNEAK); }
+			break;
+		}
+	}
 	else if ( id >= ID_INGAMECHEAT && id < ID_INGAMECHEAT+3 ) {
 		switch ( id - ID_INGAMECHEAT ) {
 		case 0: *((bool*) 0x90DA18) ^= 1; break;
@@ -1081,12 +1133,17 @@ static void PaletteUpdateMenuChecks( HWND hwnd, WPARAM wparam, LPARAM lparam )
 			for ( int i = 0; i < 6; i++ ) {
 				EnableMenuItem( subMenu, ID_SKILLS + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
 			}
+
 			CheckMenuItem( subMenu, ID_SKILLS,   (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+1, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+2, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+6, (EHarryActions::isActionEnabled(EHarryActions::ATTACK)) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+7, (EHarryActions::isActionEnabled(EHarryActions::CROUCH)) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+8, (EHarryActions::isActionEnabled(EHarryActions::SNEAK))  ? MF_CHECKED : MF_UNCHECKED );
+
 			break;
 		case 3:
 			CheckMenuItem( subMenu, ID_INGAMECHEAT,   *((bool*) 0x90DA18) ? MF_CHECKED : MF_UNCHECKED );
@@ -1205,6 +1262,9 @@ static HMENU create_menu()
 		AppendMenu( skills, MF_STRING, ID_SKILLS+3, "Heroic Dive" );
 		AppendMenu( skills, MF_STRING, ID_SKILLS+4, "Super Sling" );
 		AppendMenu( skills, MF_STRING, ID_SKILLS+5, "Breakdance" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+6, "Punch" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+7, "Roll" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+8, "Sneak" );
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) skills, "Skills" );
 	}

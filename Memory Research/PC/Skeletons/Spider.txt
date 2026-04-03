@@ -1,0 +1,5 @@
+[CheatLab] Found Spider!
+[CheatLab] - 0 : Bone_Root
+[CheatLab]  - 1 : Bone_Leg01
+[CheatLab]  - 2 : Bone_Leg02
+[CheatLab]  - 3 : Bone_Leg03

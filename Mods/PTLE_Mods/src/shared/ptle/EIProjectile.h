@@ -5,6 +5,12 @@
 class EResource;
 
 
+struct ProjectileTypeInfo
+{
+	uint32_t m_typeID;
+	/* ... */
+};
+
 class EIProjectile : public EIDynamicModel
 {
 public:
@@ -17,7 +23,7 @@ public:
 	bool unknown3;
 
 	EResource* unknown4;
-	void* m_projectileTypeInfo;
+	ProjectileTypeInfo* m_projectileTypeInfo;
 
 	Vector3f unknown5;
 	float unknown6;

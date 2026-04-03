@@ -87,7 +87,7 @@
         },
         {
           "unique_id": "0x54E26390",
-          "requires": ["Mystery item"]
+          "requires": ["mystery_item"]
         },
         {
           "explorer": true,
@@ -134,7 +134,7 @@
       "area_id": "0x3292B6C9",
       "area_name": "The Great Tree",
       "shaman": {
-        "requires": [["gas mask"], ["pickaxes"]]
+        "requires": [["gas_mask"], ["pickaxes"]]
       },
       "idols": [
         {
@@ -153,7 +153,7 @@
         },
         {
           "unique_id": "0xCA86F633",
-          "requires": [["smash strike"], ["tnt"]]
+          "requires": [["smash_strike"], ["tnt"]]
         }
       ]
     },
@@ -167,7 +167,7 @@
         },
         {
           "unique_id": "0xBD81C6A5",
-          "requires": [["glitches"], ["gas mask"], ["tnt"]]
+          "requires": [["glitches"], ["gas_mask"], ["tnt"]]
         }
       ]
     },
@@ -208,7 +208,7 @@
       "area_id": "0x07ECCC35",
       "area_name": "Mama-Oullo Tower",
       "shaman": {
-        "requires": ["smash strike"]
+        "requires": ["smash_strike"]
       },
       "idols": [
         {
@@ -455,7 +455,7 @@
         },
         {
           "explorer": true,
-          "requires": [["smash strike"]]
+          "requires": [["smash_strike"]]
         }
       ]
     },
@@ -522,7 +522,7 @@
         },
         {
           "unique_id": "0xBAEC02BC",
-          "requires": [["smash strike"], ["pickaxes"]]
+          "requires": [["smash_strike"], ["pickaxes"]]
         },
         {
           "explorer": true,
@@ -634,7 +634,7 @@
       "area_id": "0x3E7EE822",
       "area_name": "Ekkeko Ice Cavern",
       "shaman": {
-        "requires": ["roll"]
+        "requires": [["roll"], ["rising_strike"]]
       },
       "idols": [
         {
@@ -651,23 +651,23 @@
         },
         {
           "unique_id": "0x5D542FBB",
-          "requires": ["roll"]
+          "requires": [["roll"], ["rising_strike"]]
         },
         {
           "unique_id": "0x23E55306",
-          "requires": ["roll"]
+          "requires": [["roll"], ["rising_strike"]]
         },
         {
           "unique_id": "0xBAEC02BC",
-          "requires": ["roll"]
+          "requires": [["roll"], ["rising_strike"]]
         },
         {
           "unique_id": "0xCDEB322A",
-          "requires": ["roll"]
+          "requires": [["roll"], ["rising_strike"]]
         },
         {
           "explorer": true,
-          "requires": []
+          "requires": [["roll"], ["rising_strike"]]
         }
       ]
     }

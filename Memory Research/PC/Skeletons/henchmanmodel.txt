@@ -1,0 +1,53 @@
+[CheatLab] Found henchmanmodel!
+[CheatLab] - 0 : Bip01
+[CheatLab]  - 1 : Bip01 Footsteps
+[CheatLab]  - 2 : Bip01 Pelvis
+[CheatLab]   - 3 : Bip01 Spine
+[CheatLab]    - 4 : Bip01 L Thigh
+[CheatLab]     - 5 : Bip01 L Calf
+[CheatLab]      - 6 : Bip01 L Foot
+[CheatLab]       - 7 : Bip01 L Toe0
+[CheatLab]        - 8 : Bip01 L Toe0Nub
+[CheatLab]     - 9 : BONE_LeftPouch
+[CheatLab]    - 10 : Bip01 R Thigh
+[CheatLab]     - 11 : Bip01 R Calf
+[CheatLab]      - 12 : Bip01 R Foot
+[CheatLab]       - 13 : Bip01 R Toe0
+[CheatLab]        - 14 : Bip01 R Toe0Nub
+[CheatLab]     - 15 : BONE_RightPouch
+[CheatLab]    - 16 : Bip01 Spine1
+[CheatLab]     - 17 : Bip01 Neck
+[CheatLab]      - 18 : Bip01 Head
+[CheatLab]       - 19 : Bip01 HeadNub
+[CheatLab]       - 20 : BONE_EyeLeft
+[CheatLab]       - 21 : BONE_EyeRight
+[CheatLab]       - 22 : BONE_Jaw_Lower
+[CheatLab]       - 23 : BONE_Jaw_Upper
+[CheatLab]       - 24 : BONE_LeftBrow
+[CheatLab]       - 25 : BONE_RightBrow
+[CheatLab]      - 26 : Bip01 L Clavicle
+[CheatLab]       - 27 : Bip01 L UpperArm
+[CheatLab]        - 28 : Bip01 L Forearm
+[CheatLab]         - 29 : Bip01 L Hand
+[CheatLab]          - 30 : Bip01 L Finger0
+[CheatLab]           - 31 : Bip01 L Finger01
+[CheatLab]            - 32 : Bip01 L Finger0Nub
+[CheatLab]          - 33 : Bip01 L Finger1
+[CheatLab]           - 34 : Bip01 L Finger11
+[CheatLab]            - 35 : Bip01 L Finger1Nub
+[CheatLab]          - 36 : Bip01 L Finger2
+[CheatLab]           - 37 : Bip01 L Finger21
+[CheatLab]            - 38 : Bip01 L Finger2Nub
+[CheatLab]      - 39 : Bip01 R Clavicle
+[CheatLab]       - 40 : Bip01 R UpperArm
+[CheatLab]        - 41 : Bip01 R Forearm
+[CheatLab]         - 42 : Bip01 R Hand
+[CheatLab]          - 43 : Bip01 R Finger0
+[CheatLab]           - 44 : Bip01 R Finger01
+[CheatLab]            - 45 : Bip01 R Finger0Nub
+[CheatLab]          - 46 : Bip01 R Finger1
+[CheatLab]           - 47 : Bip01 R Finger11
+[CheatLab]            - 48 : Bip01 R Finger1Nub
+[CheatLab]          - 49 : Bip01 R Finger2
+[CheatLab]           - 50 : Bip01 R Finger21
+[CheatLab]            - 51 : Bip01 R Finger2Nub
