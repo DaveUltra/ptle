@@ -613,6 +613,22 @@ static bool ReturnYes()
 	return true;
 }
 
+// Explorer softlock: an explorer that goes out of view and/or far from the camera stops ticking,
+// so it never reaches "explorer.dead" (state 8) and the camera never unlocks.
+// Keep it ticking while collecting idol (state 9).
+GET_METHOD( 0x4846A0, bool, EIExplorer_ShouldTick, EIBeast* );
+static bool _EIExplorer_ShouldTick_fix( EIBeast* self )
+{
+	EBeastStateMachine* sm = self->GetStateMachine();
+	if ( sm && (uint32_t) self->m_stateIndexCurrent < sm->m_numStates
+		&& strcmp( sm->m_states[self->m_stateIndexCurrent].m_name, "explorer.fall" ) == 0 ) {
+		return true;
+	}
+
+	return EIExplorer_ShouldTick( self );
+}
+MAKE_THISCALL_WRAPPER( EIExplorer_ShouldTick_fix, _EIExplorer_ShouldTick_fix );
+ 
 static void LateInit()
 {
 	if ( !g_speedrunFriendly ) {
@@ -642,7 +658,7 @@ void InjectCode()
 	}
 
 	// Protection against explorer softlock.
-	injector::WriteMemory( 0x87659C, ReturnYes );
+	injector::WriteMemory( 0x87659C, EIExplorer_ShouldTick_fix );
 
 	// Skip splash screens and trailer.
 	if ( g_skipSplashScreens ) {
