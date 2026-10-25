@@ -608,11 +608,20 @@ static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* p
 }
 MAKE_THISCALL_WRAPPER( EPauseMain_Message_custom, _EPauseMain_Message_custom );
 
-static bool ReturnYes()
+// Explorer softlock: an explorer that goes out of view and/or far from the camera stops ticking,
+// so it never reaches "explorer.dead" (state 8) and the camera never unlocks.
+// Keep it ticking while collecting idol (state 9).
+GET_METHOD( 0x4846A0, bool, EIExplorer_ShouldTick, EIBeast* );
+static bool __stdcall _EIExplorer_ShouldTick_fix( EIBeast* self )
 {
-	return true;
-}
+	if ( self->m_stateIndexCurrent == 9 ) {
+		return true;
+	}
 
+	return EIExplorer_ShouldTick( self );
+}
+MAKE_THISCALL_WRAPPER( EIExplorer_ShouldTick_fix, _EIExplorer_ShouldTick_fix );
+ 
 static void LateInit()
 {
 	if ( !g_speedrunFriendly ) {
@@ -642,7 +651,7 @@ void InjectCode()
 	}
 
 	// Protection against explorer softlock.
-	injector::WriteMemory( 0x87659C, ReturnYes );
+	injector::WriteMemory( 0x87659C, EIExplorer_ShouldTick_fix );
 
 	// Skip splash screens and trailer.
 	if ( g_skipSplashScreens ) {
