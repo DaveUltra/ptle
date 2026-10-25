@@ -608,20 +608,13 @@ static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* p
 }
 MAKE_THISCALL_WRAPPER( EPauseMain_Message_custom, _EPauseMain_Message_custom );
 
-static bool ReturnYes()
-{
-	return true;
-}
-
 // Explorer softlock: an explorer that goes out of view and/or far from the camera stops ticking,
 // so it never reaches "explorer.dead" (state 8) and the camera never unlocks.
 // Keep it ticking while collecting idol (state 9).
 GET_METHOD( 0x4846A0, bool, EIExplorer_ShouldTick, EIBeast* );
-static bool _EIExplorer_ShouldTick_fix( EIBeast* self )
+static bool __stdcall _EIExplorer_ShouldTick_fix( EIBeast* self )
 {
-	EBeastStateMachine* sm = self->GetStateMachine();
-	if ( sm && (uint32_t) self->m_stateIndexCurrent < sm->m_numStates
-		&& strcmp( sm->m_states[self->m_stateIndexCurrent].m_name, "explorer.fall" ) == 0 ) {
+	if ( self->m_stateIndexCurrent == 9 ) {
 		return true;
 	}
 
