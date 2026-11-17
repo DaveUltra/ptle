@@ -15,6 +15,9 @@ class EIProjectile : public EIDynamicModel
 {
 public:
 
+	static const uint32_t VTABLE = 0x893210;
+
+
 	float unknown0;
 	float unknown0_1;
 	float unknown0_2;

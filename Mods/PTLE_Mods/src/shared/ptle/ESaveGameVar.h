@@ -2,12 +2,13 @@
 
 #include "EStorable.h"
 
-#include <stdint.h>
-
 
 class ESaveGameVar : public EStorable
 {
 public:
+
+	static const uint32_t VTABLE = 0x8A9358;
+
 
 		/// 4 bytes of storage, for either ints or floats.
 	uint32_t m_value;

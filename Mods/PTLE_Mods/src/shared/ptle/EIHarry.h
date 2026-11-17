@@ -54,6 +54,9 @@ class EIHarry : public EIPlayer
 {
 public:
 
+	static const uint32_t VTABLE = 0x87D300;
+
+
 	char padding6[0x688];
 
 	Vector3f m_bodyRotation;

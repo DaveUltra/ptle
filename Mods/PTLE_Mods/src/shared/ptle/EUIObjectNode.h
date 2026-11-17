@@ -9,6 +9,9 @@ class EUIObjectNode : public EInstance
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A66C0;
+
+
 	LinkedList m_children;
 	EUIObjectNode* m_parent;
 	LinkedListElem* m_navigation;

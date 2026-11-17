@@ -16,6 +16,9 @@ class EICharacter : public EIGameInstance
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A5000;
+
+
 	EAnimController m_animController;
 
 	/*-----*/ char padding4[0x4];

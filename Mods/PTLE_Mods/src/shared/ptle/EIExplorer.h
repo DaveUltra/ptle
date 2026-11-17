@@ -7,6 +7,9 @@ class EIExplorer : public EIBeast
 {
 public:
 
+	static const uint32_t VTABLE = 0x876400;
+
+
 	char padding4[12];
 
 	bool m_explorerBool0;

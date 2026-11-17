@@ -28,6 +28,9 @@ class ERCharacter : public EResource
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A6258;
+
+
 	// These 3 are part of an Array.
 	CharacterBoneInfo* m_boneList;
 	int m_numBones;

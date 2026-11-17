@@ -2,6 +2,8 @@
 
 #include "EIBeast.h"
 
+#include "EIProjectile.h"
+
 #include "math/Matrix4f.h"
 
 class EIProjectile;
@@ -11,6 +13,9 @@ class EIStaticModel;
 class EIStClair : public EIBeast
 {
 public:
+
+	static const uint32_t VTABLE = 0x899130;
+
 
 		/// Hand bones and matrices, used to correctly position the spawned TNTs.
 	uint32_t m_boneTNT_R;

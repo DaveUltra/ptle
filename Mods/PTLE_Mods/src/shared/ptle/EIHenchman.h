@@ -9,6 +9,9 @@ class EIHenchman : public EIBeast
 {
 public:
 
+	static const uint32_t VTABLE = 0x881BE8;
+
+
 	bool m_hasSpotlight;
 
 	uint32_t m_spotlightModelHash;

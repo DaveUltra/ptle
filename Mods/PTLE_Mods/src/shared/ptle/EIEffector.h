@@ -12,6 +12,9 @@ class EIEffector : public EIStaticModel
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A9868;
+
+
 	bool unknown2;
 
 	Vector3f m_position;

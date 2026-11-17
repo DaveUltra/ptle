@@ -9,6 +9,9 @@ class EUITextIcon : public EUIIcon
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A64B0;
+
+
 	ERFont* m_font;
 	
 	char padding7[0x14];

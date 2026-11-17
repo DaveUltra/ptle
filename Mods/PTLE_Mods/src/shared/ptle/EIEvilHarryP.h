@@ -13,6 +13,9 @@ class EIEvilHarryP : public EIBeast
 {
 public:
 
+	static const uint32_t VTABLE = 0x875240;
+
+
 	char padding8[0x04];
 
 	int m_bossPhase;

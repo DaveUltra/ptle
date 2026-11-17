@@ -463,17 +463,21 @@ static void __stdcall _EUIDDStoreItem_InitItem_Custom( EUIDDStoreItem* self, int
 	}
 
 	// Icon.
-	*((uint32_t*) (storeData + 0x20)) = mapped->getShaderIconCRC();
+	if ( mapped ) {
+		*((uint32_t*) (storeData + 0x20)) = mapped->getShaderIconCRC();
+	}
 
 	// Let it initialize.
 	EUIDDStoreItem_InitItem( self, p2, p3 );
 
 	// Text.
-	*self->m_text = (wchar_t*) mapped->m_displayNameW;
+	if ( mapped ) {
+		*self->m_text = (wchar_t*) mapped->m_displayNameW;
+	}
 
 	// Make our own checks for disabling items we already purchased.
 	EUIObjectNode_SetFlags( self, 0x14, true );    // Force all items on.
-	if ( mapped->isUnlocked() ) {
+	if ( mapped && mapped->isUnlocked() ) {
 		EUIObjectNode_SetFlags( self, 0x14, false );
 	}
 }

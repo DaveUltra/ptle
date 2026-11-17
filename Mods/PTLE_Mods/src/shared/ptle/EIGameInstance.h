@@ -7,6 +7,9 @@ class EIGameInstance : public EInstance
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A5198;
+
+
 	Vector3f unknown0;
 	Vector3f unknown1;
 

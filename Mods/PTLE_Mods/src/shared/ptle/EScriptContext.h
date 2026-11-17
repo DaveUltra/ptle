@@ -13,6 +13,9 @@ class EScriptContext : public EStorable
 {
 public:
 
+	static const uint32_t VTABLE = 0x8AEAF4;
+
+
 	int m_bytecodePointer;
 	int m_stackPointer;
 	ERScript* m_script;

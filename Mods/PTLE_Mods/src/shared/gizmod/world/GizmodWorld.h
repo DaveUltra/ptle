@@ -22,7 +22,7 @@ public:
 	void getEntitiesOfType( std::vector<EInstance*>& out, const ETypeInfo* type ) const;
 
 	template<class T>
-	inline void getEntitiesOfType( std::vector<T*>& out, const ETypeInfo* type ) const;
+	inline void getEntitiesOfType( std::vector<T*>& out ) const;
 
 	EIProjectile* spawnProjectile( ProjectileType::Enum type, const Vector3f& position, const Vector3f& direction, EICharacter* source, float shotAccuracy );
 };
@@ -30,7 +30,7 @@ public:
 
 
 template<class T>
-inline void GizmodWorld::getEntitiesOfType( std::vector<T*>& out, const ETypeInfo* type ) const
+inline void GizmodWorld::getEntitiesOfType( std::vector<T*>& out ) const
 {
-	this->getEntitiesOfType( reinterpret_cast<std::vector<EInstance*>&>(out), type );
+	this->getEntitiesOfType( reinterpret_cast<std::vector<EInstance*>&>(out), get_etypeinfo<T>() );
 }

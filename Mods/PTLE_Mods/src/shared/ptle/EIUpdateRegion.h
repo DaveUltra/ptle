@@ -17,6 +17,9 @@ class EIUpdateRegion : public EInstance
 {
 public:
 
+	static const uint32_t VTABLE = 0x8ADEB8;
+
+
 	TreeMap m_treeMap;
 
 	UpdateEntry* m_first;

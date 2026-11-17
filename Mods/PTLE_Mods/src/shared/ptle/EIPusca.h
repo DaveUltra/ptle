@@ -7,6 +7,9 @@ class EIPusca : public EIBeast
 {
 public:
 
+	static const uint32_t VTABLE = 0x893EA8;
+
+
 	Vector3f unknown0;
 
 	uint32_t m_boneHandCenterR;

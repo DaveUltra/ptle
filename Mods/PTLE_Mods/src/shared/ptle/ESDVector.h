@@ -9,5 +9,8 @@ class ESDVector : public EScriptData
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A8D5C;
+
+
 	Vector3f m_value;
 };

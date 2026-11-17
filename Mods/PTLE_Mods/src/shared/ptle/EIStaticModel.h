@@ -11,6 +11,9 @@ class EIStaticModel : public EIGameInstance
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A58A0;
+
+
 	Matrix4f m_worldTransform;
 	Matrix4f m_inverseWorldTransform;
 

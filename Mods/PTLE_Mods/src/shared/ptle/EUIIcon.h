@@ -9,6 +9,9 @@ class EUIIcon : public EUIObjectNode
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A65C0;
+
+
 	char padding6[0x08];
 
 	int unknown8;

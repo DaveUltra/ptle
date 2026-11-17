@@ -14,6 +14,8 @@ class EIBeast : public EICharacter
 {
 public:
 
+	static const uint32_t VTABLE = 0x86C3D0;
+
 	uint32_t m_beastTypeCRC;
 	uint32_t m_modelCRC;
 

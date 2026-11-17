@@ -17,6 +17,9 @@ class EInstance : public EStorable
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A52C0;
+
+
 	uint32_t m_uniqueID;
 
 	int unused1;

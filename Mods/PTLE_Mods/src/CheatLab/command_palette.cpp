@@ -407,8 +407,7 @@ static void _spawn_evilharry()
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
 	EIHarry* harry = *harryPtr;
 
-	const type_info_t* type = get_type_by_vtable( 0x875240 );
-	EIEvilHarryP* evilHarry = instantiate_object<EIEvilHarryP>( type );
+	EIEvilHarryP* evilHarry = instantiate_object<EIEvilHarryP>();
 
 	evilHarry->m_position.x = harry->m_position.x;
 	evilHarry->m_position.y = harry->m_position.y + 15.0F;
@@ -474,8 +473,7 @@ static EIProjectile* _harry_spawn( uint32_t code )
 	injector::WriteMemoryRaw( 0x4AEA67, bytes, 10, true );
 
 	// Instantiate a new Harry.
-	const type_info_t* type = get_type_by_vtable( 0x87D300 );
-	EIHarry* newHarry = instantiate_object<EIHarry>( type );
+	EIHarry* newHarry = instantiate_object<EIHarry>();
 
 	// Init.
 	{
@@ -506,8 +504,7 @@ static void _netiv_spawn()
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
 	EIHarry* harry = *harryPtr;
 
-	const type_info_t* type = get_type_by_vtable( 0x88AFE8 );
-	EINative* native = instantiate_object<EINative>( type );
+	EINative* native = instantiate_object<EINative>();
 
 	native->m_position.x = harry->m_position.x;
 	native->m_position.y = harry->m_position.y;
@@ -546,8 +543,7 @@ static void _micay_spawn()
 	EIHarry** harryPtr = ((EIHarry**) 0x917034);
 	EIHarry* harry = *harryPtr;
 
-	const type_info_t* type = get_type_by_vtable( 0x88B868 );
-	EINPCBeast* native = instantiate_object<EINPCBeast>( type );
+	EINPCBeast* native = instantiate_object<EINPCBeast>();
 
 	native->m_position.x = harry->m_position.x;
 	native->m_position.y = harry->m_position.y;
@@ -581,8 +577,7 @@ static void _micay_spawn()
 // --------------------------------------------------------------------------------
 static void _idol_spawn()
 {
-	const type_info_t* type = get_type_by_vtable( 0x89A2F8 );
-	EITreasureIdol* idol = instantiate_object<EITreasureIdol>( type );
+	EITreasureIdol* idol = instantiate_object<EITreasureIdol>();
 
 	EIHarry* harry = *((EIHarry**) 0x917034);
 
@@ -658,7 +653,7 @@ static void _log_children( EUIObjectNode* obj, int depth )
 
 	for ( LinkedListElem* e = obj->m_children.m_iterateFirst; e != 0; e = e->m_next ) {
 		EUIObjectNode* c = (EUIObjectNode*) e->m_data;
-		EUITextIcon* t = type_cast<EUITextIcon>( c, get_type_by_vtable(0x8A64B0) );
+		EUITextIcon* t = type_cast<EUITextIcon>( c );
 		if ( t ) {
 			sprintf_s( buf + i, sizeof(buf) - i, "- %s (0x%.8X) \"%ls\"\n", c->GetTypeName(), c, *t->m_text );
 		}
@@ -748,8 +743,8 @@ static void _explorer_tracker()
 
 static void _tp_to_explorer()
 {
-	std::vector<EIBeast*> expl;
-	Gizmod::getInstance()->getWorld()->getEntitiesOfType( expl, get_type_by_vtable(0x876400)->ptleType );
+	std::vector<EIExplorer*> expl;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EIExplorer>( expl );
 
 	if (!expl.empty()) {
 		Matrix4f mat = expl[0]->m_transformMatrix;
@@ -765,10 +760,11 @@ static void _tp_to_explorer()
 // --------------------------------------------------------------------------------
 // Teleport to shaman.
 // --------------------------------------------------------------------------------
+#include "ptle/EIShaman.h"
 static void _tp_to_shaman()
 {
-	std::vector<EIBeast*> shams;
-	Gizmod::getInstance()->getWorld()->getEntitiesOfType( shams, get_type_by_vtable(0x896C10)->ptleType );
+	std::vector<EIShaman*> shams;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EIShaman>( shams );
 
 	if (!shams.empty()) {
 		Matrix4f mat = shams[0]->m_transformMatrix;
@@ -818,7 +814,7 @@ static void _displaySkeleton()
 {
 	std::vector<EICharacter*> characters;
 	std::set<ERCharacter*> charTypes;
-	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EICharacter>( characters, get_type_by_vtable(0x8A5000)->ptleType );
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EICharacter>( characters );
 
 	for ( EICharacter* charInst : characters ) {
 		ERCharacter* ch = charInst->m_animController.m_characterResource;

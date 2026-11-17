@@ -27,6 +27,9 @@ class EIPlayer : public EICharacter
 {
 public:
 
+	static const uint32_t VTABLE = 0x87D618;
+
+
 	// TODO : replace by a matrix4.
 	Vector4f m_mat[3];
 	Vector4f m_positionPlayer;

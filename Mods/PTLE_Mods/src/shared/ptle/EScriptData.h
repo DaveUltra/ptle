@@ -7,6 +7,9 @@ class EScriptData : public EStorable
 {
 public:
 
+	static const uint32_t VTABLE = 0x8AEB4C;
+
+
 	unsigned int m_refCount;
 
 

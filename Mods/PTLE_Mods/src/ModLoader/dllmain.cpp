@@ -1,7 +1,6 @@
 #include "dllmain.h"
 #include "exception.hpp"
 #include <initguid.h>
-#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <shellapi.h>
