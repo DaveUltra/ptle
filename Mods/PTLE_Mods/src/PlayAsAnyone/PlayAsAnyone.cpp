@@ -290,7 +290,7 @@ public:
 		disguisedBeasts.clear();
 
 		std::vector<EIBeast*> allBeasts;
-		Gizmod::getInstance()->getWorld()->getEntitiesOfType<EIBeast>( allBeasts, get_type_by_vtable(0x86C3D0)->ptleType );
+		Gizmod::getInstance()->getWorld()->getEntitiesOfType<EIBeast>( allBeasts );
 		for ( EIBeast* b : allBeasts ) {
 			uint32_t vtable = *((uint32_t*) b);
 
