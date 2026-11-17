@@ -3,8 +3,52 @@
 #include "EIPlayer.h"
 
 class EIStaticModel;
+class EIParticleEmit;
 class EIParticleEmitter;
+class EResource;
 
+
+struct SkinnedModelPart
+{
+	int unknown0;
+	int unknown1;
+	float unknown2;
+	int unknown3;
+	Vector3f* unknown4;
+	void* unknown5;
+	Matrix4f* unknown6;
+
+	char padding[0xC];
+
+	EICharacter* unknown7;
+	EAnimController* unknown8;
+
+	char padding1[0x8];
+};
+
+struct HarryStrikeRibbon
+{
+	Vector3f* unknown0;
+	Vector3f unknown1;
+	Vector3f unknown2;
+	Vector3f* unknown3;
+	class EParticleRibbon* m_particleEmitter;
+	bool unknown4;
+};
+
+struct PowerGloves
+{
+	bool m_enabled;
+	EIParticleEmit* unknown0;
+	EIParticleEmit* unknown1;
+	EIParticleEmit* unknown2;
+	EIParticleEmit* unknown3;
+	class EIHarry* m_harry;
+	SkinnedModelPart unknown4;
+	EResource* unknown5;
+	char padding[4];
+	float unknown6;
+};
 
 class EIHarry : public EIPlayer
 {
@@ -15,7 +59,11 @@ public:
 	Vector3f m_bodyRotation;
 	Vector3f m_bodyTargetRotation;
 
-	char padding10[0x730];
+	char padding12[0x28];
+
+	HarryStrikeRibbon m_strikeRibbons[2];
+
+	char padding10[0x6B8];
 
 	int m_idolsCollected;
 
@@ -44,7 +92,7 @@ public:
 
 	char padding9[0x10];
 
-	int m_powerGloves;
+	PowerGloves m_powerGloves;
 
-	char padding11[0x68];
+	char padding11[0x10];
 };

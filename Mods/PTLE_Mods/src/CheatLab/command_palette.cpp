@@ -656,7 +656,7 @@ static void _log_children( EUIObjectNode* obj, int depth )
 	}
 	buf[i] = 0;
 
-	for ( LinkedListElem* e = obj->m_children.m_iterateFirst; e != 0; e = e->m_ptr1 ) {
+	for ( LinkedListElem* e = obj->m_children.m_iterateFirst; e != 0; e = e->m_next ) {
 		EUIObjectNode* c = (EUIObjectNode*) e->m_data;
 		EUITextIcon* t = type_cast<EUITextIcon>( c, get_type_by_vtable(0x8A64B0) );
 		if ( t ) {

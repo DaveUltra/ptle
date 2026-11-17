@@ -2,6 +2,9 @@
 
 #include "Event.h"
 
+#include "gizmod/types/Projectile.h"
+
+#include "ptle/EIProjectile.h"
 #include "ptle/math/Vector3f.h"
 
 class EInstance;
@@ -17,7 +20,10 @@ public:
 	ProjectileShootEvent( EIProjectile* projectile, EInstance* source, const Vector3f& pos, const Vector3f& dir )
 		: m_projectile( projectile ), m_source( source ), m_position( pos ), m_direction( dir )
 	{
+		m_projectileTypeCRC = (ProjectileType::Enum) projectile->m_projectileTypeInfo->m_typeID;
 	}
+
+	inline ProjectileType::Enum getProjectileTypeCRC() const { return m_projectileTypeCRC; }
 
 	inline EIProjectile* getProjectile() const { return m_projectile; }
 	inline EInstance* getSource() const { return m_source; }
@@ -29,6 +35,8 @@ public:
 
 
 private:
+
+	ProjectileType::Enum m_projectileTypeCRC;
 
 	EIProjectile* m_projectile;
 	EInstance* m_source;

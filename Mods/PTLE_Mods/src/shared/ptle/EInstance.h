@@ -5,6 +5,7 @@
 #include "math/AABB.h"
 
 class TreeMap;
+class TreeMapNode;
 class ERLevel;
 class ERScript;
 class Vector3f;
@@ -31,7 +32,9 @@ public:
 
 	uint32_t m_flags;
 
-	char padding1[0xC];
+	void* unknown4;
+	TreeMapNode* m_updateRegionNode;
+	void* unknown5;
 
 	AABB m_bounds;
 

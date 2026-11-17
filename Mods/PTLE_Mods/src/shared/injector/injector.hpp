@@ -484,6 +484,25 @@ inline memory_pointer_raw MakeJMP(memory_pointer_tr at, memory_pointer_raw dest,
     return p;
 }
 
+template<typename T>
+inline memory_pointer_raw MakeJMP(memory_pointer_tr at, T dest, bool vp = true)
+{
+#if !(defined (_M_IX86) || defined (_X86_))
+    dest = plugin::MakeTrampoline(at.as_int(), dest.get());
+#endif
+
+    union {
+        T method;
+        void* func;
+    };
+    method = dest;
+
+    auto p = GetBranchDestination(at, vp);
+    WriteMemory<uint8_t>(at, 0xE9, vp);
+    MakeRelativeOffset(at+1, func, 4, vp);
+    return p;
+}
+
 /*
  *  MakeCALL
  *      Creates a CALL instruction at address @at that jumps into address @dest

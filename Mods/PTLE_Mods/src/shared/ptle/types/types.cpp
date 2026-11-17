@@ -127,11 +127,24 @@ void register_types()
 	register_type( 0x8A64B0, 0x0091ED20 );   // EUITextIcon
 	register_type( 0x8A65C0, 0x0091ED50 );   // EUIIcon
 	register_type( 0x8A66C0, 0x0091EE20 );   // EUIObjectNode
+	register_type( 0x8A8C4C, 0x0091FF00 );   // ESDAnimation
+	register_type( 0x8A8CA8, 0x0091FF2C );   // ESDResource
+	register_type( 0x8A8D00, 0x0091FF58 );   // ESDFloat
+	register_type( 0x8A8D5C, 0x0091FF84 );   // ESDVector
+	register_type( 0x8A8DB0, 0x0091FFB0 );   // ESDInt
+	register_type( 0x8A8DFC, 0x0091FFDC );   // ESDString
 	register_type( 0x8A9358, 0x0092005C );   // ESaveGameVar
 	register_type( 0x8A9398, 0x00920030 );   // ESGVInt
 	register_type( 0x8A93DC, 0x00920008 );   // ESGVFloat
+	register_type( 0x8AAFA0, 0x009232A0 );   // ESDPointer
+	register_type( 0x8AC718, 0x00923AE0 );   // ESDScript
+	register_type( 0x8AC76C, 0x00923B0C );   // ESDModel
+	register_type( 0x8AC9C4, 0x00923B90 );   // ESDSound
+	register_type( 0x8ACC34, 0x00923BEC );   // ESDShader
 	register_type( 0x8ADEB8, 0x0092801C );   // EIUpdateRegion
 	register_type( 0x8AE110, 0x0093B9EC );   // ERAnim
+	register_type( 0x8AE804, 0x0093BA18 );   // ESDParticleType
+	register_type( 0x8AE860, 0x0093BA44 );   // ESDMatrix
 	register_type( 0x8B02C4, 0x0093EB70 );   // ERTexture
 	register_type( 0x8B0614, 0x0093ED30 );   // ERScript
 	register_type( 0x8B0FD4, 0x009413C8 );   // EBoundTreeNode
