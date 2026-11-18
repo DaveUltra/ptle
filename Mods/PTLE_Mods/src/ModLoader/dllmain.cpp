@@ -694,6 +694,11 @@ void InjectCode()
 	// Protection against explorer softlock.
 	injector::WriteMemory( 0x87659C, EIExplorer_ShouldTick_fix );
 
+	// Mutex guarding game instance (we want multiple instances!)
+	injector::MakeRangedNOP( 0x60D44D, 0x60D45C );    // CreateMutexA()
+	injector::MakeRangedNOP( 0x60E965, 0x60E975 );    // ReleaseMutex()
+
+
 	// Skip splash screens and trailer.
 	if ( g_skipSplashScreens ) {
 		injector::WriteMemory<uint8_t>( 0x512BC5, 0x22 );
