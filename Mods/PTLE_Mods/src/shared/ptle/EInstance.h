@@ -28,10 +28,10 @@ public:
 
 	char padding0[0x08];
 
-	float unknown0;
-	float unknown1;
-	float unknown2;
-	float m_opacity;
+	float m_opacityFinal;
+	float m_opacity2;
+	float m_opacity3;
+	float m_alphaUser;
 
 	uint32_t m_flags;
 

@@ -18,6 +18,7 @@
 #include "ptle/EIGamePlatform.h"
 #include "ptle/EIHarry.h"
 #include "ptle/EIHavokBreakable.h"
+#include "ptle/EIHavokVine.h"
 #include "ptle/EIHenchman.h"
 #include "ptle/EIHowlerMonkey.h"
 #include "ptle/EIMegaMonkeyChild.h"
@@ -177,6 +178,7 @@ void register_types()
 	register_type<EIGamePlatform>();
 	register_type<EIHarry>();
 	register_type<EIHavokBreakable>();
+	register_type<EIHavokVine>();
 	register_type<EIHenchman>();
 	register_type<EIHowlerMonkey>();
 	register_type<EIMegaMonkeyChild>();

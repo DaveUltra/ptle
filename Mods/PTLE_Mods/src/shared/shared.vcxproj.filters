@@ -180,6 +180,16 @@
     <ClInclude Include="ptle\EIGamePlatform.h" />
     <ClInclude Include="ptle\EIPlatform.h" />
     <ClInclude Include="ptle\EIHavokBreakable.h" />
+    <ClInclude Include="ptle\EItemBase.h" />
+    <ClInclude Include="ptle\EIHavokVine.h" />
+    <ClInclude Include="ptle\EItemRaft.h" />
+    <ClInclude Include="ptle\EItemSling.h" />
+    <ClInclude Include="ptle\EItemCanteen.h" />
+    <ClInclude Include="ptle\EItemShield.h" />
+    <ClInclude Include="ptle\EItemTorch.h" />
+    <ClInclude Include="ptle\EItemTNT.h" />
+    <ClInclude Include="ptle\EItemGasMask.h" />
+    <ClInclude Include="ptle\EItemPickaxes.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

@@ -23,7 +23,9 @@ public:
 	MemberFuncCallback m_onUpdate;
 	MemberFuncCallback m_onLeave;
 
-	char padding3[0x0C];
+	int m_animID;   // Supposedly...
+	float unknown2;
+	float unknown3;
 
 	int m_index;
 

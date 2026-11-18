@@ -8,6 +8,7 @@
 #include "EIEvilHarryP.h"
 #include "EIExplorer.h"
 #include "EIHarry.h"
+#include "EIHavokVine.h"
 #include "EIHenchman.h"
 #include "EIHowlerMonkey.h"
 #include "EIMegaMonkeyChild.h"
@@ -30,6 +31,7 @@
 #include "EIStClair.h"
 #include "EISupai.h"
 #include "EITreasureIdol.h"
+
 #include "ERAnim.h"
 #include "ERCharacter.h"
 #include "ERDataset.h"
@@ -43,6 +45,15 @@
 #include "EUIDDMenu.h"
 #include "EUIDDStoreItem.h"
 #include "EUITextIcon.h"
+
+#include "EItemCanteen.h"
+#include "EItemGasMask.h"
+#include "EItemPickaxes.h"
+#include "EItemRaft.h"
+#include "EItemShield.h"
+#include "EItemSling.h"
+#include "EItemTNT.h"
+#include "EItemTorch.h"
 
 
 
@@ -98,6 +109,7 @@ CHECK_TYPE_SIZE( EIEffector,         0x240 );
 CHECK_TYPE_SIZE( EIPlayerStart,      0x240 );
 CHECK_TYPE_SIZE( EIPlant,            0x260 );
 CHECK_TYPE_SIZE( EIProjectile,       0x280 );
+CHECK_TYPE_SIZE( EIHavokVine,        0x2B0 );
 CHECK_TYPE_SIZE( EIBeast,            0x6F0 );
 CHECK_TYPE_SIZE( EIShaman,           0x700 );
 CHECK_TYPE_SIZE( EISnowBowler,       0x720 );
@@ -134,6 +146,15 @@ CHECK_TYPE_SIZE( EUITextIcon,        0x110 );
 CHECK_TYPE_SIZE( EUIMenu,            0x15C );
 CHECK_TYPE_SIZE( EUIDDStoreItem,     0x19C );
 CHECK_TYPE_SIZE( EUIDDMenu,          0x1A0 );
+CHECK_TYPE_SIZE( EItemBase,          0xA0 );
+CHECK_TYPE_SIZE( EItemCanteen,       0xB0 );
+CHECK_TYPE_SIZE( EItemGasMask,       0xB0 );
+CHECK_TYPE_SIZE( EItemPickaxes,      0xC0 );
+CHECK_TYPE_SIZE( EItemTNT,           0xC0 );
+CHECK_TYPE_SIZE( EItemTorch,         0xC0 );
+CHECK_TYPE_SIZE( EItemRaft,          0x110 );
+CHECK_TYPE_SIZE( EItemSling,         0x140 );
+CHECK_TYPE_SIZE( EItemShield,        0x160 );
 
 
 CHECK_FIELD_OFFSET( EIHarry,        m_breakdance,        0x1914 );
@@ -154,3 +175,5 @@ CHECK_FIELD_OFFSET( ERLevel,        m_entitiesByID,      0x59C );
 
 CHECK_FIELD_OFFSET( EScriptContext, m_scriptStack,       0x24 );
 CHECK_FIELD_OFFSET( EScriptContext, m_currentFunction,   0x884 );
+
+CHECK_FIELD_OFFSET( EItemBase,      m_harry,             0x20 );
