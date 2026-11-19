@@ -198,5 +198,6 @@
     <None Include="gizmod\item\InventoryItem.inl" />
     <None Include="ptle\src\EHarryAction.inl" />
     <None Include="ptle\src\EHeroicSkill.inl" />
+    <None Include="gizmod\Gizmod.inl" />
   </ItemGroup>
 </Project>

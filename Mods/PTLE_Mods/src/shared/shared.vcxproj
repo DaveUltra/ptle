@@ -266,6 +266,7 @@
     <ClInclude Include="utils\log.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="gizmod\Gizmod.inl" />
     <None Include="gizmod\GizmodEvents.inl" />
     <None Include="gizmod\item\InventoryItem.inl" />
     <None Include="ptle\src\EHarryAction.inl" />

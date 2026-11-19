@@ -56,11 +56,11 @@ public:
 
 
 		/// Util functions.
-	static EIHarry* getHarry();
-	static ERLevel* getLevel();
-	static EUIHud* getHUD();
+	static inline EIHarry* getHarry();
+	static inline ERLevel* getLevel();
+	static inline EUIHud*  getHUD();
 
-	static uint32_t getCurrentLevelCRC();
+	static inline uint32_t getCurrentLevelCRC();
 
 
 private:
@@ -72,3 +72,6 @@ private:
 
 	InventoryItem m_inventoryItems[9];
 };
+
+
+#include "Gizmod.inl"
