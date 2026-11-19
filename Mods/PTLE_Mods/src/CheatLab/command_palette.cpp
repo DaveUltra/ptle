@@ -49,6 +49,11 @@ GET_METHOD( 0x559640, void, EIProjectile_Spawn, EIProjectile*, Vector3f*, Vector
 
 
 
+static inline ItemStruct* get_global_items()
+{
+	return (ItemStruct*) 0x8EEB90;
+}
+
 static void log_state_machine_info( EBeastStateMachine* sm )
 {
 	if ( !sm->m_states ) return;
@@ -144,20 +149,21 @@ static void _infinite_jump( bool enable )
 // --------------------------------------------------------------------------------
 // TNT rain.
 // --------------------------------------------------------------------------------
+#include "gizmod/types/Projectile.h"
 static EIProjectile* _do_tnt_rain( uint32_t projectileType )
 {
 	Vector3f pos, dir;
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
+	EIHarry* harry = Gizmod::getHarry();
 
 	for ( int i = -12; i <= 12; i++ ) {
 		for ( int j = -12; j <= 12; j++ ) {
 			dir.x = dir.y = dir.z = 0.0F;
 
-			pos.z = 70.0F;
-			pos.x = j * 16.0F;
-			pos.y = i * 16.0F;
+			pos.z = harry->m_position.z + 70.0F;
+			pos.x = harry->m_position.x + j * 16.0F;
+			pos.y = harry->m_position.y + i * 16.0F;
 
-			EIProjectile* tnt = EIProjectile_Create( 0xBBCAC492 );
+			EIProjectile* tnt = EIProjectile_Create( ProjectileType::TNT_HARRY );
 			EIProjectile_Spawn( tnt, &pos, &dir, harry, 1.0F );
 		}
 	}
@@ -187,7 +193,7 @@ static void _all_tnt( bool enable )
 {
 	if ( enable ) {
 		// mov DWORD PTR [ebp+0x8], BBCAC492
-		uint8_t bytes[] = { 0xC7, 0x45, 0x08, 0x92, 0xC4, 0xCA, 0xBB };
+		const uint8_t bytes[] = { 0xC7, 0x45, 0x08, 0x92, 0xC4, 0xCA, 0xBB };
 		injector::WriteMemoryRaw( 0x55784E, bytes, sizeof(bytes), true );
 	}
 	else {
@@ -286,14 +292,32 @@ static void _deactivate_effectors( bool enable )
 	}
 }
 
+// --------------------------------------------------------------------------------
+// The HUD's life meter (EUIHudLifeMeter, at HUD+0xF8) lays its icons out for the
+// max health only when it enters the screen : changing the max while it is up
+// leaves the new icons at the middle of the screen. Sending it back to its
+// "hidden" state (+0x124 = 0) with "show" requested (+0x198) makes it lay them
+// out again.
+// --------------------------------------------------------------------------------
+static void _refresh_life_meter()
+{
+	EUIHud* hud = Gizmod::getHUD();
+	if ( !hud ) return;
+
+	uint8_t* meter = *(uint8_t**) ((uint8_t*) hud + 0xF8);
+	if ( !meter || *(uint32_t*) meter != 0x8A04D8 ) return;   // EUIHudLifeMeter vtable.
+
+	*(int*) (meter + 0x124) = 0;
+	*(uint8_t*) (meter + 0x198) = 1;
+}
 
 // --------------------------------------------------------------------------------
 // Give useful items, abilities, and max HP.
 // --------------------------------------------------------------------------------
 static void _give_stuff()
 {
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
-	if ( !harry || !harry->m_itemHotbar ) {
+	EIHarry* harry = Gizmod::getHarry();
+	if ( !harry || !harry->m_inventory ) {
 		log_printf( "Harry's not spawned yet.\n" );
 		return;
 	}
@@ -307,15 +331,16 @@ static void _give_stuff()
 	// Max HP (10).
 	harry->m_healthMax = 10;
 	harry->m_healthValue = 10;
+	_refresh_life_meter();
 
 	// Hotbar.
-	harry->m_itemHotbar[0] = injector::ReadMemory<void*>( 0x8EEC20 );  // Raft.
-	harry->m_itemHotbar[1] = injector::ReadMemory<void*>( 0x8EEBCC );  // Pickaxes.
-	harry->m_itemHotbar[2] = injector::ReadMemory<void*>( 0x8EEBB0 );  // Torch.
-	harry->m_itemHotbar[3] = injector::ReadMemory<void*>( 0x8EEBE8 );  // TNT.
+	harry->m_inventory->m_hotbar[0] = injector::ReadMemory<EItemBase*>( 0x8EEC20 );  // Raft.
+	harry->m_inventory->m_hotbar[1] = injector::ReadMemory<EItemBase*>( 0x8EEBCC );  // Pickaxes.
+	harry->m_inventory->m_hotbar[2] = injector::ReadMemory<EItemBase*>( 0x8EEBB0 );  // Torch.
+	harry->m_inventory->m_hotbar[3] = injector::ReadMemory<EItemBase*>( 0x8EEBE8 );  // TNT.
 
 	// Unlock all items.
-	ItemStruct* items = (ItemStruct*) 0x8EEB90;
+	ItemStruct* items = get_global_items();
 	for ( int i = 0; i < 8; i++ ) {
 		items[i].m_unlocked = 1;
 	}
@@ -331,7 +356,7 @@ static void _give_stuff()
 // --------------------------------------------------------------------------------
 static void _heal()
 {
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
+	EIHarry* harry = Gizmod::getHarry();
 	if ( !harry ) {
 		log_printf( "Harry's not spawned yet.\n" );
 		return;
@@ -346,8 +371,8 @@ static void _heal()
 // --------------------------------------------------------------------------------
 static void _remove_stuff()
 {
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
-	if ( !harry || !harry->m_itemHotbar ) {
+	EIHarry* harry = Gizmod::getHarry();
+	if ( !harry || !harry->m_inventory ) {
 		log_printf( "Harry's not spawned yet.\n" );
 		return;
 	}
@@ -365,13 +390,13 @@ static void _remove_stuff()
 	harry->m_healthValue = 5;
 
 	// Clear hotbar contents.
-	harry->m_itemHotbar[0] = 0;
-	harry->m_itemHotbar[1] = 0;
-	harry->m_itemHotbar[2] = 0;
-	harry->m_itemHotbar[3] = 0;
+	harry->m_inventory->m_hotbar[0] = 0;
+	harry->m_inventory->m_hotbar[1] = 0;
+	harry->m_inventory->m_hotbar[2] = 0;
+	harry->m_inventory->m_hotbar[3] = 0;
 
 	// Remove all items.
-	ItemStruct* items = (ItemStruct*) 0x8EEB90;
+	ItemStruct* items = get_global_items();
 	for ( int i = 0; i < 8; i++ ) {
 		items[i].m_unlocked = 0;
 	}
@@ -387,7 +412,7 @@ static void _remove_stuff()
 // --------------------------------------------------------------------------------
 static void _die()
 {
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
+	EIHarry* harry = Gizmod::getHarry();
 	if ( !harry ) return;
 
 	harry->m_healthValue = 0;
@@ -404,8 +429,7 @@ static bool no()
 
 static void _spawn_evilharry()
 {
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
+	EIHarry* harry = Gizmod::getHarry();
 
 	EIEvilHarryP* evilHarry = instantiate_object<EIEvilHarryP>();
 
@@ -458,8 +482,7 @@ static void _spawn_evilharry()
 // --------------------------------------------------------------------------------
 static EIProjectile* _harry_spawn( uint32_t code )
 {
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
+	EIHarry* harry = Gizmod::getHarry();
 
 	// Disable HUD updates (maybe?)
 	injector::MakeRET( 0x4B0950 );
@@ -488,7 +511,7 @@ static EIProjectile* _harry_spawn( uint32_t code )
 		AddToWorld( harry->m_world, newHarry );
 		newHarry->m_world = harry->m_world;
 
-		newHarry->m_itemHotbar = harry->m_itemHotbar;
+		newHarry->m_inventory = harry->m_inventory;
 		//*(((uint8_t*) newHarry) + 0x3e3) = false;
 	}
 
@@ -501,8 +524,7 @@ static EIProjectile* _harry_spawn( uint32_t code )
 // --------------------------------------------------------------------------------
 static void _netiv_spawn()
 {
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
+	EIHarry* harry = Gizmod::getHarry();
 
 	EINative* native = instantiate_object<EINative>();
 
@@ -540,8 +562,7 @@ static void _netiv_spawn()
 // --------------------------------------------------------------------------------
 static void _micay_spawn()
 {
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
+	EIHarry* harry = Gizmod::getHarry();
 
 	EINPCBeast* native = instantiate_object<EINPCBeast>();
 
@@ -579,7 +600,7 @@ static void _idol_spawn()
 {
 	EITreasureIdol* idol = instantiate_object<EITreasureIdol>();
 
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
 
 	Vector3f pos = { 0, 0, 0 };
 	Vector4f rot = { 0, 0, 0, 1 };
@@ -720,26 +741,6 @@ static void _ExplorerTick( EIExplorer* self )
 MAKE_THISCALL_WRAPPER( ExplorerTick, _ExplorerTick );
 
 GET_METHOD( 0x4B55F0, void, EIHarry_Tp, EIHarry*, Matrix4f*, bool, float );
-
-static void _explorer_tracker()
-{
-	static bool non = false;
-	if ( !non ) {
-		non = true;
-
-		// Patch tick function.
-		injector::WriteMemory( 0x87642C, ExplorerTick );
-
-		// Display explorer state machine.
-		void* dummy = (void*) (0x876400);
-		EBeastStateMachine* sm = ((EIBeast*)(&dummy))->GetStateMachine();
-		log_state_machine_info( sm );
-	}
-
-	Matrix4f mat = m;
-	mat.data[3][2] += 5.0F;
-	EIHarry_Tp(Gizmod::getHarry(), &mat, false, 1.0F);
-}
 
 static void _tp_to_explorer()
 {
@@ -927,7 +928,7 @@ bool load_saveslot( int i )
 	}
 
 	//ScheduleWorldLoad( (void*) 0x917028, levels_game.levels[id - 400].crc, false );
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
 
 	EIHarry_Teleport( harry, &save_slots[i].playerTransform, false, 1.0F );
 
