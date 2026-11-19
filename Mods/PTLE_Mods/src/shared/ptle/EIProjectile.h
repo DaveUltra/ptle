@@ -19,8 +19,8 @@ public:
 
 
 	float unknown0;
-	float unknown0_1;
-	float unknown0_2;
+	float m_hitDamage;
+	float m_hitForce;
 	float m_lifetime;
 	bool unknown2;
 	bool unknown3;
@@ -28,7 +28,10 @@ public:
 	EResource* unknown4;
 	ProjectileTypeInfo* m_projectileTypeInfo;
 
-	Vector3f unknown5;
+	uint32_t unknown13;
+	uint32_t unknown14;
+	uint32_t m_hitFlags;
+
 	float unknown6;
 	float unknown7;
 	Vector3f unknown8;

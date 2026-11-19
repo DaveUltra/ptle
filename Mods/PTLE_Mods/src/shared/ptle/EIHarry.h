@@ -57,7 +57,32 @@ public:
 	static const uint32_t VTABLE = 0x87D300;
 
 
-	char padding6[0x688];
+	char padding0[0x19C];
+
+	uint32_t m_boneRHandHold;
+	uint32_t m_boneLHand;
+	uint32_t m_boneRHand;
+	uint32_t m_boneSpine1;
+	uint32_t m_boneLToe0;
+	uint32_t m_boneRToe0;
+	uint32_t m_boneSpine2;
+	uint32_t m_boneLClavicle;
+	uint32_t m_boneRClavicle;
+	uint32_t m_boneRUpperArm;
+	uint32_t m_boneRForearm;
+	uint32_t m_boneLForearm;
+	uint32_t m_boneLThigh;
+	uint32_t m_boneRThigh;
+	uint32_t m_boneNeck1;
+
+	Matrix4f m_matLClavicle;
+	Matrix4f m_matRClavicle;
+	Matrix4f m_matRHand;
+	Matrix4f m_matRToe0;
+	Matrix4f m_matLToe0;
+	uint32_t* m_animationHashes;
+
+	char padding1[0x364];
 
 	Vector3f m_bodyRotation;
 	Vector3f m_bodyTargetRotation;
@@ -66,7 +91,14 @@ public:
 
 	HarryStrikeRibbon m_strikeRibbons[2];
 
-	char padding10[0x6B8];
+	char padding10[0x6A8];
+
+	uint32_t m_hitFlags;
+	bool m_slingAnimated;
+	bool m_dieOnNextLand;
+
+	int unknown0;
+	int unknown1;
 
 	int m_idolsCollected;
 
