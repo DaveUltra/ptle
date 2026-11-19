@@ -698,6 +698,8 @@ void InjectCode()
 	injector::MakeRangedNOP( 0x60D44D, 0x60D45C );    // CreateMutexA()
 	injector::MakeRangedNOP( 0x60E965, 0x60E975 );    // ReleaseMutex()
 
+	// SetWindowPos() with hwndInsertAfter == -1 means window will stay top-most. Use 0 instead.
+	injector::WriteMemory<uint8_t>( 0x60D687, 0 );
 
 	// Skip splash screens and trailer.
 	if ( g_skipSplashScreens ) {
@@ -710,7 +712,6 @@ void InjectCode()
 	injector::MakeRangedNOP( 0x60D439, 0x60D441 );
 	injector::MakeCALL( 0x60D439, LateInit );
 	injector::MakeRangedNOP( 0x60E977, 0x60E97F );
-
 
 	if ( !g_speedrunFriendly ) {
 		// Breakables.
