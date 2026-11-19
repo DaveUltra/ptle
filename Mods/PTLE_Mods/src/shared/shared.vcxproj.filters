@@ -190,6 +190,8 @@
     <ClInclude Include="ptle\EItemTNT.h" />
     <ClInclude Include="ptle\EItemGasMask.h" />
     <ClInclude Include="ptle\EItemPickaxes.h" />
+    <ClInclude Include="gizmod\event\HarryDeathEvent.h" />
+    <ClInclude Include="gizmod\event\HarryDamageEvent.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

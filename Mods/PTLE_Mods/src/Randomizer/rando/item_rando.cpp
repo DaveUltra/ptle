@@ -37,7 +37,7 @@
 //
 
 
-GET_METHOD( 0x506170, void, UnlockItem, void*, uint32_t );
+GET_METHOD( 0x506170, void, UnlockItem, EInventory*, uint32_t );
 GET_FUNC( 0x5E34A0, void, AddCollectedIdols, uint32_t, int );
 GET_METHOD( 0x597400, void, EITreasureIdol_InitValues, EITreasureIdol*, Vector3f*, Vector4f*, uint32_t, uint32_t, uint32_t );
 
@@ -93,7 +93,7 @@ struct Unlockable
 				*((bool*) 0x90DA22) = true;
 			}
 			else {
-				UnlockItem( harry->m_itemHotbar, m_itemHash );
+				UnlockItem( harry->m_inventory, m_itemHash );
 			}
 			Gizmod::getInstance()->getLogger()->log_printf( "Collected %s!\n", m_displayName );
 			break;

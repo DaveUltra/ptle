@@ -294,6 +294,7 @@ enum vccorlibExportsNames
 
 #include "ptle/EInstance.h"
 #include "ptle/EIBeast.h"
+#include "ptle/EIFlockBeast.h"
 #include "ptle/EIPlant.h"
 #include "ptle/EIProjectile.h"
 #include "ptle/EITreasureIdol.h"
@@ -519,6 +520,60 @@ static void __stdcall _ProjectileShoot( EIProjectile* self, Vector3f* position, 
 MAKE_THISCALL_WRAPPER( ProjectileShoot, _ProjectileShoot );
 
 
+// Harry death.
+GET_METHOD( 0x4D3F40, int, EIHarry_CalcNextStateID, EIHarry* );
+
+// Land on back (hot coals, falling, mama monkey kick, frozen water).
+// The original function immediately returns 0x90 (state "deathfall") if m_dieOnNextLand is true.
+// By cancelling the event, we make the original function drop to the natural, non-lethal state.
+static int __stdcall _HarryDeathLandFunc( EIHarry* harry )
+{
+	if ( harry->m_dieOnNextLand ) {
+		HarryDeathEvent event( harry );
+		g_pitfall.getEventListener()->invokeEvent( event );
+
+		if ( event.isCancelled() ) {
+			harry->m_dieOnNextLand = false;
+		}
+	}
+
+	return EIHarry_CalcNextStateID( harry );
+}
+MAKE_THISCALL_WRAPPER( HarryDeathLand, _HarryDeathLandFunc );
+
+// Repeated "m_health <= 0" check.
+static void __stdcall _HarryDeathRepeatFunc( EIHarry* harry, int stateID, bool param2 )
+{
+	HarryDeathEvent event( harry );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( event.isCancelled() ) return;
+
+	harry->PerformStateSwitch( stateID, param2 );
+}
+MAKE_THISCALL_WRAPPER( HarryDeathRepeat, _HarryDeathRepeatFunc );
+
+
+// Harry damage.
+GET_METHOD( 0x4BA910, void, EIHarry_OnHit, EIHarry*, float, EInstance*, uint32_t, Vector3f*, float, int );
+static void __stdcall _HarryDamageFunc( EIHarry* harry, float damage, EInstance* source, uint32_t flags, Vector3f* direction, float force, int param7 )
+{
+	HarryDamageEvent event( harry, source, damage, flags, *direction, force, param7 );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( event.isCancelled() ) return;
+
+	log_printf(
+		"Harry damage : damage=%f, source=%s, flags=0x%x, direction=(%f,%f,%f), force=%f, param7=%d\n",
+		damage, source ? source->GetTypeName() : "<none>", flags,
+		direction->x, direction->y, direction->z, force, param7 );
+
+	EIHarry_OnHit( harry, damage, source, flags, direction, force, param7 );
+	//harry->OnHit( damage, source, flags, direction, force, param7 );
+}
+MAKE_THISCALL_WRAPPER( HarryDamage, _HarryDamageFunc );
+
+
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
 	int step = *((int*) 0x91707C);
@@ -667,8 +722,8 @@ static void LateInit()
 {
 	if ( !g_speedrunFriendly ) {
 		// Beast state change.
-		const ETypeInfo* beast = get_type_by_vtable( 0x86C3D0 )->ptleType;
-		const ETypeInfo* flockBeast = get_type_by_vtable( 0x876D28 )->ptleType;
+		const ETypeInfo* beast = get_type_by_vtable( EIBeast::VTABLE )->ptleType;
+		const ETypeInfo* flockBeast = get_type_by_vtable( EIFlockBeast::VTABLE )->ptleType;
 
 		for ( auto p : get_all_types() ) {
 		const ETypeInfo* baseType = p.second.ptleType->m_parent;
@@ -730,18 +785,24 @@ void InjectCode()
 		injector::WriteMemory( 0x8EFF1C, HarryAddHeroic_Custom );  // "HarryAddHeroic" script function.
 
 		// Plants rustling.
-		injector::MakeNOP( 0x5444C6, 10 );
-		injector::MakeCALL( 0x5444C6, PlantRustleBig );
-		injector::MakeNOP( 0x545222, 10 );
-		injector::MakeCALL( 0x545222, PlantRustleSmall );
-		injector::MakeNOP( 0x545507, 10 );
-		injector::MakeCALL( 0x545507, PlantRustleSmall );
+		injector::MakeNOP( 0x5444C6, 10 ); injector::MakeCALL( 0x5444C6, PlantRustleBig );
+		injector::MakeNOP( 0x545222, 10 ); injector::MakeCALL( 0x545222, PlantRustleSmall );
+		injector::MakeNOP( 0x545507, 10 ); injector::MakeCALL( 0x545507, PlantRustleSmall );
 
 		// Projectile shooting.
 		static const uint32_t callLocations[] = { 0x494253, 0x501F12, 0x556723, 0x559B23, 0x559EA5, 0x559FFA, 0x55E0A4, 0x583711, 0x583B77, 0x595867, 0x595960 };
 		for ( int i = 0; i < _countof(callLocations); i++ ) {
 			injector::MakeCALL( callLocations[i], ProjectileShoot );
 		}
+
+		// Harry death.
+		injector::MakeNOP( 0x4B22DB, 6 ); injector::MakeCALL( 0x4B22DB, HarryDeathRepeat );
+		injector::MakeCALL( 0x4CFB29, HarryDeathLand );
+		injector::MakeCALL( 0x4D46DE, HarryDeathLand );
+		injector::MakeCALL( 0x4E6F40, HarryDeathLand );
+
+		// Harry damage (subclassing).
+		injector::WriteMemory( 0x87D3C8, HarryDamage );
 
 
 		// Not working.
@@ -757,12 +818,9 @@ void InjectCode()
 
 		// Shaman purchases & skill unlock (partial).
 		injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );   // EPauseMain_Message() in vtable.
-		injector::MakeRangedNOP( 0x52E9E7, 0x52EA4D );
-		injector::MakeRangedNOP( 0x52ED61, 0x52EDC7 );
-		injector::MakeRangedNOP( 0x52F064, 0x52F0CA );
-		injector::MakeCALL( 0x52E9E7, BoughtSmashStrike );
-		injector::MakeCALL( 0x52ED61, BoughtSuperSling );
-		injector::MakeCALL( 0x52F064, BoughtBreakdance );
+		injector::MakeRangedNOP( 0x52E9E7, 0x52EA4D ); injector::MakeCALL( 0x52E9E7, BoughtSmashStrike );
+		injector::MakeRangedNOP( 0x52ED61, 0x52EDC7 ); injector::MakeCALL( 0x52ED61, BoughtSuperSling );
+		injector::MakeRangedNOP( 0x52F064, 0x52F0CA ); injector::MakeCALL( 0x52F064, BoughtBreakdance );
 	}
 }
 

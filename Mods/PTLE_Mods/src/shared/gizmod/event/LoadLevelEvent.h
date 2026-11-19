@@ -7,6 +7,8 @@
 
 DECLARE_EVENT( LoadLevel );
 
+// Load level event.
+// Fired as soon as Harry walks into a level trigger (right as the fade to black starts).
 class LoadLevelEvent : public Event<ILoadLevelListener>
 {
 public:
