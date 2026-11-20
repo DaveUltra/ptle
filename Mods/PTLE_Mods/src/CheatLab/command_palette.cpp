@@ -8,10 +8,15 @@
 #include "ptle/ERLevel.h"
 #include "ptle/EIHarry.h"
 #include "ptle/EIProjectile.h"
+#include "ptle/EIEvilHarryMM.h"
 #include "ptle/EIEvilHarryP.h"
+#include "ptle/EIEvilHarryS.h"
 #include "ptle/EITreasureIdol.h"
 #include "ptle/EINative.h"
 #include "ptle/EINPCBeast.h"
+#include "ptle/EIPitMonster.h"
+#include "ptle/EICrocs.h"
+#include "ptle/EIFlockBeast.h"
 #include "ptle/math/Vector3f.h"
 #include "ptle/math/Vector4f.h"
 
@@ -415,7 +420,7 @@ static void _die()
 	EIHarry* harry = Gizmod::getHarry();
 	if ( !harry ) return;
 
-	harry->m_healthValue = 0;
+	harry->PerformStateSwitch( 0x37, 0 );
 }
 
 
@@ -778,21 +783,6 @@ static void _tp_to_shaman()
 }
 
 
-// --------------------------------------------------------------------------------
-// Display Harry's position.
-// --------------------------------------------------------------------------------
-static void _display_coords()
-{
-	EIHarry* harry = Gizmod::getHarry();
-	if ( !harry ) return;
-
-	Gizmod::getInstance()->getLogger()->log_printf( "Harry's position : [%f, %f, %f]\n",
-		harry->m_position.x,
-		harry->m_position.y,
-		harry->m_position.z );
-}
-
-
 static void _give_five_idols()
 {
 	Gizmod::getHarry()->m_idolsCollected += 5;
@@ -830,6 +820,51 @@ static void _displaySkeleton()
 }
 
 
+// --------------------------------------------------------------------------------
+// Kill all enemies.
+// --------------------------------------------------------------------------------
+GET_METHOD( 0x418820, void, EIBeast_SetDead, EIBeast* );
+static bool _is_evil_harry( EIBeast* b )
+{
+	return
+		b->GetType() == get_etypeinfo<EIEvilHarryMM>() ||
+		b->GetType() == get_etypeinfo<EIEvilHarryP>() ||
+		b->GetType() == get_etypeinfo<EIEvilHarryS>();
+}
+static void _killAllEnemies()
+{
+	std::vector<EIBeast*> beasts;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EIBeast>( beasts );
+
+	for ( EIBeast* b : beasts ) {
+		// Skip critical : explorers, shamans, NPCs and evil harrys.
+		if ( b->GetType() == get_etypeinfo<EIShaman>() ) continue;
+		if ( b->GetType() == get_etypeinfo<EIExplorer>() ) continue;
+		if ( b->GetType() == get_etypeinfo<EINPCBeast>() ) continue;
+		if ( _is_evil_harry(b) ) continue;
+
+		// TODO: crocs.
+		if ( b->GetType() == get_etypeinfo<EICrocs>() ) continue;
+
+		// Force pits to close.
+		if ( b->GetType() == get_etypeinfo<EIPitMonster>() ) {
+			((EIPitMonster*) b)->m_locked = true;
+		}
+		else if ( is_type_derived_from(b->GetType(), get_etypeinfo<EIFlockBeast>()) ) {
+			//((EIFlockBeast*) b)
+		}
+		// Beasts who cannot die.
+		else if (false) {
+
+		}
+		else {
+			EIBeast_SetDead( b );
+			b->m_flags &= ~1;      // Visible flag.
+		}
+	}
+}
+
+
 //
 // List of available commands / cheats.
 //
@@ -862,9 +897,9 @@ const command_t commands[] =
 	{ "List entities w/ IDs", _list_entities },
 	{ "TP to Explorer",       _tp_to_explorer },
 	{ "TP to Shaman",         _tp_to_shaman },
-	{ "Display Harry Pos",    _display_coords },
 	{ "Give 5 idols",         _give_five_idols },
 	{ "Display Skeletons",    _displaySkeleton },
+	{ "Kill all enemies",     _killAllEnemies },
 };
 
 const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);
@@ -959,6 +994,7 @@ static struct palette_wnd_data_t
 {
 	HWND previous_area_label;
 	HWND idol_count_label;
+	HWND harry_pos_label;
 
 } paletteWndData;
 static HWND hwndPalette;
@@ -1010,6 +1046,7 @@ static void PaletteCreate( HWND hwnd )
 			y += 24;
 		}
 	}
+	if ( i & 1 ) y += 24;
 	y += 14;
 	paletteWndData.previous_area_label = CreateWindow("STATIC", "Previous Area: ",
 		WS_CHILD | WS_VISIBLE,
@@ -1020,11 +1057,16 @@ static void PaletteCreate( HWND hwnd )
 		WS_CHILD | WS_VISIBLE,
 		10, y, 300, 20,
 		hwnd, nullptr, nullptr, nullptr);
+	y += 20;
+	paletteWndData.harry_pos_label = CreateWindow("STATIC", "Harry Position: ",
+		WS_CHILD | WS_VISIBLE,
+		10, y, 300, 20,
+		hwnd, nullptr, nullptr, nullptr);
 }
 
 static void PaletteRefreshInfo( HWND hwnd )
 {
-	char buffer[64];
+	char buffer[128];
 
 	uint32_t* prevAreaPtr = find_previous_area_memory();
 	const char* prefix = "Previous Area: ";
@@ -1034,14 +1076,15 @@ static void PaletteRefreshInfo( HWND hwnd )
 	else {
 		sprintf_s(buffer, "%s0x%.8X (%s)", prefix, *prevAreaPtr, level_get_name(level_get_by_crc(*prevAreaPtr)));
 	}
-
 	SetWindowText(paletteWndData.previous_area_label, buffer);
 
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
 	if ( harry ) {
 		sprintf_s(buffer, "Idols: %d", harry->m_idolsCollected);
-
 		SetWindowText(paletteWndData.idol_count_label, buffer);
+
+		sprintf_s(buffer, "Harry's position: [%.3f  %.3f  %.3f]", harry->m_position.x, harry->m_position.y, harry->m_position.z);
+		SetWindowText(paletteWndData.harry_pos_label, buffer);
 	}
 }
 
@@ -1069,7 +1112,7 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 		(*itemSwapPtr) = !(*itemSwapPtr);
 	}
 	else if ( id >= ID_SKILLS && id < ID_SKILLS+6 ) {
-		EIHarry* harry = *((EIHarry**) 0x917034);
+		EIHarry* harry = Gizmod::getHarry();
 		if ( harry ) {
 			switch ( id - ID_SKILLS ) {
 			case 0: harry->m_risingStrike = !harry->m_risingStrike; break;
@@ -1115,7 +1158,7 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 static void PaletteUpdateMenuChecks( HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
 	if ( HIWORD( wparam ) & MF_POPUP ) {
-		EIHarry* harry = *((EIHarry**) 0x917034);
+		EIHarry* harry = Gizmod::getHarry();
 		ItemStruct* items = (ItemStruct*) 0x8EEB90;
 		HMENU subMenu = GetSubMenu( (HMENU) lparam, LOWORD(wparam) );
 
