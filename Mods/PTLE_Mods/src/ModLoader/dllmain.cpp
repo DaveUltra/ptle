@@ -619,11 +619,6 @@ static void __stdcall _HarryDamageFunc( EIHarry* harry, float damage, EInstance*
 
 	if ( event.isCancelled() ) return;
 
-	log_printf(
-		"Harry damage : damage=%f, source=%s, flags=0x%x, direction=(%f,%f,%f), force=%f, param7=%d\n",
-		damage, source ? source->GetTypeName() : "<none>", flags,
-		direction->x, direction->y, direction->z, force, param7 );
-
 	EIHarry_OnHit( harry, damage, source, flags, direction, force, param7 );
 	//harry->OnHit( damage, source, flags, direction, force, param7 );
 }
