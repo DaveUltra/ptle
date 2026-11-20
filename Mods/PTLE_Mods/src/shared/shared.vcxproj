@@ -152,6 +152,7 @@
     <ClInclude Include="ptle\EIQuicksandPatch.h" />
     <ClInclude Include="ptle\EIResetPlane.h" />
     <ClInclude Include="ptle\EIScorps.h" />
+    <ClInclude Include="ptle\EIShadowSpot.h" />
     <ClInclude Include="ptle\EISpinja.h" />
     <ClInclude Include="ptle\EItemBase.h" />
     <ClInclude Include="ptle\EItemCanteen.h" />

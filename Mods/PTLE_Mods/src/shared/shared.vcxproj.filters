@@ -192,6 +192,7 @@
     <ClInclude Include="ptle\EItemPickaxes.h" />
     <ClInclude Include="gizmod\event\HarryDeathEvent.h" />
     <ClInclude Include="gizmod\event\HarryDamageEvent.h" />
+    <ClInclude Include="ptle\EIShadowSpot.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

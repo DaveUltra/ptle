@@ -3,6 +3,7 @@
 #include "EIBushNinja.h"
 #include "EICameraBossPusca.h"
 #include "EICameraLook.h"
+#include "EICrocs.h"
 #include "EIEffector.h"
 #include "EIEvilHarryMM.h"
 #include "EIEvilHarryP.h"
@@ -15,6 +16,7 @@
 #include "EIMegaMonkeyParent.h"
 #include "EINative.h"
 #include "EINPCBeast.h"
+#include "EIPitMonster.h"
 #include "EIPlant.h"
 #include "EIPlayerMonkey.h"
 #include "EIPlayerPenguin.h"
@@ -24,6 +26,7 @@
 #include "EIProjectile.h"
 #include "EIPusca.h"
 #include "EIPuscaMinion.h"
+#include "EIShadowSpot.h"
 #include "EIShaman.h"
 #include "EISnowBowler.h"
 #include "EISnowScarab.h"
@@ -90,6 +93,7 @@ CHECK_TYPE_SIZE( EInstance,          0x64 );
 CHECK_TYPE_SIZE( EILight,            0x7C );
 CHECK_TYPE_SIZE( EIPointLight,       0x94 );
 CHECK_TYPE_SIZE( EIGameInstance,     0xB4 );
+CHECK_TYPE_SIZE( EIShadowSpot,       0x134 );
 CHECK_TYPE_SIZE( EICamera,           0x130 );
 CHECK_TYPE_SIZE( EICameraPit,        0x140 );
 CHECK_TYPE_SIZE( EICameraLook,       0x1A0 );
@@ -117,6 +121,7 @@ CHECK_TYPE_SIZE( EINPCBeast,         0x730 );
 CHECK_TYPE_SIZE( EIPuscaMinion,      0x730 );
 CHECK_TYPE_SIZE( EINative,           0x740 );
 CHECK_TYPE_SIZE( EIMegaMonkeyChild,  0x760 );
+CHECK_TYPE_SIZE( EIPitMonster,       0x760 );
 CHECK_TYPE_SIZE( EIExplorer,         0x770 );
 CHECK_TYPE_SIZE( EIHowlerMonkey,     0x790 );
 CHECK_TYPE_SIZE( EIMegaMonkeyParent, 0x7C0 );
@@ -127,6 +132,7 @@ CHECK_TYPE_SIZE( EIStClair,          0x7F0 );
 CHECK_TYPE_SIZE( EIBushNinja,        0x850 );
 CHECK_TYPE_SIZE( EISpinja,           0x8B0 );
 CHECK_TYPE_SIZE( EIEvilHarryMM,      0x8B0 );
+CHECK_TYPE_SIZE( EICrocs,            0x8E0 );
 CHECK_TYPE_SIZE( EIEvilHarryP,       0x970 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );
 CHECK_TYPE_SIZE( EResource,          0x14 );

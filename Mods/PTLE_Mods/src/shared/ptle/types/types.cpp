@@ -43,6 +43,7 @@
 #include "ptle/EIQuicksandPatch.h"
 #include "ptle/EIResetPlane.h"
 #include "ptle/EIScorps.h"
+#include "ptle/EIShadowSpot.h"
 #include "ptle/EIShaman.h"
 #include "ptle/EISnowBowler.h"
 #include "ptle/EISnowScarab.h"
@@ -207,6 +208,7 @@ void register_types()
 	register_type<EIQuicksandPatch>();
 	register_type<EIResetPlane>();
 	register_type<EIScorps>();
+	register_type<EIShadowSpot>();
 	register_type<EIShaman>();
 	register_type<EISnowBowler>();
 	register_type<EISnowScarab>();

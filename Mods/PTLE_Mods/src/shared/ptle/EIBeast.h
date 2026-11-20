@@ -101,7 +101,7 @@ public:
 	virtual void func_unknown66();
 	virtual void func_unknown67();
 	virtual void func_unknown68();
-	virtual void func_unknown69();
+	virtual int GetBossHealth();
 	virtual void func_unknown70();
 	virtual void EnterState();
 	virtual void func_unknown71();
@@ -113,4 +113,24 @@ public:
 	virtual void SetPositionOnGround();
 	virtual void DeserializePart1( void* );
 	virtual void DeserializePart2();
+
+	virtual void func_unknown72();
+	virtual bool func_unknown73();
+	virtual bool func_unknown74();
+
+	virtual bool Cond_HarryLookingAway();
+	virtual bool func_unknown75();
+	virtual bool func_unknown76();
+	virtual bool Cond_IsAnimationDone();
+	virtual bool Cond_WaitASec();
+	virtual bool Cond_HitByUnknown0();
+	virtual bool Cond_HitByUnknown1();
+	virtual bool Cond_HitByUnknown2();
+	virtual bool func_unknown77();
+	virtual bool Cond_IsPlayerInRange();
+	virtual bool Cond_IsPlayerNotInRange();
+	virtual bool func_unknown78();
+	virtual bool func_unknown79();
+	virtual bool Cond_IsTargetInRange();
+	virtual bool Cond_IsTargetNotInRange();
 };

@@ -13,6 +13,13 @@ class Vector4f;
 class Matrix4f;
 
 
+struct OverlapStruct
+{
+	uint32_t m_flags;
+	int padding[2];
+	class EInstance* m_other;
+};
+
 class EInstance : public EStorable
 {
 public:
@@ -55,8 +62,8 @@ public:
 	virtual void func_unknown3();
 	virtual void func_unknown4(Matrix4f*);
 	virtual int func_unknown5();
-	virtual bool func_unknown6(void*, Vector3f*, Vector3f*, uint32_t);
-	virtual bool func_unknown7(void*, Vector3f*, Vector3f*, float, int);
+	virtual bool OverlapRelated0(OverlapStruct*, Vector3f*, Vector3f*, uint32_t);
+	virtual bool OverlapRelated1(OverlapStruct*, Vector3f*, Vector3f*, float, int);
 	virtual bool func_unknown8();
 	virtual void func_unknown9(Vector3f*, float*, int*);
 	virtual void func_unknown10();

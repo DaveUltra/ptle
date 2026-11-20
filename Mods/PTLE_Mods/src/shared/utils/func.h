@@ -8,7 +8,7 @@
 
 // Create a function pointer to a known method (member function).
 #define GET_METHOD( addr, rettype, name, ... ) \
-	static rettype (__thiscall *name)(__VA_ARGS__) = reinterpret_cast<rettype(__thiscall *)(__VA_ARGS__)>(addr)
+	static rettype (__thiscall *const name)(__VA_ARGS__) = reinterpret_cast<rettype(__thiscall *)(__VA_ARGS__)>(addr)
 
 
 // Make a custom function compatible with the __thiscall convention.
