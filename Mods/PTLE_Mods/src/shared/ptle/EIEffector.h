@@ -37,6 +37,4 @@ public:
 
 	EInstance* unknown5;
 	Vector3f m_scale;
-
-	char padding7[0x0C];
 };

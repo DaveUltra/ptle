@@ -55,6 +55,4 @@ public:
 		/// - in MoI, he'll throw one then two at phase 3 and 4
 		/// - in Crystal Cavern, he always throws two.
 	bool m_throwingTwoTNT;
-
-	char padding12[0xB];
 };

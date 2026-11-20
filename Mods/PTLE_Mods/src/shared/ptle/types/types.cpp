@@ -4,6 +4,7 @@
 
 #include "ptle/EIBats.h"
 #include "ptle/EIBeast.h"
+#include "ptle/EIBezierSpline.h"
 #include "ptle/EIBreakable.h"
 #include "ptle/EIBushNinja.h"
 #include "ptle/EIButterfly.h"
@@ -15,12 +16,16 @@
 #include "ptle/EIEvilHarryP.h"
 #include "ptle/EIEvilHarryS.h"
 #include "ptle/EIExplorer.h"
+#include "ptle/EIEyeballs.h"
 #include "ptle/EIGamePlatform.h"
+#include "ptle/EIGassregion.h"
 #include "ptle/EIHarry.h"
 #include "ptle/EIHavokBreakable.h"
+#include "ptle/EIHavokCloth.h"
 #include "ptle/EIHavokVine.h"
 #include "ptle/EIHenchman.h"
 #include "ptle/EIHowlerMonkey.h"
+#include "ptle/EIMarker.h"
 #include "ptle/EIMegaMonkeyChild.h"
 #include "ptle/EIMegaMonkeyParent.h"
 #include "ptle/EIMole.h"
@@ -163,6 +168,7 @@ void register_types()
 	register_type<EIAnimLod>();
 	register_type<EIBats>();
 	register_type<EIBeast>();
+	register_type<EIBezierSpline>();
 	register_type<EIBreakable>();
 	register_type<EIBushNinja>();
 	register_type<EIButterfly>();
@@ -175,13 +181,17 @@ void register_types()
 	register_type<EIEvilHarryP>();
 	register_type<EIEvilHarryS>();
 	register_type<EIExplorer>();
+	register_type<EIEyeballs>();
 	register_type<EIFlockBeast>();
 	register_type<EIGamePlatform>();
+	register_type<EIGassregion>();
 	register_type<EIHarry>();
 	register_type<EIHavokBreakable>();
+	register_type<EIHavokCloth>();
 	register_type<EIHavokVine>();
 	register_type<EIHenchman>();
 	register_type<EIHowlerMonkey>();
+	register_type<EIMarker>();
 	register_type<EIMegaMonkeyChild>();
 	register_type<EIMegaMonkeyParent>();
 	register_type<EIMole>();

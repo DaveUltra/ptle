@@ -125,6 +125,7 @@
     <ClInclude Include="ptle\EHeroicSkill.h" />
     <ClInclude Include="ptle\EIAnimLod.h" />
     <ClInclude Include="ptle\EIBats.h" />
+    <ClInclude Include="ptle\EIBezierSpline.h" />
     <ClInclude Include="ptle\EIBreakable.h" />
     <ClInclude Include="ptle\EIButterfly.h" />
     <ClInclude Include="ptle\EICinematic.h" />
@@ -132,10 +133,14 @@
     <ClInclude Include="ptle\EIElectricEel.h" />
     <ClInclude Include="ptle\EIEvilHarryP.h" />
     <ClInclude Include="ptle\EIEvilHarryS.h" />
+    <ClInclude Include="ptle\EIEyeballs.h" />
     <ClInclude Include="ptle\EIFlockBeast.h" />
     <ClInclude Include="ptle\EIGamePlatform.h" />
+    <ClInclude Include="ptle\EIGassregion.h" />
     <ClInclude Include="ptle\EIHavokBreakable.h" />
+    <ClInclude Include="ptle\EIHavokCloth.h" />
     <ClInclude Include="ptle\EIHavokVine.h" />
+    <ClInclude Include="ptle\EIMarker.h" />
     <ClInclude Include="ptle\EIMole.h" />
     <ClInclude Include="ptle\EINinjaBush.h" />
     <ClInclude Include="ptle\EIPenguinNest.h" />

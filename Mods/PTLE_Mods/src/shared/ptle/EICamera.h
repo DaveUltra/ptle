@@ -11,8 +11,6 @@ public:
 	Vector3f unknown1;
 	Vector3f m_boundsCenter;
 
-	char padding3[0x8];
-
 	Matrix4f m_cameraMatrix;
 
 	float m_boundsSize;

@@ -1,5 +1,6 @@
 #include <stdint.h>
 
+#include "EIBezierSpline.h"
 #include "EIBushNinja.h"
 #include "EICameraBossPusca.h"
 #include "EICameraLook.h"
@@ -8,12 +9,17 @@
 #include "EIEvilHarryMM.h"
 #include "EIEvilHarryP.h"
 #include "EIExplorer.h"
+#include "EIEyeballs.h"
+#include "EIGassregion.h"
 #include "EIHarry.h"
+#include "EIHavokCloth.h"
 #include "EIHavokVine.h"
 #include "EIHenchman.h"
 #include "EIHowlerMonkey.h"
+#include "EIMarker.h"
 #include "EIMegaMonkeyChild.h"
 #include "EIMegaMonkeyParent.h"
+#include "EIMole.h"
 #include "EINative.h"
 #include "EINPCBeast.h"
 #include "EIPitMonster.h"
@@ -93,6 +99,8 @@ CHECK_TYPE_SIZE( EInstance,          0x64 );
 CHECK_TYPE_SIZE( EILight,            0x7C );
 CHECK_TYPE_SIZE( EIPointLight,       0x94 );
 CHECK_TYPE_SIZE( EIGameInstance,     0xB4 );
+CHECK_TYPE_SIZE( EIBezierSpline,     0xDC );
+CHECK_TYPE_SIZE( EIMarker,           0x120 );
 CHECK_TYPE_SIZE( EIShadowSpot,       0x134 );
 CHECK_TYPE_SIZE( EICamera,           0x130 );
 CHECK_TYPE_SIZE( EICameraPit,        0x140 );
@@ -109,13 +117,16 @@ CHECK_TYPE_SIZE( EIHarry,            0x1A20 );
 CHECK_TYPE_SIZE( EIStaticModel,      0x1E0 );
 CHECK_TYPE_SIZE( EIDynamicModel,     0x1E0 );
 CHECK_TYPE_SIZE( EITreasureIdol,     0x210 );
+CHECK_TYPE_SIZE( EIGassregion,       0x220 );
 CHECK_TYPE_SIZE( EIEffector,         0x240 );
 CHECK_TYPE_SIZE( EIPlayerStart,      0x240 );
 CHECK_TYPE_SIZE( EIPlant,            0x260 );
 CHECK_TYPE_SIZE( EIProjectile,       0x280 );
+CHECK_TYPE_SIZE( EIHavokCloth,       0x1D4 );
 CHECK_TYPE_SIZE( EIHavokVine,        0x2B0 );
 CHECK_TYPE_SIZE( EIBeast,            0x6F0 );
 CHECK_TYPE_SIZE( EIShaman,           0x700 );
+CHECK_TYPE_SIZE( EIMole,             0x710 );
 CHECK_TYPE_SIZE( EISnowBowler,       0x720 );
 CHECK_TYPE_SIZE( EINPCBeast,         0x730 );
 CHECK_TYPE_SIZE( EIPuscaMinion,      0x730 );
@@ -123,6 +134,7 @@ CHECK_TYPE_SIZE( EINative,           0x740 );
 CHECK_TYPE_SIZE( EIMegaMonkeyChild,  0x760 );
 CHECK_TYPE_SIZE( EIPitMonster,       0x760 );
 CHECK_TYPE_SIZE( EIExplorer,         0x770 );
+CHECK_TYPE_SIZE( EIEyeballs,         0x770 );
 CHECK_TYPE_SIZE( EIHowlerMonkey,     0x790 );
 CHECK_TYPE_SIZE( EIMegaMonkeyParent, 0x7C0 );
 CHECK_TYPE_SIZE( EISnowScarab,       0x7D0 );

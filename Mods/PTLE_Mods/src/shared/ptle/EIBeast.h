@@ -9,6 +9,8 @@ class EBeastState;
 class EBeastTransition;
 class EBeastStateMachine;
 
+class EIBezierSpline;
+
 
 class EIBeast : public EICharacter
 {
@@ -71,7 +73,7 @@ public:
 	char padding8[0x13];
 
 	float unknown10;
-	class EIBezierSpline* m_bezierSpline;
+	EIBezierSpline* m_bezierSpline;
 	uint32_t m_bezierSplineHash;
 
 	char padding11[0x48];

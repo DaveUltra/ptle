@@ -193,6 +193,11 @@
     <ClInclude Include="gizmod\event\HarryDeathEvent.h" />
     <ClInclude Include="gizmod\event\HarryDamageEvent.h" />
     <ClInclude Include="ptle\EIShadowSpot.h" />
+    <ClInclude Include="ptle\EIBezierSpline.h" />
+    <ClInclude Include="ptle\EIEyeballs.h" />
+    <ClInclude Include="ptle\EIGassregion.h" />
+    <ClInclude Include="ptle\EIHavokCloth.h" />
+    <ClInclude Include="ptle\EIMarker.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />
