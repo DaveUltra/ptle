@@ -46,11 +46,15 @@ GET_FUNC( 0x6F8EC0, uint32_t, HashPath, char* );
 GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
 GET_METHOD( 0x527E50, int,  EIBeast_Deserialize2, EIBeast* );
 
+GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
+
 
 GET_METHOD( 0x5EBA90, void, ScheduleWorldLoad, void*, uint32_t, bool );
 
 GET_FUNC( 0x557840, EIProjectile*, EIProjectile_Create, uint32_t );
 GET_METHOD( 0x559640, void, EIProjectile_Spawn, EIProjectile*, Vector3f*, Vector3f*, EInstance*, float );
+GET_METHOD( 0x559640, void, EIProjectile_Throw, EIProjectile*, Vector3f*, Vector3f*, EICharacter*, float );
+GET_METHOD( 0x559200, void, EIProjectile_HitInstance, EIProjectile*, void* );
 
 
 
@@ -296,6 +300,53 @@ static void _deactivate_effectors( bool enable )
 		injector::WriteMemoryRaw( 0x668943, origBytes, 5, true );
 	}
 }
+
+
+// --------------------------------------------------------------------------------
+// Ender pearl cheat (throw a TNT to teleport).
+// --------------------------------------------------------------------------------
+
+static const EIProjectile* g_enderPearl = 0;
+
+static void __stdcall _projectile_hit_custom( EIProjectile* self, void* p )
+{
+	if ( self == g_enderPearl ) {
+		EIHarry* harry = Gizmod::getHarry();
+		Matrix4f mat = harry->m_transformMatrix;
+		mat.data[3][0] = self->m_worldTransform.data[3][0];
+		mat.data[3][1] = self->m_worldTransform.data[3][1];
+		mat.data[3][2] = self->m_worldTransform.data[3][2];
+
+		EIHarry_Teleport( harry, &mat, false, 1.0F );
+		g_enderPearl = 0;
+	}
+
+	EIProjectile_HitInstance( self, p );
+}
+MAKE_THISCALL_WRAPPER( projectile_hit_custom, _projectile_hit_custom );
+
+static void __stdcall _projectile_throw_custom( EIProjectile* self, Vector3f* pos, Vector3f* dir, EICharacter* source, float accu )
+{
+	g_enderPearl = self;
+
+	EIProjectile_Throw( self, pos, dir, source, accu );
+}
+MAKE_THISCALL_WRAPPER( projectile_throw_custom, _projectile_throw_custom );
+
+static void _ender_pearl( bool enable )
+{
+	static const uint32_t addrsHit[] = { 0x55B23C, 0x55A523, 0x425455 };
+	static const uint32_t addrsThrow[] = { 0x595867, 0x595960 };
+	if ( enable ) {
+		for ( int i = 0; i < _countof(addrsHit); i++ ) injector::MakeCALL( addrsHit[i], projectile_hit_custom );
+		for ( int i = 0; i < _countof(addrsThrow); i++ ) injector::MakeCALL( addrsThrow[i], projectile_throw_custom );
+	}
+	else {
+		for ( int i = 0; i < _countof(addrsHit); i++ ) injector::MakeCALL( addrsHit[i], EIProjectile_HitInstance );
+		for ( int i = 0; i < _countof(addrsThrow); i++ ) injector::MakeCALL( addrsThrow[i], EIProjectile_Throw );
+	}
+}
+
 
 // --------------------------------------------------------------------------------
 // The HUD's life meter (EUIHudLifeMeter, at HUD+0xF8) lays its icons out for the
@@ -880,6 +931,7 @@ const cheat_t cheats[] =
 	{ "All TNT",              _all_tnt },
 	{ "Free Camera",          _free_camera },
 	{ "Deactivate Effectors", _deactivate_effectors },
+	{ "Ender Pearl",          _ender_pearl },
 };
 
 const command_t commands[] =
@@ -951,9 +1003,6 @@ static void init_gotolevels_list()
 //
 
 savepoint_t save_slots[10];
-
-GET_METHOD( 0x60FEA0, void, EICharacter_SetPos, EICharacter*, Vector3f*, bool );
-GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
 
 bool load_saveslot( int i )
 {
@@ -1031,10 +1080,9 @@ static void PaletteCreate( HWND hwnd )
 			WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
 			10 + (i & 1) * (BUTTON_WIDTH+10), y,
 			BUTTON_WIDTH, 22, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
-		if ( i & 1 ) {
-			y += 24;
-		}
+		if ( i & 1 ) y += 24;
 	}
+	if ( i & 1 ) y += 24;
 	y += 14;
 	i = 0;
 	for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
@@ -1042,9 +1090,7 @@ static void PaletteCreate( HWND hwnd )
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 			10 + (i & 1) * (BUTTON_WIDTH+10), y,
 			BUTTON_WIDTH, 22, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
-		if ( i & 1 ) {
-			y += 24;
-		}
+		if ( i & 1 ) y += 24;
 	}
 	if ( i & 1 ) y += 24;
 	y += 14;

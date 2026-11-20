@@ -17,6 +17,7 @@ Additions :
 	- Randomizer : **item rando!** inventory items, abilities and shaman purchases can be shuffled together with each other, and appear at idol locations
 	- CheatLab : Added roll, punch and sneak to the skills tab
 	- CheatLab : Added "Kill all enemies" button. Currently struggles with a few enemies (e.g. snow scarabs, crocs, ...)
+	- CheatLab : Added "Ender Pearl" cheat (Harry gets teleported on TNT hit)
 
 Fixes :
 
