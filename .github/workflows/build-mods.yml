@@ -33,6 +33,7 @@ jobs:
           Rename-Item dist/mods/Randomizer.asi Randomizer.asi.d      # Disable Rando by default.
           Rename-Item dist/mods/CheatLab.asi CheatLab.asi.d          # Disable CheatLab by default.
           Rename-Item dist/mods/TreasureHunt.asi TreasureHunt.asi.d  # Disable TreasureHunt by default.
+          Rename-Item dist/mods/PlayAsAnyone.asi PlayAsAnyone.asi.d  # Disable PlayAsAnyone by default.
           Get-Item Mods/PTLE_Mods/patch/* | Copy-Item -Destination "dist/$($_.Name)"
           Copy-Item Mods/PTLE_Mods/src/ModLoader/config.ini dist/config.ini
           Copy-Item Mods/PTLE_Mods/bin/Release/binkw32.dll dist/binkw32.dll
