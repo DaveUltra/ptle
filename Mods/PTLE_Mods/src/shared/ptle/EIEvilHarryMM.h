@@ -13,6 +13,9 @@ class EIEvilHarryMM : public EIBeast
 {
 public:
 
+	static const uint32_t VTABLE = 0x874688;
+
+
 	int m_bossStage;
 	int unknown2;
 	uint32_t unknown3;

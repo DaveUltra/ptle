@@ -20,8 +20,8 @@ class Gizmod
 public:
 
 	static const uint32_t VERSION_MAJOR = 0;
-	static const uint32_t VERSION_MINOR = 2;
-	static const uint32_t VERSION_PATCH = 1;
+	static const uint32_t VERSION_MINOR = 3;
+	static const uint32_t VERSION_PATCH = 0;
 
 		/// Returns :
 		/// - +2 if plugin was made for a later version.
@@ -56,11 +56,11 @@ public:
 
 
 		/// Util functions.
-	static EIHarry* getHarry();
-	static ERLevel* getLevel();
-	static EUIHud* getHUD();
+	static inline EIHarry* getHarry();
+	static inline ERLevel* getLevel();
+	static inline EUIHud*  getHUD();
 
-	static uint32_t getCurrentLevelCRC();
+	static inline uint32_t getCurrentLevelCRC();
 
 
 private:
@@ -70,5 +70,8 @@ private:
 	SaveManager m_saveManager;
 	GizmodWorld m_world;
 
-	InventoryItem m_inventoryItems[8];
+	InventoryItem m_inventoryItems[9];
 };
+
+
+#include "Gizmod.inl"

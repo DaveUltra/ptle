@@ -7,6 +7,9 @@ class EIPlant : public EIAnimLod
 {
 public:
 
+	static const uint32_t VTABLE = 0x890840;
+
+
 	bool unknown0;
 	bool unknown1;
 	bool unknown2;

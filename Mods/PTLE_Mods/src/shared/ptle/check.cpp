@@ -1,19 +1,28 @@
 #include <stdint.h>
 
+#include "EIBezierSpline.h"
 #include "EIBushNinja.h"
 #include "EICameraBossPusca.h"
 #include "EICameraLook.h"
+#include "EICrocs.h"
 #include "EIEffector.h"
 #include "EIEvilHarryMM.h"
 #include "EIEvilHarryP.h"
 #include "EIExplorer.h"
+#include "EIEyeballs.h"
+#include "EIGassregion.h"
 #include "EIHarry.h"
+#include "EIHavokCloth.h"
+#include "EIHavokVine.h"
 #include "EIHenchman.h"
 #include "EIHowlerMonkey.h"
+#include "EIMarker.h"
 #include "EIMegaMonkeyChild.h"
 #include "EIMegaMonkeyParent.h"
+#include "EIMole.h"
 #include "EINative.h"
 #include "EINPCBeast.h"
+#include "EIPitMonster.h"
 #include "EIPlant.h"
 #include "EIPlayerMonkey.h"
 #include "EIPlayerPenguin.h"
@@ -23,12 +32,15 @@
 #include "EIProjectile.h"
 #include "EIPusca.h"
 #include "EIPuscaMinion.h"
+#include "EIShadowSpot.h"
 #include "EIShaman.h"
 #include "EISnowBowler.h"
 #include "EISnowScarab.h"
+#include "EISpinja.h"
 #include "EIStClair.h"
 #include "EISupai.h"
 #include "EITreasureIdol.h"
+
 #include "ERAnim.h"
 #include "ERCharacter.h"
 #include "ERDataset.h"
@@ -39,7 +51,18 @@
 #include "ERScript.h"
 #include "ERShader.h"
 #include "EScriptContext.h"
+#include "EUIDDMenu.h"
+#include "EUIDDStoreItem.h"
 #include "EUITextIcon.h"
+
+#include "EItemCanteen.h"
+#include "EItemGasMask.h"
+#include "EItemPickaxes.h"
+#include "EItemRaft.h"
+#include "EItemShield.h"
+#include "EItemSling.h"
+#include "EItemTNT.h"
+#include "EItemTorch.h"
 
 
 
@@ -76,6 +99,9 @@ CHECK_TYPE_SIZE( EInstance,          0x64 );
 CHECK_TYPE_SIZE( EILight,            0x7C );
 CHECK_TYPE_SIZE( EIPointLight,       0x94 );
 CHECK_TYPE_SIZE( EIGameInstance,     0xB4 );
+CHECK_TYPE_SIZE( EIBezierSpline,     0xDC );
+CHECK_TYPE_SIZE( EIMarker,           0x120 );
+CHECK_TYPE_SIZE( EIShadowSpot,       0x134 );
 CHECK_TYPE_SIZE( EICamera,           0x130 );
 CHECK_TYPE_SIZE( EICameraPit,        0x140 );
 CHECK_TYPE_SIZE( EICameraLook,       0x1A0 );
@@ -91,18 +117,24 @@ CHECK_TYPE_SIZE( EIHarry,            0x1A20 );
 CHECK_TYPE_SIZE( EIStaticModel,      0x1E0 );
 CHECK_TYPE_SIZE( EIDynamicModel,     0x1E0 );
 CHECK_TYPE_SIZE( EITreasureIdol,     0x210 );
+CHECK_TYPE_SIZE( EIGassregion,       0x220 );
 CHECK_TYPE_SIZE( EIEffector,         0x240 );
 CHECK_TYPE_SIZE( EIPlayerStart,      0x240 );
 CHECK_TYPE_SIZE( EIPlant,            0x260 );
 CHECK_TYPE_SIZE( EIProjectile,       0x280 );
+CHECK_TYPE_SIZE( EIHavokCloth,       0x1D4 );
+CHECK_TYPE_SIZE( EIHavokVine,        0x2B0 );
 CHECK_TYPE_SIZE( EIBeast,            0x6F0 );
 CHECK_TYPE_SIZE( EIShaman,           0x700 );
+CHECK_TYPE_SIZE( EIMole,             0x710 );
 CHECK_TYPE_SIZE( EISnowBowler,       0x720 );
 CHECK_TYPE_SIZE( EINPCBeast,         0x730 );
 CHECK_TYPE_SIZE( EIPuscaMinion,      0x730 );
 CHECK_TYPE_SIZE( EINative,           0x740 );
 CHECK_TYPE_SIZE( EIMegaMonkeyChild,  0x760 );
+CHECK_TYPE_SIZE( EIPitMonster,       0x760 );
 CHECK_TYPE_SIZE( EIExplorer,         0x770 );
+CHECK_TYPE_SIZE( EIEyeballs,         0x770 );
 CHECK_TYPE_SIZE( EIHowlerMonkey,     0x790 );
 CHECK_TYPE_SIZE( EIMegaMonkeyParent, 0x7C0 );
 CHECK_TYPE_SIZE( EISnowScarab,       0x7D0 );
@@ -110,7 +142,9 @@ CHECK_TYPE_SIZE( EIHenchman,         0x7E0 );
 CHECK_TYPE_SIZE( EIPusca,            0x7E0 );
 CHECK_TYPE_SIZE( EIStClair,          0x7F0 );
 CHECK_TYPE_SIZE( EIBushNinja,        0x850 );
+CHECK_TYPE_SIZE( EISpinja,           0x8B0 );
 CHECK_TYPE_SIZE( EIEvilHarryMM,      0x8B0 );
+CHECK_TYPE_SIZE( EICrocs,            0x8E0 );
 CHECK_TYPE_SIZE( EIEvilHarryP,       0x970 );
 CHECK_TYPE_SIZE( EISupai,            0xA00 );
 CHECK_TYPE_SIZE( EResource,          0x14 );
@@ -127,6 +161,18 @@ CHECK_TYPE_SIZE( EScriptContext,     0x890 );
 CHECK_TYPE_SIZE( EUIObjectNode,      0xB0 );
 CHECK_TYPE_SIZE( EUIIcon,            0xE4 );
 CHECK_TYPE_SIZE( EUITextIcon,        0x110 );
+CHECK_TYPE_SIZE( EUIMenu,            0x15C );
+CHECK_TYPE_SIZE( EUIDDStoreItem,     0x19C );
+CHECK_TYPE_SIZE( EUIDDMenu,          0x1A0 );
+CHECK_TYPE_SIZE( EItemBase,          0xA0 );
+CHECK_TYPE_SIZE( EItemCanteen,       0xB0 );
+CHECK_TYPE_SIZE( EItemGasMask,       0xB0 );
+CHECK_TYPE_SIZE( EItemPickaxes,      0xC0 );
+CHECK_TYPE_SIZE( EItemTNT,           0xC0 );
+CHECK_TYPE_SIZE( EItemTorch,         0xC0 );
+CHECK_TYPE_SIZE( EItemRaft,          0x110 );
+CHECK_TYPE_SIZE( EItemSling,         0x140 );
+CHECK_TYPE_SIZE( EItemShield,        0x160 );
 
 
 CHECK_FIELD_OFFSET( EIHarry,        m_breakdance,        0x1914 );
@@ -147,3 +193,5 @@ CHECK_FIELD_OFFSET( ERLevel,        m_entitiesByID,      0x59C );
 
 CHECK_FIELD_OFFSET( EScriptContext, m_scriptStack,       0x24 );
 CHECK_FIELD_OFFSET( EScriptContext, m_currentFunction,   0x884 );
+
+CHECK_FIELD_OFFSET( EItemBase,      m_harry,             0x20 );

@@ -2,10 +2,15 @@
 
 #include "EUIObjectNode.h"
 
+class ERShader;
+
 
 class EUIIcon : public EUIObjectNode
 {
 public:
+
+	static const uint32_t VTABLE = 0x8A65C0;
+
 
 	char padding6[0x08];
 
@@ -13,5 +18,8 @@ public:
 	int m_colorIndex0;
 	int m_colorIndex1;
 
-	char padding7[0x20];
+	char padding7[0x14];
+
+	ERShader* m_shaders[2];
+	float unknown9;
 };

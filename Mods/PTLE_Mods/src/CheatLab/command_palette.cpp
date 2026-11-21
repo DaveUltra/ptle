@@ -4,13 +4,19 @@
 
 #include "injector/injector.hpp"
 
+#include "ptle/EHarryActions.h"
 #include "ptle/ERLevel.h"
 #include "ptle/EIHarry.h"
 #include "ptle/EIProjectile.h"
+#include "ptle/EIEvilHarryMM.h"
 #include "ptle/EIEvilHarryP.h"
+#include "ptle/EIEvilHarryS.h"
 #include "ptle/EITreasureIdol.h"
 #include "ptle/EINative.h"
 #include "ptle/EINPCBeast.h"
+#include "ptle/EIPitMonster.h"
+#include "ptle/EICrocs.h"
+#include "ptle/EIFlockBeast.h"
 #include "ptle/math/Vector3f.h"
 #include "ptle/math/Vector4f.h"
 
@@ -40,13 +46,22 @@ GET_FUNC( 0x6F8EC0, uint32_t, HashPath, char* );
 GET_METHOD( 0x412850, void, EIBeast_LoadBeastAsset, EIBeast* );
 GET_METHOD( 0x527E50, int,  EIBeast_Deserialize2, EIBeast* );
 
+GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
+
 
 GET_METHOD( 0x5EBA90, void, ScheduleWorldLoad, void*, uint32_t, bool );
 
 GET_FUNC( 0x557840, EIProjectile*, EIProjectile_Create, uint32_t );
 GET_METHOD( 0x559640, void, EIProjectile_Spawn, EIProjectile*, Vector3f*, Vector3f*, EInstance*, float );
+GET_METHOD( 0x559640, void, EIProjectile_Throw, EIProjectile*, Vector3f*, Vector3f*, EICharacter*, float );
+GET_METHOD( 0x559200, void, EIProjectile_HitInstance, EIProjectile*, void* );
 
 
+
+static inline ItemStruct* get_global_items()
+{
+	return (ItemStruct*) 0x8EEB90;
+}
 
 static void log_state_machine_info( EBeastStateMachine* sm )
 {
@@ -143,20 +158,21 @@ static void _infinite_jump( bool enable )
 // --------------------------------------------------------------------------------
 // TNT rain.
 // --------------------------------------------------------------------------------
+#include "gizmod/types/Projectile.h"
 static EIProjectile* _do_tnt_rain( uint32_t projectileType )
 {
 	Vector3f pos, dir;
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
+	EIHarry* harry = Gizmod::getHarry();
 
 	for ( int i = -12; i <= 12; i++ ) {
 		for ( int j = -12; j <= 12; j++ ) {
 			dir.x = dir.y = dir.z = 0.0F;
 
-			pos.z = 70.0F;
-			pos.x = j * 16.0F;
-			pos.y = i * 16.0F;
+			pos.z = harry->m_position.z + 70.0F;
+			pos.x = harry->m_position.x + j * 16.0F;
+			pos.y = harry->m_position.y + i * 16.0F;
 
-			EIProjectile* tnt = EIProjectile_Create( 0xBBCAC492 );
+			EIProjectile* tnt = EIProjectile_Create( ProjectileType::TNT_HARRY );
 			EIProjectile_Spawn( tnt, &pos, &dir, harry, 1.0F );
 		}
 	}
@@ -186,7 +202,7 @@ static void _all_tnt( bool enable )
 {
 	if ( enable ) {
 		// mov DWORD PTR [ebp+0x8], BBCAC492
-		uint8_t bytes[] = { 0xC7, 0x45, 0x08, 0x92, 0xC4, 0xCA, 0xBB };
+		const uint8_t bytes[] = { 0xC7, 0x45, 0x08, 0x92, 0xC4, 0xCA, 0xBB };
 		injector::WriteMemoryRaw( 0x55784E, bytes, sizeof(bytes), true );
 	}
 	else {
@@ -287,12 +303,77 @@ static void _deactivate_effectors( bool enable )
 
 
 // --------------------------------------------------------------------------------
+// Ender pearl cheat (throw a TNT to teleport).
+// --------------------------------------------------------------------------------
+
+static const EIProjectile* g_enderPearl = 0;
+
+static void __stdcall _projectile_hit_custom( EIProjectile* self, void* p )
+{
+	if ( self == g_enderPearl ) {
+		EIHarry* harry = Gizmod::getHarry();
+		Matrix4f mat = harry->m_transformMatrix;
+		mat.data[3][0] = self->m_worldTransform.data[3][0];
+		mat.data[3][1] = self->m_worldTransform.data[3][1];
+		mat.data[3][2] = self->m_worldTransform.data[3][2];
+
+		EIHarry_Teleport( harry, &mat, false, 1.0F );
+		g_enderPearl = 0;
+	}
+
+	EIProjectile_HitInstance( self, p );
+}
+MAKE_THISCALL_WRAPPER( projectile_hit_custom, _projectile_hit_custom );
+
+static void __stdcall _projectile_throw_custom( EIProjectile* self, Vector3f* pos, Vector3f* dir, EICharacter* source, float accu )
+{
+	g_enderPearl = self;
+
+	EIProjectile_Throw( self, pos, dir, source, accu );
+}
+MAKE_THISCALL_WRAPPER( projectile_throw_custom, _projectile_throw_custom );
+
+static void _ender_pearl( bool enable )
+{
+	static const uint32_t addrsHit[] = { 0x55B23C, 0x55A523, 0x425455 };
+	static const uint32_t addrsThrow[] = { 0x595867, 0x595960 };
+	if ( enable ) {
+		for ( int i = 0; i < _countof(addrsHit); i++ ) injector::MakeCALL( addrsHit[i], projectile_hit_custom );
+		for ( int i = 0; i < _countof(addrsThrow); i++ ) injector::MakeCALL( addrsThrow[i], projectile_throw_custom );
+	}
+	else {
+		for ( int i = 0; i < _countof(addrsHit); i++ ) injector::MakeCALL( addrsHit[i], EIProjectile_HitInstance );
+		for ( int i = 0; i < _countof(addrsThrow); i++ ) injector::MakeCALL( addrsThrow[i], EIProjectile_Throw );
+	}
+}
+
+
+// --------------------------------------------------------------------------------
+// The HUD's life meter (EUIHudLifeMeter, at HUD+0xF8) lays its icons out for the
+// max health only when it enters the screen : changing the max while it is up
+// leaves the new icons at the middle of the screen. Sending it back to its
+// "hidden" state (+0x124 = 0) with "show" requested (+0x198) makes it lay them
+// out again.
+// --------------------------------------------------------------------------------
+static void _refresh_life_meter()
+{
+	EUIHud* hud = Gizmod::getHUD();
+	if ( !hud ) return;
+
+	uint8_t* meter = *(uint8_t**) ((uint8_t*) hud + 0xF8);
+	if ( !meter || *(uint32_t*) meter != 0x8A04D8 ) return;   // EUIHudLifeMeter vtable.
+
+	*(int*) (meter + 0x124) = 0;
+	*(uint8_t*) (meter + 0x198) = 1;
+}
+
+// --------------------------------------------------------------------------------
 // Give useful items, abilities, and max HP.
 // --------------------------------------------------------------------------------
 static void _give_stuff()
 {
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
-	if ( !harry || !harry->m_itemHotbar ) {
+	EIHarry* harry = Gizmod::getHarry();
+	if ( !harry || !harry->m_inventory ) {
 		log_printf( "Harry's not spawned yet.\n" );
 		return;
 	}
@@ -306,15 +387,16 @@ static void _give_stuff()
 	// Max HP (10).
 	harry->m_healthMax = 10;
 	harry->m_healthValue = 10;
+	_refresh_life_meter();
 
 	// Hotbar.
-	harry->m_itemHotbar[0] = injector::ReadMemory<void*>( 0x8EEC20 );  // Raft.
-	harry->m_itemHotbar[1] = injector::ReadMemory<void*>( 0x8EEBCC );  // Pickaxes.
-	harry->m_itemHotbar[2] = injector::ReadMemory<void*>( 0x8EEBB0 );  // Torch.
-	harry->m_itemHotbar[3] = injector::ReadMemory<void*>( 0x8EEBE8 );  // TNT.
+	harry->m_inventory->m_hotbar[0] = injector::ReadMemory<EItemBase*>( 0x8EEC20 );  // Raft.
+	harry->m_inventory->m_hotbar[1] = injector::ReadMemory<EItemBase*>( 0x8EEBCC );  // Pickaxes.
+	harry->m_inventory->m_hotbar[2] = injector::ReadMemory<EItemBase*>( 0x8EEBB0 );  // Torch.
+	harry->m_inventory->m_hotbar[3] = injector::ReadMemory<EItemBase*>( 0x8EEBE8 );  // TNT.
 
 	// Unlock all items.
-	ItemStruct* items = (ItemStruct*) 0x8EEB90;
+	ItemStruct* items = get_global_items();
 	for ( int i = 0; i < 8; i++ ) {
 		items[i].m_unlocked = 1;
 	}
@@ -330,7 +412,7 @@ static void _give_stuff()
 // --------------------------------------------------------------------------------
 static void _heal()
 {
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
+	EIHarry* harry = Gizmod::getHarry();
 	if ( !harry ) {
 		log_printf( "Harry's not spawned yet.\n" );
 		return;
@@ -345,8 +427,8 @@ static void _heal()
 // --------------------------------------------------------------------------------
 static void _remove_stuff()
 {
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
-	if ( !harry || !harry->m_itemHotbar ) {
+	EIHarry* harry = Gizmod::getHarry();
+	if ( !harry || !harry->m_inventory ) {
 		log_printf( "Harry's not spawned yet.\n" );
 		return;
 	}
@@ -364,13 +446,13 @@ static void _remove_stuff()
 	harry->m_healthValue = 5;
 
 	// Clear hotbar contents.
-	harry->m_itemHotbar[0] = 0;
-	harry->m_itemHotbar[1] = 0;
-	harry->m_itemHotbar[2] = 0;
-	harry->m_itemHotbar[3] = 0;
+	harry->m_inventory->m_hotbar[0] = 0;
+	harry->m_inventory->m_hotbar[1] = 0;
+	harry->m_inventory->m_hotbar[2] = 0;
+	harry->m_inventory->m_hotbar[3] = 0;
 
 	// Remove all items.
-	ItemStruct* items = (ItemStruct*) 0x8EEB90;
+	ItemStruct* items = get_global_items();
 	for ( int i = 0; i < 8; i++ ) {
 		items[i].m_unlocked = 0;
 	}
@@ -386,10 +468,10 @@ static void _remove_stuff()
 // --------------------------------------------------------------------------------
 static void _die()
 {
-	EIHarry* harry = injector::ReadMemory<EIHarry*>( 0x917034 );
+	EIHarry* harry = Gizmod::getHarry();
 	if ( !harry ) return;
 
-	harry->m_healthValue = 0;
+	harry->PerformStateSwitch( 0x37, 0 );
 }
 
 
@@ -403,11 +485,9 @@ static bool no()
 
 static void _spawn_evilharry()
 {
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
+	EIHarry* harry = Gizmod::getHarry();
 
-	const type_info_t* type = get_type_by_vtable( 0x875240 );
-	EIEvilHarryP* evilHarry = instantiate_object<EIEvilHarryP>( type );
+	EIEvilHarryP* evilHarry = instantiate_object<EIEvilHarryP>();
 
 	evilHarry->m_position.x = harry->m_position.x;
 	evilHarry->m_position.y = harry->m_position.y + 15.0F;
@@ -458,8 +538,7 @@ static void _spawn_evilharry()
 // --------------------------------------------------------------------------------
 static EIProjectile* _harry_spawn( uint32_t code )
 {
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
+	EIHarry* harry = Gizmod::getHarry();
 
 	// Disable HUD updates (maybe?)
 	injector::MakeRET( 0x4B0950 );
@@ -473,8 +552,7 @@ static EIProjectile* _harry_spawn( uint32_t code )
 	injector::WriteMemoryRaw( 0x4AEA67, bytes, 10, true );
 
 	// Instantiate a new Harry.
-	const type_info_t* type = get_type_by_vtable( 0x87D300 );
-	EIHarry* newHarry = instantiate_object<EIHarry>( type );
+	EIHarry* newHarry = instantiate_object<EIHarry>();
 
 	// Init.
 	{
@@ -489,7 +567,7 @@ static EIProjectile* _harry_spawn( uint32_t code )
 		AddToWorld( harry->m_world, newHarry );
 		newHarry->m_world = harry->m_world;
 
-		newHarry->m_itemHotbar = harry->m_itemHotbar;
+		newHarry->m_inventory = harry->m_inventory;
 		//*(((uint8_t*) newHarry) + 0x3e3) = false;
 	}
 
@@ -502,11 +580,9 @@ static EIProjectile* _harry_spawn( uint32_t code )
 // --------------------------------------------------------------------------------
 static void _netiv_spawn()
 {
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
+	EIHarry* harry = Gizmod::getHarry();
 
-	const type_info_t* type = get_type_by_vtable( 0x88AFE8 );
-	EINative* native = instantiate_object<EINative>( type );
+	EINative* native = instantiate_object<EINative>();
 
 	native->m_position.x = harry->m_position.x;
 	native->m_position.y = harry->m_position.y;
@@ -542,11 +618,9 @@ static void _netiv_spawn()
 // --------------------------------------------------------------------------------
 static void _micay_spawn()
 {
-	EIHarry** harryPtr = ((EIHarry**) 0x917034);
-	EIHarry* harry = *harryPtr;
+	EIHarry* harry = Gizmod::getHarry();
 
-	const type_info_t* type = get_type_by_vtable( 0x88B868 );
-	EINPCBeast* native = instantiate_object<EINPCBeast>( type );
+	EINPCBeast* native = instantiate_object<EINPCBeast>();
 
 	native->m_position.x = harry->m_position.x;
 	native->m_position.y = harry->m_position.y;
@@ -580,10 +654,9 @@ static void _micay_spawn()
 // --------------------------------------------------------------------------------
 static void _idol_spawn()
 {
-	const type_info_t* type = get_type_by_vtable( 0x89A2F8 );
-	EITreasureIdol* idol = instantiate_object<EITreasureIdol>( type );
+	EITreasureIdol* idol = instantiate_object<EITreasureIdol>();
 
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
 
 	Vector3f pos = { 0, 0, 0 };
 	Vector4f rot = { 0, 0, 0, 1 };
@@ -655,9 +728,9 @@ static void _log_children( EUIObjectNode* obj, int depth )
 	}
 	buf[i] = 0;
 
-	for ( LinkedListElem* e = obj->m_children.m_iterateFirst; e != 0; e = e->m_ptr1 ) {
+	for ( LinkedListElem* e = obj->m_children.m_iterateFirst; e != 0; e = e->m_next ) {
 		EUIObjectNode* c = (EUIObjectNode*) e->m_data;
-		EUITextIcon* t = type_cast<EUITextIcon>( c, get_type_by_vtable(0x8A64B0) );
+		EUITextIcon* t = type_cast<EUITextIcon>( c );
 		if ( t ) {
 			sprintf_s( buf + i, sizeof(buf) - i, "- %s (0x%.8X) \"%ls\"\n", c->GetTypeName(), c, *t->m_text );
 		}
@@ -725,30 +798,10 @@ MAKE_THISCALL_WRAPPER( ExplorerTick, _ExplorerTick );
 
 GET_METHOD( 0x4B55F0, void, EIHarry_Tp, EIHarry*, Matrix4f*, bool, float );
 
-static void _explorer_tracker()
-{
-	static bool non = false;
-	if ( !non ) {
-		non = true;
-
-		// Patch tick function.
-		injector::WriteMemory( 0x87642C, ExplorerTick );
-
-		// Display explorer state machine.
-		void* dummy = (void*) (0x876400);
-		EBeastStateMachine* sm = ((EIBeast*)(&dummy))->GetStateMachine();
-		log_state_machine_info( sm );
-	}
-
-	Matrix4f mat = m;
-	mat.data[3][2] += 5.0F;
-	EIHarry_Tp(Gizmod::getHarry(), &mat, false, 1.0F);
-}
-
 static void _tp_to_explorer()
 {
-	std::vector<EIBeast*> expl;
-	Gizmod::getInstance()->getWorld()->getEntitiesOfType( expl, get_type_by_vtable(0x876400)->ptleType );
+	std::vector<EIExplorer*> expl;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EIExplorer>( expl );
 
 	if (!expl.empty()) {
 		Matrix4f mat = expl[0]->m_transformMatrix;
@@ -764,10 +817,11 @@ static void _tp_to_explorer()
 // --------------------------------------------------------------------------------
 // Teleport to shaman.
 // --------------------------------------------------------------------------------
+#include "ptle/EIShaman.h"
 static void _tp_to_shaman()
 {
-	std::vector<EIBeast*> shams;
-	Gizmod::getInstance()->getWorld()->getEntitiesOfType( shams, get_type_by_vtable(0x896C10)->ptleType );
+	std::vector<EIShaman*> shams;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EIShaman>( shams );
 
 	if (!shams.empty()) {
 		Matrix4f mat = shams[0]->m_transformMatrix;
@@ -780,25 +834,87 @@ static void _tp_to_shaman()
 }
 
 
-// --------------------------------------------------------------------------------
-// Display Harry's position.
-// --------------------------------------------------------------------------------
-static void _display_coords()
-{
-	EIHarry* harry = Gizmod::getHarry();
-	if ( !harry ) return;
-
-	Gizmod::getInstance()->getLogger()->log_printf( "Harry's position : [%f, %f, %f]\n",
-		harry->m_position.x,
-		harry->m_position.y,
-		harry->m_position.z );
-}
-
-
 static void _give_five_idols()
 {
 	Gizmod::getHarry()->m_idolsCollected += 5;
 }
+
+
+#include "ptle/ERCharacter.h"
+#include <set>
+static void _displayBone(ERCharacter* ch, CharacterBoneInfo* bone, int myIndex = 0, int r = 0)
+{
+	Logger* logger = Gizmod::getInstance()->getLogger();
+	logger->log_printf( "%*s- %d : %s\n", r, "", myIndex, bone->m_name );
+
+	for ( int i = 0; i < bone->m_childBoneIndices.m_size; i++ ) {
+		int index = ((int*) bone->m_childBoneIndices.m_data)[i];
+		_displayBone( ch, &ch->m_boneList[index], index, r + 1 );
+	}
+}
+static void _displaySkeleton()
+{
+	std::vector<EICharacter*> characters;
+	std::set<ERCharacter*> charTypes;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EICharacter>( characters );
+
+	for ( EICharacter* charInst : characters ) {
+		ERCharacter* ch = charInst->m_animController.m_characterResource;
+		charTypes.insert( ch );
+	}
+
+	Logger* logger = Gizmod::getInstance()->getLogger();
+	for ( ERCharacter* ch : charTypes ) {
+		logger->log_printf( "\nFound %s!\n", ch->m_name );
+		_displayBone( ch, &ch->m_boneList[0] );
+	}
+}
+
+
+// --------------------------------------------------------------------------------
+// Kill all enemies.
+// --------------------------------------------------------------------------------
+GET_METHOD( 0x418820, void, EIBeast_SetDead, EIBeast* );
+static bool _is_evil_harry( EIBeast* b )
+{
+	return
+		b->GetType() == get_etypeinfo<EIEvilHarryMM>() ||
+		b->GetType() == get_etypeinfo<EIEvilHarryP>() ||
+		b->GetType() == get_etypeinfo<EIEvilHarryS>();
+}
+static void _killAllEnemies()
+{
+	std::vector<EIBeast*> beasts;
+	Gizmod::getInstance()->getWorld()->getEntitiesOfType<EIBeast>( beasts );
+
+	for ( EIBeast* b : beasts ) {
+		// Skip critical : explorers, shamans, NPCs and evil harrys.
+		if ( b->GetType() == get_etypeinfo<EIShaman>() ) continue;
+		if ( b->GetType() == get_etypeinfo<EIExplorer>() ) continue;
+		if ( b->GetType() == get_etypeinfo<EINPCBeast>() ) continue;
+		if ( _is_evil_harry(b) ) continue;
+
+		// TODO: crocs.
+		if ( b->GetType() == get_etypeinfo<EICrocs>() ) continue;
+
+		// Force pits to close.
+		if ( b->GetType() == get_etypeinfo<EIPitMonster>() ) {
+			((EIPitMonster*) b)->m_locked = true;
+		}
+		else if ( is_type_derived_from(b->GetType(), get_etypeinfo<EIFlockBeast>()) ) {
+			//((EIFlockBeast*) b)
+		}
+		// Beasts who cannot die.
+		else if (false) {
+
+		}
+		else {
+			EIBeast_SetDead( b );
+			b->m_flags &= ~1;      // Visible flag.
+		}
+	}
+}
+
 
 //
 // List of available commands / cheats.
@@ -815,6 +931,7 @@ const cheat_t cheats[] =
 	{ "All TNT",              _all_tnt },
 	{ "Free Camera",          _free_camera },
 	{ "Deactivate Effectors", _deactivate_effectors },
+	{ "Ender Pearl",          _ender_pearl },
 };
 
 const command_t commands[] =
@@ -832,8 +949,9 @@ const command_t commands[] =
 	{ "List entities w/ IDs", _list_entities },
 	{ "TP to Explorer",       _tp_to_explorer },
 	{ "TP to Shaman",         _tp_to_shaman },
-	{ "Display Harry Pos",    _display_coords },
 	{ "Give 5 idols",         _give_five_idols },
+	{ "Display Skeletons",    _displaySkeleton },
+	{ "Kill all enemies",     _killAllEnemies },
 };
 
 const int NUM_CHEATS = sizeof(cheats) / sizeof(cheat_t);
@@ -886,9 +1004,6 @@ static void init_gotolevels_list()
 
 savepoint_t save_slots[10];
 
-GET_METHOD( 0x60FEA0, void, EICharacter_SetPos, EICharacter*, Vector3f*, bool );
-GET_METHOD( 0x4B55F0, void, EIHarry_Teleport, EIHarry*, Matrix4f*, bool, float );
-
 bool load_saveslot( int i )
 {
 	if ( save_slots[i].levelID == -1 ) {
@@ -897,7 +1012,7 @@ bool load_saveslot( int i )
 	}
 
 	//ScheduleWorldLoad( (void*) 0x917028, levels_game.levels[id - 400].crc, false );
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
 
 	EIHarry_Teleport( harry, &save_slots[i].playerTransform, false, 1.0F );
 
@@ -907,8 +1022,10 @@ bool load_saveslot( int i )
 
 void save_saveslot( int i )
 {
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
+	uint32_t levelCRC = Gizmod::getCurrentLevelCRC();
 
+	save_slots[i].levelID = levelCRC;
 	save_slots[i].playerTransform = harry->m_rigidBodyMatrix;
 
 	log_printf( "Saved state %d.\n", i );
@@ -926,6 +1043,7 @@ static struct palette_wnd_data_t
 {
 	HWND previous_area_label;
 	HWND idol_count_label;
+	HWND harry_pos_label;
 
 } paletteWndData;
 static HWND hwndPalette;
@@ -962,10 +1080,9 @@ static void PaletteCreate( HWND hwnd )
 			WS_CHILD | WS_VISIBLE | BS_AUTOCHECKBOX | BS_PUSHLIKE,
 			10 + (i & 1) * (BUTTON_WIDTH+10), y,
 			BUTTON_WIDTH, 22, hwnd, (HMENU) (ID_CHEATS + i), 0, 0 );
-		if ( i & 1 ) {
-			y += 24;
-		}
+		if ( i & 1 ) y += 24;
 	}
+	if ( i & 1 ) y += 24;
 	y += 14;
 	i = 0;
 	for ( const command_t* cmd = commands; cmd != commands + NUM_COMMANDS; cmd++, i++ ) {
@@ -973,10 +1090,9 @@ static void PaletteCreate( HWND hwnd )
 			WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON,
 			10 + (i & 1) * (BUTTON_WIDTH+10), y,
 			BUTTON_WIDTH, 22, hwnd, (HMENU) (ID_COMMANDS + i), 0, 0 );
-		if ( i & 1 ) {
-			y += 24;
-		}
+		if ( i & 1 ) y += 24;
 	}
+	if ( i & 1 ) y += 24;
 	y += 14;
 	paletteWndData.previous_area_label = CreateWindow("STATIC", "Previous Area: ",
 		WS_CHILD | WS_VISIBLE,
@@ -987,11 +1103,16 @@ static void PaletteCreate( HWND hwnd )
 		WS_CHILD | WS_VISIBLE,
 		10, y, 300, 20,
 		hwnd, nullptr, nullptr, nullptr);
+	y += 20;
+	paletteWndData.harry_pos_label = CreateWindow("STATIC", "Harry Position: ",
+		WS_CHILD | WS_VISIBLE,
+		10, y, 300, 20,
+		hwnd, nullptr, nullptr, nullptr);
 }
 
 static void PaletteRefreshInfo( HWND hwnd )
 {
-	char buffer[64];
+	char buffer[128];
 
 	uint32_t* prevAreaPtr = find_previous_area_memory();
 	const char* prefix = "Previous Area: ";
@@ -1001,14 +1122,15 @@ static void PaletteRefreshInfo( HWND hwnd )
 	else {
 		sprintf_s(buffer, "%s0x%.8X (%s)", prefix, *prevAreaPtr, level_get_name(level_get_by_crc(*prevAreaPtr)));
 	}
-
 	SetWindowText(paletteWndData.previous_area_label, buffer);
 
-	EIHarry* harry = *((EIHarry**) 0x917034);
+	EIHarry* harry = Gizmod::getHarry();
 	if ( harry ) {
 		sprintf_s(buffer, "Idols: %d", harry->m_idolsCollected);
-
 		SetWindowText(paletteWndData.idol_count_label, buffer);
+
+		sprintf_s(buffer, "Harry's position: [%.3f  %.3f  %.3f]", harry->m_position.x, harry->m_position.y, harry->m_position.z);
+		SetWindowText(paletteWndData.harry_pos_label, buffer);
 	}
 }
 
@@ -1036,7 +1158,7 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 		(*itemSwapPtr) = !(*itemSwapPtr);
 	}
 	else if ( id >= ID_SKILLS && id < ID_SKILLS+6 ) {
-		EIHarry* harry = *((EIHarry**) 0x917034);
+		EIHarry* harry = Gizmod::getHarry();
 		if ( harry ) {
 			switch ( id - ID_SKILLS ) {
 			case 0: harry->m_risingStrike = !harry->m_risingStrike; break;
@@ -1046,6 +1168,22 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 			case 4: harry->m_superSling   = !harry->m_superSling;   break;
 			case 5: harry->m_breakdance   = !harry->m_breakdance;   break;
 			}
+		}
+	}
+	else if (id >= ID_SKILLS + 6 && id < ID_SKILLS + 9) {
+		switch (id - (ID_SKILLS + 6)) {
+		case 0:
+			if ( EHarryActions::isActionEnabled(EHarryActions::ATTACK) ) { EHarryActions::disableAction(EHarryActions::ATTACK); }
+			else { EHarryActions::enableAction(EHarryActions::ATTACK); }
+			break;
+		case 1:
+			if ( EHarryActions::isActionEnabled(EHarryActions::CROUCH) ) { EHarryActions::disableAction(EHarryActions::CROUCH); }
+			else { EHarryActions::enableAction(EHarryActions::CROUCH); }
+			break;
+		case 2:
+			if ( EHarryActions::isActionEnabled(EHarryActions::SNEAK) ) { EHarryActions::disableAction(EHarryActions::SNEAK); }
+			else { EHarryActions::enableAction(EHarryActions::SNEAK); }
+			break;
 		}
 	}
 	else if ( id >= ID_INGAMECHEAT && id < ID_INGAMECHEAT+3 ) {
@@ -1066,7 +1204,7 @@ static void PaletteCommand( HWND hwnd, WPARAM id )
 static void PaletteUpdateMenuChecks( HWND hwnd, WPARAM wparam, LPARAM lparam )
 {
 	if ( HIWORD( wparam ) & MF_POPUP ) {
-		EIHarry* harry = *((EIHarry**) 0x917034);
+		EIHarry* harry = Gizmod::getHarry();
 		ItemStruct* items = (ItemStruct*) 0x8EEB90;
 		HMENU subMenu = GetSubMenu( (HMENU) lparam, LOWORD(wparam) );
 
@@ -1081,12 +1219,17 @@ static void PaletteUpdateMenuChecks( HWND hwnd, WPARAM wparam, LPARAM lparam )
 			for ( int i = 0; i < 6; i++ ) {
 				EnableMenuItem( subMenu, ID_SKILLS + i, harry != 0 ? MF_ENABLED : MF_GRAYED );
 			}
+
 			CheckMenuItem( subMenu, ID_SKILLS,   (harry != 0 && harry->m_risingStrike) ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+1, (harry != 0 && harry->m_smashStrike)  ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+2, (harry != 0 && harry->m_heroicDash)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+3, (harry != 0 && harry->m_heroicDive)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+4, (harry != 0 && harry->m_superSling)   ? MF_CHECKED : MF_UNCHECKED );
 			CheckMenuItem( subMenu, ID_SKILLS+5, (harry != 0 && harry->m_breakdance)   ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+6, (EHarryActions::isActionEnabled(EHarryActions::ATTACK)) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+7, (EHarryActions::isActionEnabled(EHarryActions::CROUCH)) ? MF_CHECKED : MF_UNCHECKED );
+			CheckMenuItem( subMenu, ID_SKILLS+8, (EHarryActions::isActionEnabled(EHarryActions::SNEAK))  ? MF_CHECKED : MF_UNCHECKED );
+
 			break;
 		case 3:
 			CheckMenuItem( subMenu, ID_INGAMECHEAT,   *((bool*) 0x90DA18) ? MF_CHECKED : MF_UNCHECKED );
@@ -1205,6 +1348,9 @@ static HMENU create_menu()
 		AppendMenu( skills, MF_STRING, ID_SKILLS+3, "Heroic Dive" );
 		AppendMenu( skills, MF_STRING, ID_SKILLS+4, "Super Sling" );
 		AppendMenu( skills, MF_STRING, ID_SKILLS+5, "Breakdance" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+6, "Punch" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+7, "Roll" );
+		AppendMenu( skills, MF_STRING, ID_SKILLS+8, "Sneak" );
 
 		AppendMenu( menu, MF_POPUP, (UINT_PTR) skills, "Skills" );
 	}

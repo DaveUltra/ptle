@@ -9,18 +9,24 @@ class EUIObjectNode : public EInstance
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A66C0;
+
+
 	LinkedList m_children;
 	EUIObjectNode* m_parent;
-	EUIObjectNode* unknown0;
+	LinkedListElem* m_navigation;
 
-	char padding3[0x0C];
+	uint32_t m_flags;
+	uint32_t m_flags2;
+
+	char padding3[0x04];
 
 	float unknown1;
 	float unknown2;
 	float unknown3;
-	float unknown4;
+	float m_xPos;
 	float unknown5;
-	float unknown6;
+	float m_yPos;
 	float unknown7;
 
 	char padding4[0x0C];

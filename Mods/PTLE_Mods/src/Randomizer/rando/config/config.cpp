@@ -38,6 +38,9 @@ static const config_field_t fields[] =
 	CONFIG_FIELD( itemRandoInventory,    config_field_type_t::BOOLEAN )
 	CONFIG_FIELD( itemRandoIdols,        config_field_type_t::BOOLEAN )
 	CONFIG_FIELD( itemRandoExplorers,    config_field_type_t::BOOLEAN )
+	CONFIG_FIELD( itemRandoHeroicSkills, config_field_type_t::BOOLEAN )
+	CONFIG_FIELD( itemRandoHarryActions, config_field_type_t::BOOLEAN )
+	CONFIG_FIELD( itemRandoNotesSlots,   config_field_type_t::BOOLEAN )
 };
 
 
@@ -81,6 +84,9 @@ RandoConfig::RandoConfig()
 	, itemRandoInventory( false )
 	, itemRandoIdols( false )
 	, itemRandoExplorers( false )
+	, itemRandoHeroicSkills( false )
+	, itemRandoHarryActions( false )
+	, itemRandoNotesSlots( false )
 {
 
 }

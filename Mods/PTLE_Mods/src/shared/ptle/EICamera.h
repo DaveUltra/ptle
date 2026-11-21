@@ -9,13 +9,12 @@ public:
 
 	Vector3f unknown0;
 	Vector3f unknown1;
-	Vector3f unknown2;
+	Vector3f m_boundsCenter;
 
-	char padding3[0x8];
+	Matrix4f m_cameraMatrix;
 
-	Matrix4f unknown3;
-
-	char padding4[0x8];
+	float m_boundsSize;
+	bool unknown3;
 
 	uint32_t unknown4;
 	bool unknown5;

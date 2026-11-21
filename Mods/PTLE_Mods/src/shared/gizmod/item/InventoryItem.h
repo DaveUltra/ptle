@@ -4,11 +4,13 @@
 
 #include "ItemModelsCRC.h"
 
+class EItemBase;
+
 
 struct ItemStruct
 {
 	void (*m_factory)();
-	void* m_object;
+	EItemBase* m_object;
 	const char* m_name;
 	uint32_t m_hash;
 	int unknown0;
@@ -32,6 +34,7 @@ public:
 		RAFT,
 		GAS_MASK,
 		CANTEEN,
+		STINK_BOMB,
 
 		UNKNOWN = -1
 	};

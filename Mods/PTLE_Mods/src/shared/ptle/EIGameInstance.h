@@ -7,6 +7,9 @@ class EIGameInstance : public EInstance
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A5198;
+
+
 	Vector3f unknown0;
 	Vector3f unknown1;
 
@@ -21,7 +24,7 @@ public:
 	virtual void func_unknown31(float, uint32_t);
 	virtual void func_unknown32(float);
 	virtual float func_unknown33();
-	virtual void OnHit(float, EInstance*, uint32_t, Vector3f*, float, int);
+	virtual void OnHit(float damage, EInstance* source, uint32_t flags, Vector3f* direction, float force, void* params);
 	virtual void func_unknown35();
 	virtual void func_unknown36();
 	virtual void func_unknown37();
@@ -37,6 +40,6 @@ public:
 	virtual void func_SetUnknown(uint32_t);
 	virtual void func_unknown46();
 	virtual void func_unknown47();
-	virtual void func_unknown48(float);
+	virtual bool DistanceFade(float distance);
 	virtual void func_unknown49(float*, float*);
 };

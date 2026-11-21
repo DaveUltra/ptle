@@ -16,15 +16,19 @@ class EICharacter : public EIGameInstance
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A5000;
+
+
 	EAnimController m_animController;
 
 	/*-----*/ char padding4[0x4];
 
 	bool m_onGround;
 	Vector4f unused4;
-	int unused5;
-	
+
+	uint32_t m_characterCRC;
 	uint32_t m_modelCRC;
+
 	Vector3f m_position;
 	Vector3f m_rotationEuler;
 	Vector3f m_scale;

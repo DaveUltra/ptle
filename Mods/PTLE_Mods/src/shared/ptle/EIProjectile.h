@@ -5,21 +5,33 @@
 class EResource;
 
 
+struct ProjectileTypeInfo
+{
+	uint32_t m_typeID;
+	/* ... */
+};
+
 class EIProjectile : public EIDynamicModel
 {
 public:
 
+	static const uint32_t VTABLE = 0x893210;
+
+
 	float unknown0;
-	float unknown0_1;
-	float unknown0_2;
+	float m_hitDamage;
+	float m_hitForce;
 	float m_lifetime;
 	bool unknown2;
 	bool unknown3;
 
 	EResource* unknown4;
-	void* m_projectileTypeInfo;
+	ProjectileTypeInfo* m_projectileTypeInfo;
 
-	Vector3f unknown5;
+	uint32_t unknown13;
+	uint32_t unknown14;
+	uint32_t m_hitFlags;
+
 	float unknown6;
 	float unknown7;
 	Vector3f unknown8;

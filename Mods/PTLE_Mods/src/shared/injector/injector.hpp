@@ -289,7 +289,7 @@ struct scoped_unprotect
  *      Writes into memory @addr the content of @value with a sizeof @size
  *      Does memory unprotection if @vp is true
  */
-inline void WriteMemoryRaw(memory_pointer_tr addr, void* value, size_t size, bool vp)
+inline void WriteMemoryRaw(memory_pointer_tr addr, const void* value, size_t size, bool vp)
 {
     scoped_unprotect xprotect(addr, vp? size : 0);
     memcpy(addr.get(), value, size);
@@ -481,6 +481,25 @@ inline memory_pointer_raw MakeJMP(memory_pointer_tr at, memory_pointer_raw dest,
     auto p = GetBranchDestination(at, vp);
     WriteMemory<uint8_t>(at, 0xE9, vp);
     MakeRelativeOffset(at+1, dest, 4, vp);
+    return p;
+}
+
+template<typename T>
+inline memory_pointer_raw MakeJMP(memory_pointer_tr at, T dest, bool vp = true)
+{
+#if !(defined (_M_IX86) || defined (_X86_))
+    dest = plugin::MakeTrampoline(at.as_int(), dest.get());
+#endif
+
+    union {
+        T method;
+        void* func;
+    };
+    method = dest;
+
+    auto p = GetBranchDestination(at, vp);
+    WriteMemory<uint8_t>(at, 0xE9, vp);
+    MakeRelativeOffset(at+1, func, 4, vp);
     return p;
 }
 

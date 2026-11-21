@@ -9,10 +9,12 @@ class EIHenchman : public EIBeast
 {
 public:
 
-	bool unknown2;
-	bool unknown3;
+	static const uint32_t VTABLE = 0x881BE8;
 
-	uint32_t m_modelHash;   // Probably for handheld TNT model.
+
+	bool m_hasSpotlight;
+
+	uint32_t m_spotlightModelHash;
 	uint32_t m_projectileType;
 	float unknown4;
 	uint32_t unknown5;
@@ -29,11 +31,26 @@ public:
 	uint32_t m_boneHand_L;
 	uint32_t unknown7;
 
-	char padding9[0x44];
+	char padding9[0x08];
+
+	bool m_pointReached;
+	bool unused0;
+	bool m_coverObjectDestroyed;
+
+	int m_coverObjectID;
+	int m_desiredCoverObjectID;
+	int m_closestJumpPoint;
+	Vector3f m_jumpPointLocation;
+
+	char padding10[0x10];
+
+	bool m_standing;
+
+	char padding11[0xF];
 
 	Array m_coverObjectInstances;
 
-	EIStaticModel* m_model;
+	EIDynamicModel* m_spotlightModel;
 
-	char padding10[0x04];
+	char padding12[0x04];
 };

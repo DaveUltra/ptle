@@ -2,6 +2,99 @@
 
 #include "ptle/EStorable.h"
 
+#include "ptle/EIBats.h"
+#include "ptle/EIBeast.h"
+#include "ptle/EIBezierSpline.h"
+#include "ptle/EIBreakable.h"
+#include "ptle/EIBushNinja.h"
+#include "ptle/EIButterfly.h"
+#include "ptle/EICinematic.h"
+#include "ptle/EICrocs.h"
+#include "ptle/EIEffector.h"
+#include "ptle/EIElectricEel.h"
+#include "ptle/EIEvilHarryMM.h"
+#include "ptle/EIEvilHarryP.h"
+#include "ptle/EIEvilHarryS.h"
+#include "ptle/EIExplorer.h"
+#include "ptle/EIEyeballs.h"
+#include "ptle/EIGamePlatform.h"
+#include "ptle/EIGassregion.h"
+#include "ptle/EIHarry.h"
+#include "ptle/EIHavokBreakable.h"
+#include "ptle/EIHavokCloth.h"
+#include "ptle/EIHavokVine.h"
+#include "ptle/EIHenchman.h"
+#include "ptle/EIHowlerMonkey.h"
+#include "ptle/EIMarker.h"
+#include "ptle/EIMegaMonkeyChild.h"
+#include "ptle/EIMegaMonkeyParent.h"
+#include "ptle/EIMole.h"
+#include "ptle/EINative.h"
+#include "ptle/EINinjaBush.h"
+#include "ptle/EINPCBeast.h"
+#include "ptle/EIPenguinNest.h"
+#include "ptle/EIPenguins.h"
+#include "ptle/EIPiranha.h"
+#include "ptle/EIPitMonster.h"
+#include "ptle/EIPlant.h"
+#include "ptle/EIPlantNox.h"
+#include "ptle/EIPlayerMonkey.h"
+#include "ptle/EIPlayerPenguin.h"
+#include "ptle/EIPlayerScorpion.h"
+#include "ptle/EIPlayerStart.h"
+#include "ptle/EIPorcupine.h"
+#include "ptle/EIPusca.h"
+#include "ptle/EIPuscaMinion.h"
+#include "ptle/EIQuicksandPatch.h"
+#include "ptle/EIResetPlane.h"
+#include "ptle/EIScorps.h"
+#include "ptle/EIShadowSpot.h"
+#include "ptle/EIShaman.h"
+#include "ptle/EISnowBowler.h"
+#include "ptle/EISnowScarab.h"
+#include "ptle/EISpinja.h"
+#include "ptle/EIStClair.h"
+#include "ptle/EISupai.h"
+#include "ptle/EITreasureIdol.h"
+#include "ptle/EIUpdateRegion.h"
+#include "ptle/EIUserTreasureIdol.h"
+#include "ptle/EIWaterPatch.h"
+#include "ptle/EIWell.h"
+#include "ptle/EIYoYoMonkey.h"
+
+#include "ptle/EResource.h"
+#include "ptle/ERAnim.h"
+#include "ptle/ERCharacter.h"
+#include "ptle/ERDataset.h"
+#include "ptle/ERFont.h"
+#include "ptle/ERLevel.h"
+#include "ptle/ERModel.h"
+#include "ptle/ERParticleType.h"
+#include "ptle/ERScript.h"
+#include "ptle/ERShader.h"
+#include "ptle/ERTexture.h"
+
+#include "ptle/EScriptContext.h"
+#include "ptle/EScriptData.h"
+#include "ptle/ESDAnimation.h"
+#include "ptle/ESDFloat.h"
+#include "ptle/ESDInt.h"
+#include "ptle/ESDModel.h"
+#include "ptle/ESDMatrix.h"
+#include "ptle/ESDParticleType.h"
+#include "ptle/ESDPointer.h"
+#include "ptle/ESDResource.h"
+#include "ptle/ESDScript.h"
+#include "ptle/ESDShader.h"
+#include "ptle/ESDSound.h"
+#include "ptle/ESDString.h"
+#include "ptle/ESDVector.h"
+
+#include "ptle/ESGVFloat.h"
+#include "ptle/ESGVInt.h"
+
+#include "ptle/EUITextIcon.h"
+
 
 static std::map<uint32_t, type_info_t> g_types;
 
@@ -52,87 +145,134 @@ bool is_type_derived_from( const ETypeInfo* type, const ETypeInfo* base )
 }
 
 
-static inline void register_type( uint32_t vtableAddr, uint32_t ptleTypeAddr )
+static inline void register_type(uint32_t vtableAddr, uint32_t ptleTypeAddr)
 {
-	type_info_t t = { (void*) vtableAddr, (const ETypeInfo*) ptleTypeAddr };
+	const type_info_t t = { (void*) vtableAddr, (const ETypeInfo*) ptleTypeAddr };
 	g_types.insert( std::pair<uint32_t, type_info_t>(vtableAddr, t) );
+}
+
+template<class T>
+static inline void register_type()
+{
+	uint32_t dummy = T::VTABLE;
+	const type_info_t t = { (void*) T::VTABLE, ((const EStorable*) &dummy)->GetType() };
+	g_types.insert( std::pair<uint32_t, type_info_t>(dummy, t) );
 }
 
 void register_types()
 {
-	register_type( 0x86B3C8, 0x0090D2FC );   // EIBats
-	register_type( 0x86C3D0, 0x0090D36C );   // EIBeast
-	register_type( 0x86CE50, 0x0090D888 );   // EIBreakable
-	register_type( 0x86D1D8, 0x0090D8C0 );   // EIBushNinja
-	register_type( 0x86D7A0, 0x0090D92C );   // EIButterfly
-	register_type( 0x86DB20, 0x009410E4 );   // EStorable
-	register_type( 0x86E660, 0x0090DA34 );   // EICinematic
-	register_type( 0x86FD18, 0x0090DAC0 );   // EICrocs
-	register_type( 0x873B68, 0x0090F0D0 );   // EIElectricEel
-	register_type( 0x874688, 0x0090F13C );   // EIEvilHarryMM
-	register_type( 0x875240, 0x0090F1A8 );   // EIEvilHarryP
-	register_type( 0x875B30, 0x0090F218 );   // EIEvilHarryS
-	register_type( 0x876400, 0x0090F3E8 );   // EIExplorer
-	register_type( 0x876D28, 0x0090F4C0 );   // EIFlockBeast
-	register_type( 0x8779C0, 0x0090F5D0 );   // EIGamePlatform
-	register_type( 0x87A3D8, 0x0090F9C8 );   // EGamesUI3dScore
-	register_type( 0x87A750, 0x0090F9F4 );   // EGamesUI3dTimer
-	register_type( 0x87D300, 0x0090FBE8 );   // EIHarry
-	register_type( 0x87D618, 0x00910D30 );   // EIPlayer
-	register_type( 0x87FDC0, 0x0090FD78 );   // EIHavokBreakable
-	register_type( 0x881BE8, 0x0090FEB4 );   // EIHenchman
-	register_type( 0x8822D0, 0x00910014 );   // EIHowlerMonkey
-	register_type( 0x889700, 0x00910700 );   // EIMegaMonkeyChild
-	register_type( 0x88A2C0, 0x00910774 );   // EIMegaMonkeyParent
-	register_type( 0x88A668, 0x009107E0 );   // EIMole
-	register_type( 0x88AFE8, 0x009108A0 );   // EINative
-	register_type( 0x88B4F0, 0x00910938 );   // EINinjaBush
-	register_type( 0x88B868, 0x009109A4 );   // EINPCBeast
-	register_type( 0x88E518, 0x00910A7C );   // EIPenguinNest
-	register_type( 0x88E8C8, 0x00910AA8 );   // EIPenguins
-	register_type( 0x88F078, 0x00910B78 );   // EIPiranha
-	register_type( 0x890400, 0x00910C20 );   // EIPitMonster
-	register_type( 0x890840, 0x00910C8C );   // EIPlant
-	register_type( 0x890A40, 0x00910CC4 );   // EIPlantNox
-	register_type( 0x891358, 0x00910E7C );   // EIPlayerMonkey
-	register_type( 0x8916D8, 0x00910EA8 );   // EIPlayerPenguin
-	register_type( 0x891A78, 0x00910ED4 );   // EIPlayerScorpion
-	register_type( 0x8925A8, 0x0091104C );   // EIPorcupine
-	register_type( 0x893210, 0x0091156C );   // EIProjectile
-	register_type( 0x893EA8, 0x00911648 );   // EIPusca
-	register_type( 0x894398, 0x00911820 );   // EIPuscaMinion
-	register_type( 0x894A48, 0x009118BC );   // EIResetPlane
-	register_type( 0x896438, 0x00911CE8 );   // EIScorps
-	register_type( 0x896C10, 0x00911F2C );   // EIShaman
-	register_type( 0x897ED0, 0x00912184 );   // EISnowBowler
-	register_type( 0x898C20, 0x00912298 );   // EISpinja
-	register_type( 0x899130, 0x0091233C );   // EIStClair
-	register_type( 0x8999C8, 0x009123AC );   // EISupai
-	register_type( 0x89A2F8, 0x009124F0 );   // EITreasureIdol
-	register_type( 0x89A420, 0x009124F0 );   // EIUserTreasureIdol
+	register_type<EStorable>();
+	register_type<EInstance>();
+	register_type<EIGameInstance>();
+
+	register_type<EIAnimLod>();
+	register_type<EIBats>();
+	register_type<EIBeast>();
+	register_type<EIBezierSpline>();
+	register_type<EIBreakable>();
+	register_type<EIBushNinja>();
+	register_type<EIButterfly>();
+	register_type<EICharacter>();
+	register_type<EICinematic>();
+	register_type<EICrocs>();
+	register_type<EIEffector>();
+	register_type<EIElectricEel>();
+	register_type<EIEvilHarryMM>();
+	register_type<EIEvilHarryP>();
+	register_type<EIEvilHarryS>();
+	register_type<EIExplorer>();
+	register_type<EIEyeballs>();
+	register_type<EIFlockBeast>();
+	register_type<EIGamePlatform>();
+	register_type<EIGassregion>();
+	register_type<EIHarry>();
+	register_type<EIHavokBreakable>();
+	register_type<EIHavokCloth>();
+	register_type<EIHavokVine>();
+	register_type<EIHenchman>();
+	register_type<EIHowlerMonkey>();
+	register_type<EIMarker>();
+	register_type<EIMegaMonkeyChild>();
+	register_type<EIMegaMonkeyParent>();
+	register_type<EIMole>();
+	register_type<EINative>();
+	register_type<EINinjaBush>();
+	register_type<EINPCBeast>();
+	register_type<EIPenguinNest>();
+	register_type<EIPenguins>();
+	register_type<EIPiranha>();
+	register_type<EIPitMonster>();
+	register_type<EIPlant>();
+	register_type<EIPlantNox>();
+	register_type<EIPlatform>();
+	register_type<EIPlayer>();
+	register_type<EIPlayerBeast>();
+	register_type<EIPlayerMonkey>();
+	register_type<EIPlayerPenguin>();
+	register_type<EIPlayerScorpion>();
+	register_type<EIPlayerStart>();
+	register_type<EIPorcupine>();
+	register_type<EIProjectile>();
+	register_type<EIPusca>();
+	register_type<EIPuscaMinion>();
+	register_type<EIQuicksandPatch>();
+	register_type<EIResetPlane>();
+	register_type<EIScorps>();
+	register_type<EIShadowSpot>();
+	register_type<EIShaman>();
+	register_type<EISnowBowler>();
+	register_type<EISnowScarab>();
+	register_type<EISpinja>();
+	register_type<EIStaticModel>();
+	register_type<EIStClair>();
+	register_type<EISupai>();
+	register_type<EITreasureIdol>();
+	register_type<EIUpdateRegion>();
+	register_type<EIUserTreasureIdol>();
+	register_type<EIWavePatch>();
+	register_type<EIWaterPatch>();
+	register_type<EIWell>();
+	register_type<EIYoYoMonkey>();
+
+	register_type<EResource>();
+	register_type<ERAnim>();
+	register_type<ERCharacter>();
+	register_type<ERFont>();
+	register_type<ERLevel>();
+	register_type<ERModel>();
+	register_type<ERScript>();
+	register_type<ERShader>();
+	register_type<ERTexture>();
+
+	register_type<EScriptContext>();
+	register_type<EScriptData>();
+	register_type<ESDAnimation>();
+	register_type<ESDFloat>();
+	register_type<ESDInt>();
+	register_type<ESDResource>();
+	register_type<ESDVector>();
+	register_type<ESDMatrix>();
+	register_type<ESDModel>();
+	register_type<ESDParticleType>();
+	register_type<ESDPointer>();
+	register_type<ESDScript>();
+	register_type<ESDShader>();
+	register_type<ESDSound>();
+	register_type<ESDString>();
+
+	register_type<ESaveGameVar>();
+	register_type<ESGVFloat>();
+	register_type<ESGVInt>();
+
+	register_type<EUIObjectNode>();
+	register_type<EUIIcon>();
+	register_type<EUITextIcon>();
 	register_type( 0x89DED0, 0x00912970 );   // EUIDDMenuTextItem
 	register_type( 0x89F608, 0x00912BB8 );   // EUIHudCube
 	register_type( 0x89F840, 0x00912BE4 );   // EUIHudInventory
 	register_type( 0x8A04D8, 0x00912C6C );   // EUIHudLifeMeter
-	register_type( 0x8A2148, 0x0091FED4 );   // EIWaterPatch
-	register_type( 0x8A2580, 0x00916E98 );   // EIWell
-	register_type( 0x8A2C70, 0x009170DC );   // EIYoYoMonkey
-	register_type( 0x8A5000, 0x009176CC );   // EICharacter
-	register_type( 0x8A5198, 0x00917730 );   // EIGameInstance
-	register_type( 0x8A52C0, 0x0091775C );   // EInstance
-	register_type( 0x8A5710, 0x00917914 );   // EResource
-	register_type( 0x8A5B4C, 0x0091AA10 );   // ERModel
-	register_type( 0x8A5D08, 0x0091EA48 );   // ERLevel
-	register_type( 0x8A5D64, 0x0091EA80 );   // ERShader
-	register_type( 0x8A64B0, 0x0091ED20 );   // EUITextIcon
-	register_type( 0x8A65C0, 0x0091ED50 );   // EUIIcon
-	register_type( 0x8A66C0, 0x0091EE20 );   // EUIObjectNode
-	register_type( 0x8A9358, 0x0092005C );   // ESaveGameVar
-	register_type( 0x8A9398, 0x00920030 );   // ESGVInt
-	register_type( 0x8A93DC, 0x00920008 );   // ESGVFloat
-	register_type( 0x8ADEB8, 0x0092801C );   // EIUpdateRegion
-	register_type( 0x8AE110, 0x0093B9EC );   // ERAnim
-	register_type( 0x8B02C4, 0x0093EB70 );   // ERTexture
-	register_type( 0x8B0614, 0x0093ED30 );   // ERScript
+	register_type( 0x87A3D8, 0x0090F9C8 );   // EGamesUI3dScore
+	register_type( 0x87A750, 0x0090F9F4 );   // EGamesUI3dTimer
+
 	register_type( 0x8B0FD4, 0x009413C8 );   // EBoundTreeNode
 }

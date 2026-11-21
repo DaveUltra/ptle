@@ -4,8 +4,8 @@
 struct LinkedListElem
 {
 	void* m_data;
-	LinkedListElem* m_ptr0;
-	LinkedListElem* m_ptr1;
+	LinkedListElem* m_prev;
+	LinkedListElem* m_next;
 };
 
 class LinkedList

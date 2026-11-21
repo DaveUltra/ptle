@@ -5,7 +5,6 @@
 #include <string>
 #include <shlobj.h>
 #include <stdio.h>
-#include <filesystem>
 #include <functional>
 #include <set>
 #include <intrin.h>

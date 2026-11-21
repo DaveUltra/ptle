@@ -2,23 +2,34 @@
 
 #include "EStorable.h"
 
+#include "ptle/math/Matrix4f.h"
+
 class EInstance;
+class ERScript;
+class EScriptData;
 
 
 class EScriptContext : public EStorable
 {
 public:
 
-	int unknown0;
+	static const uint32_t VTABLE = 0x8AEAF4;
+
+
+	int m_bytecodePointer;
 	int m_stackPointer;
-	int unknown2;
+	ERScript* m_script;
 
 	EInstance* m_owningInstance;
 
-	char padding0[0xC];
+	bool unknown0;
+	bool m_sleeping;
+
+	uint32_t m_sleepFrameStart;
+	float m_sleepDuration;
 
 	void* unknown1;
-	EStorable* /* ( EScriptData* ) */ m_scriptStack[512];
+	EScriptData* m_scriptStack[512];
 
 	char padding1[0x60];
 

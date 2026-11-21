@@ -25,7 +25,7 @@ static void adjust_window_size()
 	*width = rect.right - rect.left;
 	*height = rect.bottom - rect.top;
 }
-#include <d3d9.h>
+
 void InitMod()
 {
 	// System inconveniences.
@@ -61,9 +61,9 @@ void InitMod()
 		injector::WriteMemory<uint32_t>( 0x697EF4, 0xEF4 );  // Replace "d3dPresentParams.RefreshRateInHz = 0"
 		injector::WriteMemory<uint32_t>( 0x697EF8, 1 );      // by      "d3dPresentParams.WindowedMode = 1"
 
-		// Correct window resolution.
-		injector::MakeCALL( 0x60D4CD, adjust_window_size );  // We replace a "ShowCursor()" call by a function
-		injector::MakeNOP( 0x60D4CD+5 );                     // that corrects client size based on window decorations.
+		// Correct window resolution (Win32's AdjustWindowRect(), which ensures proper client rect resolution).
+		injector::MakeCALL( 0x60D4CD, adjust_window_size );  // Replaces a superfluous
+		injector::MakeNOP( 0x60D4CD+5 );                     // "ShowCursor()" call.
 
 		// Remove the game's adjust and move our own values.
 		injector::MakeRangedNOP( 0x6E859C, 0x6E85E6 );

@@ -30,7 +30,7 @@ bool InventoryItem::isNotesUnlocked( Notes notes )
 		return false;
 	}
 
-	int val;
+	int val = 0;
 	uint32_t hash = GetHarrySaveGameVariable(id);
 	Gizmod::getInstance()->getSaveManager()->getNativeManager()->GetVar( 0, hash, &val );
 	return val != 0;
@@ -55,7 +55,7 @@ bool InventoryItem::setItemInHand( Item item )
 	}
 
 	ItemStruct* itemStruct = Gizmod::getInstance()->getInventoryItem( item )->m_itemStruct;
-	harry->m_itemHotbar[5] = itemStruct->m_object;
+	harry->m_inventory->m_itemInHandNext = itemStruct->m_object;
 	return true;
 }
 
@@ -69,11 +69,11 @@ bool InventoryItem::setItemInHotbar( int slotID, Item item )
 	}
 
 	if ( item == Item::UNKNOWN ) {
-		harry->m_itemHotbar[slotID] = 0;
+		harry->m_inventory->m_hotbar[slotID] = 0;
 	}
 	else {
 		ItemStruct* itemStruct = Gizmod::getInstance()->getInventoryItem( item )->m_itemStruct;
-		harry->m_itemHotbar[slotID] = itemStruct->m_object;
+		harry->m_inventory->m_hotbar[slotID] = itemStruct->m_object;
 	}
 	return true;
 }

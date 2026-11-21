@@ -43,6 +43,9 @@ struct RandoConfig
 	bool itemRandoInventory;      // Shuffle unlockable items as part of item rando.
 	bool itemRandoIdols;          // Shuffle idols.
 	bool itemRandoExplorers;      // Shuffle explorers.
+	bool itemRandoHeroicSkills;   // Shuffle heroic skills.
+	bool itemRandoHarryActions;   // Shuffle harry actions.
+	bool itemRandoNotesSlots;     // Shuffle notes slots.
 
 	// Default values.
 	RandoConfig();

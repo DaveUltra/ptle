@@ -1,5 +1,30 @@
 # Gizmod Changelog
 
+## v0.3.0
+
+Additions :
+
+- Heroic skills and "Harry actions" APIs, used to query & unlock heroic abilities (rising strike, dash...) as well as basic abilities (roll, punch, sneak)
+- "HeroicUnlock" event, invoked when the player gets a new skill from the heroic handbook the intended way
+- "HarryDeath" event, invoked when Harry dies from any source (exact source is currently not reported)
+- "HarryDamage" event, invoked when Harry takes damage from any source
+- Stink bomb added as an inventory item (though because it is a cheat, it works a bit weirdly)
+- Core game :
+	- Removed the game's mutex, allowing players to start multiple instances on the same PC
+	- Game window is no longer top-most (does not display on top of all other windows anymore)
+- Mods :
+	- New mod : **Play as anyone!** (replace Harry's model by an NPC model, still beta)
+	- Randomizer : **item rando!** inventory items, abilities and shaman purchases can be shuffled together with each other, and appear at idol locations
+	- CheatLab : Added roll, punch and sneak to the skills tab
+	- CheatLab : Added "Kill all enemies" button. Currently struggles with a few enemies (e.g. snow scarabs, crocs, ...)
+	- CheatLab : Added "Ender Pearl" cheat (Harry gets teleported on TNT hit)
+
+Fixes :
+
+- CheatLab : save slots not working
+- CheatLab : health points no longer display at the center of the screen (force health bar to reload when "Give Stuff" is pressed)
+- **Explorer softlock fix** has been made (and proven) speedrun-viable.
+
 ## v0.2.1
 
 Additions :

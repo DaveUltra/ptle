@@ -11,11 +11,14 @@ class ERScript : public EResource
 {
 public:
 
+	static const uint32_t VTABLE = 0x8B0614;
+
+
 	TreeMap m_aliveContexts;
 
-	LinkedList unknown0;
-	Array unknown1;
-	Array unknown2;
+	LinkedList m_scriptData;   // List of EScriptData*.
+	Array      m_bytecode;     // Array of unsigned int.
+	Array      m_stringArray;
 
 	int m_count;
 };

@@ -5,6 +5,7 @@
 #include "math/AABB.h"
 
 class TreeMap;
+class TreeMapNode;
 class ERLevel;
 class ERScript;
 class Vector3f;
@@ -12,9 +13,19 @@ class Vector4f;
 class Matrix4f;
 
 
+struct OverlapStruct
+{
+	uint32_t m_flags;
+	int padding[2];
+	class EInstance* m_other;
+};
+
 class EInstance : public EStorable
 {
 public:
+
+	static const uint32_t VTABLE = 0x8A52C0;
+
 
 	uint32_t m_uniqueID;
 
@@ -24,14 +35,16 @@ public:
 
 	char padding0[0x08];
 
-	float unknown0;
-	float unknown1;
-	float unknown2;
-	float m_opacity;
+	float m_opacityFinal;
+	float m_opacity2;
+	float m_opacity3;
+	float m_alphaUser;
 
 	uint32_t m_flags;
 
-	char padding1[0xC];
+	void* unknown4;
+	TreeMapNode* m_updateRegionNode;
+	void* unknown5;
 
 	AABB m_bounds;
 
@@ -49,8 +62,8 @@ public:
 	virtual void func_unknown3();
 	virtual void func_unknown4(Matrix4f*);
 	virtual int func_unknown5();
-	virtual bool func_unknown6(void*, Vector3f*, Vector3f*, uint32_t);
-	virtual bool func_unknown7(void*, Vector3f*, Vector3f*, float, int);
+	virtual bool OverlapRelated0(OverlapStruct*, Vector3f*, Vector3f*, uint32_t);
+	virtual bool OverlapRelated1(OverlapStruct*, Vector3f*, Vector3f*, float, int);
 	virtual bool func_unknown8();
 	virtual void func_unknown9(Vector3f*, float*, int*);
 	virtual void func_unknown10();

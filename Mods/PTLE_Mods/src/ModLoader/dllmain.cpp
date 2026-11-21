@@ -1,7 +1,6 @@
 #include "dllmain.h"
 #include "exception.hpp"
 #include <initguid.h>
-#include <filesystem>
 #include <fstream>
 #include <memory>
 #include <shellapi.h>
@@ -295,9 +294,11 @@ enum vccorlibExportsNames
 
 #include "ptle/EInstance.h"
 #include "ptle/EIBeast.h"
+#include "ptle/EIFlockBeast.h"
 #include "ptle/EIPlant.h"
 #include "ptle/EIProjectile.h"
 #include "ptle/EITreasureIdol.h"
+#include "ptle/EIHarry.h"
 #include "ptle/ESDInt.h"
 #include "ptle/EScriptContext.h"
 
@@ -385,6 +386,12 @@ static const char* source( uint32_t s )
 	if ( s & 0x80000 ) return "Smash strike";
 	return "idk";
 }
+
+
+// -----------------------------------------------------------
+// Breakable break.
+// -----------------------------------------------------------
+
 GET_METHOD( 0x4EDF50, void, EIHavokBreakable_Break, EInstance*, uint32_t, Vector4f*, float );
 static void _BreakableBreak( EInstance* self, uint32_t p4, Vector4f* p7, float p6 )
 {
@@ -396,6 +403,11 @@ static void _BreakableBreak( EInstance* self, uint32_t p4, Vector4f* p7, float p
 	}
 }
 MAKE_THISCALL_WRAPPER( BreakableBreak, _BreakableBreak );
+
+
+// -----------------------------------------------------------
+// Collect item.
+// -----------------------------------------------------------
 
 GET_METHOD( 0x506170, void, CollectItem, void*, uint32_t );
 static void _CollectItem_custom( void* self, uint32_t itemHash )
@@ -413,6 +425,11 @@ static void _CollectItem_custom( void* self, uint32_t itemHash )
 }
 MAKE_THISCALL_WRAPPER( CollectItem_custom, _CollectItem_custom );
 
+
+// -----------------------------------------------------------
+// Collect idol.
+// -----------------------------------------------------------
+
 // VERY hacky :
 // The original "AddCollectedIdols" function is not a member function. But at the injection point, ECX contains a pointer
 // to the idol, which we can retrieve by pretending that it is a member function.
@@ -428,6 +445,11 @@ static void _AddCollectedIdols_custom( EITreasureIdol* self, uint32_t levelCRC, 
 	}
 }
 MAKE_THISCALL_WRAPPER( AddCollectedIdols_custom, _AddCollectedIdols_custom );
+
+
+// -----------------------------------------------------------
+// Cinematic play.
+// -----------------------------------------------------------
 
 // Cutscene start.
 GET_METHOD( 0x4308B0, bool, EICinematic_CheckCannotPlay, EICinematic*, bool );
@@ -446,7 +468,56 @@ static bool _CinematicCannotPlay( EICinematic* self, bool param )
 MAKE_THISCALL_WRAPPER( CinematicCannotPlay, _CinematicCannotPlay );
 
 
+// -----------------------------------------------------------
+// Heroic skill unlock.
+// -----------------------------------------------------------
+GET_FUNC( 0x4EA0D0, void, Script_HarryAddHeroic, EScriptContext* );
+
+// Script function (heroic dive, heroic dash, rising strike).
+static void HarryAddHeroic_Custom( EScriptContext* context )
+{
+	ESDInt* skillHashVar = (ESDInt*) context->m_scriptStack[context->m_stackPointer - 1];
+
+	HeroicUnlockEvent event( EHeroicSkill::getSkillFromHash(skillHashVar->m_value) );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( !event.isCancelled() ) {
+		// Patch value if desired skill was changed.
+		skillHashVar->m_value = EHeroicSkill::getSkillHash( event.getSkill() );
+		Script_HarryAddHeroic( context );
+	}
+	else {
+		context->m_stackPointer--;
+	}
+}
+
+// Purchasable skills (smash strike, super sling, breakdance).
+static void BoughtSkill( EHeroicSkill::Enum skill )
+{
+	if ( skill == EHeroicSkill::UNKNOWN ) return;
+
+	HeroicUnlockEvent heroicEvent( skill );
+	g_pitfall.getEventListener()->invokeEvent( heroicEvent );
+
+	if ( !heroicEvent.isCancelled() ) {
+		EIHarry* harry = Gizmod::getHarry();
+
+		switch ( skill )
+		{
+		case EHeroicSkill::SMASH_STRIKE: harry->m_smashStrike = 1; break;
+		case EHeroicSkill::SUPER_SLING:  harry->m_superSling  = 1; break;
+		case EHeroicSkill::BREAKDANCE:   harry->m_breakdance  = 1; break;
+		}
+	}
+}
+static void BoughtSmashStrike() { BoughtSkill( EHeroicSkill::SMASH_STRIKE ); }
+static void BoughtSuperSling()  { BoughtSkill( EHeroicSkill::SUPER_SLING ); }
+static void BoughtBreakdance()  { BoughtSkill( EHeroicSkill::BREAKDANCE ); }
+
+
+// -----------------------------------------------------------
 // Plant rustle.
+// -----------------------------------------------------------
 static void _PlantRustleBig( EIPlant* plant )
 {
 	// Ignore if already rustling.
@@ -482,7 +553,9 @@ static void __declspec(naked) PlantRustleSmall()
 }
 
 
+// -----------------------------------------------------------
 // Projectile shoot.
+// -----------------------------------------------------------
 GET_METHOD( 0x559640, void, EIProjectile_Shoot, EIProjectile*, const Vector3f*, const Vector3f*, EInstance*, float );
 static void __stdcall _ProjectileShoot( EIProjectile* self, Vector3f* position, Vector3f* direction, EInstance* source, float accuracy )
 {
@@ -498,6 +571,63 @@ static void __stdcall _ProjectileShoot( EIProjectile* self, Vector3f* position, 
 }
 MAKE_THISCALL_WRAPPER( ProjectileShoot, _ProjectileShoot );
 
+
+// -----------------------------------------------------------
+// Harry death.
+// -----------------------------------------------------------
+GET_METHOD( 0x4D3F40, int, EIHarry_CalcNextStateID, EIHarry* );
+
+// Land on back (hot coals, falling, mama monkey kick, frozen water).
+// The original function immediately returns 0x90 (state "deathfall") if m_dieOnNextLand is true.
+// By cancelling the event, we make the original function drop to the natural, non-lethal state.
+static int __stdcall _HarryDeathLandFunc( EIHarry* harry )
+{
+	if ( harry->m_dieOnNextLand ) {
+		HarryDeathEvent event( harry );
+		g_pitfall.getEventListener()->invokeEvent( event );
+
+		if ( event.isCancelled() ) {
+			harry->m_dieOnNextLand = false;
+		}
+	}
+
+	return EIHarry_CalcNextStateID( harry );
+}
+MAKE_THISCALL_WRAPPER( HarryDeathLand, _HarryDeathLandFunc );
+
+// Repeated "m_health <= 0" check.
+static void __stdcall _HarryDeathRepeatFunc( EIHarry* harry, int stateID, bool param2 )
+{
+	HarryDeathEvent event( harry );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( event.isCancelled() ) return;
+
+	harry->PerformStateSwitch( stateID, param2 );
+}
+MAKE_THISCALL_WRAPPER( HarryDeathRepeat, _HarryDeathRepeatFunc );
+
+
+// -----------------------------------------------------------
+// Harry damage.
+// -----------------------------------------------------------
+GET_METHOD( 0x4BA910, void, EIHarry_OnHit, EIHarry*, float, EInstance*, uint32_t, Vector3f*, float, int );
+static void __stdcall _HarryDamageFunc( EIHarry* harry, float damage, EInstance* source, uint32_t flags, Vector3f* direction, float force, int param7 )
+{
+	HarryDamageEvent event( harry, source, damage, flags, *direction, force, param7 );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( event.isCancelled() ) return;
+
+	EIHarry_OnHit( harry, damage, source, flags, direction, force, param7 );
+	//harry->OnHit( damage, source, flags, direction, force, param7 );
+}
+MAKE_THISCALL_WRAPPER( HarryDamage, _HarryDamageFunc );
+
+
+// -----------------------------------------------------------
+// Entity spawn event (not working).
+// -----------------------------------------------------------
 
 static void EntitySpawn( class ERLevel* level, EInstance* inst )
 {
@@ -518,6 +648,11 @@ static __declspec(naked) void _EntitySpawn()
 	__asm ret 0x4
 }
 
+
+// -----------------------------------------------------------
+// Level loaded event.
+// -----------------------------------------------------------
+
 GET_METHOD( 0x5229B0, void, EMusicManager_PlayMusic, void*, uint32_t, bool );
 static void LevelLoaded()
 {
@@ -535,6 +670,11 @@ static void LevelLoaded()
 		EMusicManager_PlayMusic( musicManager, event.getMusicCRC(), true );
 	}
 }
+
+
+// -----------------------------------------------------------
+// Load level event.
+// -----------------------------------------------------------
 
 GET_METHOD( 0x5EBA90, void, LoadLevel, void*, uint32_t, bool );
 static uint32_t* get_prev_level_address()
@@ -565,6 +705,11 @@ static void _LoadLevel_custom( void* self, uint32_t levelCRC, bool param )
 }
 MAKE_THISCALL_WRAPPER( LoadLevel_custom, _LoadLevel_custom )
 
+
+// -----------------------------------------------------------
+// Shaman purchase.
+// -----------------------------------------------------------
+
 static ShamanShop::PriceSlot id_to_shaman( int id )
 {
 	switch ( id )
@@ -582,13 +727,6 @@ static ShamanShop::PriceSlot id_to_shaman( int id )
 	default: return ShamanShop::UNKNOWN;
 	}
 }
-static bool OnShamanPurchase( int id )
-{
-	ShamanPurchaseEvent event( id_to_shaman(id) );
-	g_pitfall.getEventListener()->invokeEvent( event );
-
-	return event.isCancelled();
-}
 
 class EPauseMain;
 GET_METHOD( 0x52C590, void, EPauseMain_Message, EPauseMain*, int, void*, int );
@@ -598,8 +736,12 @@ static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* p
 	{
 	// Shaman purchase.
 	case 0x89: case 0x8A: case 0x8B: case 0x8C: case 0x8D: case 0x8E: case 0x8F: case 0x90: case 0x91: case 0x9C:
-		if ( OnShamanPurchase( messageID ) ) {
-			return;
+		{
+			ShamanShop::PriceSlot slot = id_to_shaman(messageID);
+			ShamanPurchaseEvent event( slot );
+			g_pitfall.getEventListener()->invokeEvent( event );
+
+			if ( event.isCancelled() ) return;
 		}
 		break;
 	}
@@ -607,6 +749,8 @@ static void _EPauseMain_Message_custom( EPauseMain* self, int messageID, void* p
 	EPauseMain_Message( self, messageID, param1, param2 );
 }
 MAKE_THISCALL_WRAPPER( EPauseMain_Message_custom, _EPauseMain_Message_custom );
+
+
 
 // Explorer softlock: an explorer that goes out of view and/or far from the camera stops ticking,
 // so it never reaches "explorer.dead" (state 8) and the camera never unlocks.
@@ -626,8 +770,8 @@ static void LateInit()
 {
 	if ( !g_speedrunFriendly ) {
 		// Beast state change.
-		const ETypeInfo* beast = get_type_by_vtable( 0x86C3D0 )->ptleType;
-		const ETypeInfo* flockBeast = get_type_by_vtable( 0x876D28 )->ptleType;
+		const ETypeInfo* beast = get_type_by_vtable( EIBeast::VTABLE )->ptleType;
+		const ETypeInfo* flockBeast = get_type_by_vtable( EIFlockBeast::VTABLE )->ptleType;
 
 		for ( auto p : get_all_types() ) {
 		const ETypeInfo* baseType = p.second.ptleType->m_parent;
@@ -653,6 +797,13 @@ void InjectCode()
 	// Protection against explorer softlock.
 	injector::WriteMemory( 0x87659C, EIExplorer_ShouldTick_fix );
 
+	// Mutex guarding game instance (we want multiple instances!)
+	injector::MakeRangedNOP( 0x60D44D, 0x60D45C );    // CreateMutexA()
+	injector::MakeRangedNOP( 0x60E965, 0x60E975 );    // ReleaseMutex()
+
+	// SetWindowPos() with hwndInsertAfter == -1 means window will stay top-most. Use 0 instead.
+	injector::WriteMemory<uint8_t>( 0x60D687, 0 );
+
 	// Skip splash screens and trailer.
 	if ( g_skipSplashScreens ) {
 		injector::WriteMemory<uint8_t>( 0x512BC5, 0x22 );
@@ -664,7 +815,6 @@ void InjectCode()
 	injector::MakeRangedNOP( 0x60D439, 0x60D441 );
 	injector::MakeCALL( 0x60D439, LateInit );
 	injector::MakeRangedNOP( 0x60E977, 0x60E97F );
-
 
 	if ( !g_speedrunFriendly ) {
 		// Breakables.
@@ -679,19 +829,31 @@ void InjectCode()
 		// Cinematic playing.
 		injector::MakeCALL( 0x430A20, CinematicCannotPlay );
 
+		// Heroic skill unlock.
+		injector::WriteMemory( 0x8EFF1C, HarryAddHeroic_Custom );  // "HarryAddHeroic" script function.
+		injector::MakeRangedNOP( 0x52E9E7, 0x52EA4D ); injector::MakeCALL( 0x52E9E7, BoughtSmashStrike );
+		injector::MakeRangedNOP( 0x52ED61, 0x52EDC7 ); injector::MakeCALL( 0x52ED61, BoughtSuperSling );
+		injector::MakeRangedNOP( 0x52F064, 0x52F0CA ); injector::MakeCALL( 0x52F064, BoughtBreakdance );
+
 		// Plants rustling.
-		injector::MakeNOP( 0x5444C6, 10 );
-		injector::MakeCALL( 0x5444C6, PlantRustleBig );
-		injector::MakeNOP( 0x545222, 10 );
-		injector::MakeCALL( 0x545222, PlantRustleSmall );
-		injector::MakeNOP( 0x545507, 10 );
-		injector::MakeCALL( 0x545507, PlantRustleSmall );
+		injector::MakeNOP( 0x5444C6, 10 ); injector::MakeCALL( 0x5444C6, PlantRustleBig );
+		injector::MakeNOP( 0x545222, 10 ); injector::MakeCALL( 0x545222, PlantRustleSmall );
+		injector::MakeNOP( 0x545507, 10 ); injector::MakeCALL( 0x545507, PlantRustleSmall );
 
 		// Projectile shooting.
 		static const uint32_t callLocations[] = { 0x494253, 0x501F12, 0x556723, 0x559B23, 0x559EA5, 0x559FFA, 0x55E0A4, 0x583711, 0x583B77, 0x595867, 0x595960 };
 		for ( int i = 0; i < _countof(callLocations); i++ ) {
 			injector::MakeCALL( callLocations[i], ProjectileShoot );
 		}
+
+		// Harry death.
+		injector::MakeNOP( 0x4B22DB, 6 ); injector::MakeCALL( 0x4B22DB, HarryDeathRepeat );
+		injector::MakeCALL( 0x4CFB29, HarryDeathLand );
+		injector::MakeCALL( 0x4D46DE, HarryDeathLand );
+		injector::MakeCALL( 0x4E6F40, HarryDeathLand );
+
+		// Harry damage (subclassing).
+		injector::WriteMemory( 0x87D3C8, HarryDamage );
 
 
 		// Not working.
@@ -705,8 +867,8 @@ void InjectCode()
 		injector::MakeCALL( 0x5EC196, LevelLoaded );
 		injector::MakeRangedNOP( 0x5096BC, 0x5096ED );             // Defer music playing.
 
-		// EPauseMain_Message() in vtable.
-		injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );
+		// Shaman purchases.
+		injector::WriteMemory( 0x88E484, &EPauseMain_Message_custom );   // EPauseMain_Message() in vtable.
 	}
 }
 

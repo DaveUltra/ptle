@@ -10,6 +10,7 @@
 	case 0xFB3D82AC: return InventoryItem::RAFT;
 	case 0xCFC909C3: return InventoryItem::GAS_MASK;
 	case 0xE51C8F72: return InventoryItem::CANTEEN;
+	case 0x55A51DAB: return InventoryItem::STINK_BOMB;
 	default: return InventoryItem::UNKNOWN;
 	}
 }
@@ -26,6 +27,7 @@ inline const char* InventoryItem::getName() const
 	case InventoryItem::RAFT:     return "Raft";
 	case InventoryItem::GAS_MASK: return "Gas Mask";
 	case InventoryItem::CANTEEN:  return "Canteen";
+	case InventoryItem::STINK_BOMB: return "Stink Bomb";
 	default: return "";
 	}
 }
@@ -42,6 +44,7 @@ inline uint32_t InventoryItem::getHash() const
 	case InventoryItem::RAFT:     return 0xFB3D82AC;
 	case InventoryItem::GAS_MASK: return 0xCFC909C3;
 	case InventoryItem::CANTEEN:  return 0xE51C8F72;
+	case InventoryItem::STINK_BOMB: return 0x55A51DAB;
 	default: return 0;
 	}
 }
@@ -58,6 +61,7 @@ inline uint32_t InventoryItem::getModelCRC() const
 	case InventoryItem::RAFT:     return ItemModelsCRC::RAFT;
 	case InventoryItem::GAS_MASK: return ItemModelsCRC::GAS_MASK;
 	case InventoryItem::CANTEEN:  return ItemModelsCRC::CANTEEN;
+	case InventoryItem::STINK_BOMB: return ItemModelsCRC::STINK_BOMB;
 	default: return 0;
 	}
 }

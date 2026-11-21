@@ -6,6 +6,8 @@
 
 class EIBeast;
 
+class EItemBase;
+
 
 struct EState
 {
@@ -23,19 +25,53 @@ struct EState
 	int unkn1;
 };
 
+struct EInventory
+{
+	EItemBase* m_hotbar[4];
+	EItemBase* m_itemInHand;
+	EItemBase* m_itemInHandNext;
+};
+
 class EIPlayer : public EICharacter
 {
 public:
 
-	// TODO : replace by a matrix4.
-	Vector4f m_mat[3];
-	Vector4f m_positionPlayer;
+	static const uint32_t VTABLE = 0x87D618;
 
-	char padding4[0x2E0];
+
+	Matrix4f m_characterMatrix;
+	Vector3f unknown0;
+
+	float m_orientationAngle;
+	float unknown4;
+	float m_speed;
+	float unknown5;
+
+	char padding4[0x80];
+
+	EState* m_currentState;
+
+	char padding5[0xC];
+
+	uint16_t m_stateID;
+	uint16_t m_stateSwitchedFrom;
+	uint16_t m_lastStateID;
+
+	char padding6[0x1E];
+
+	Matrix4f m_matSpine2;
 
 	Vector3f unknown1;
 	Vector3f unknown2;
 	Vector3f unknown3;
+
+	Matrix4f m_matRHandHold;
+	Matrix4f m_matLHand;
+	Matrix4f m_matBip01;
+	Matrix4f m_matHead;
+	Matrix4f m_matJaw;
+
+	char padding7[0x84];
 
 	int m_healthMax;
 	int m_healthValue;
@@ -45,13 +81,13 @@ public:
 	Vector3f m_headRotation;
 	Vector3f m_headTargetRotation;
 
-	char padding5[0xD4];
+	char padding11[0xD4];
 
 	Matrix4f m_rigidBodyMatrix;
 
-	char padding6[0xBC];
+	char padding10[0xBC];
 
-	void** m_itemHotbar;
+	EInventory* m_inventory;
 
 	char padding9[0x1F0];
 

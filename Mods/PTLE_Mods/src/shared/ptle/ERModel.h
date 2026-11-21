@@ -11,6 +11,9 @@ class ERModel : public EResource
 {
 public:
 
+	static const uint32_t VTABLE = 0x8A5B4C;
+
+
 	Array m_array0;
 	Vector3f unknown0;
 

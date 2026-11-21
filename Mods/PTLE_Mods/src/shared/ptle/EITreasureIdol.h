@@ -7,6 +7,9 @@ class EITreasureIdol : public EIDynamicModel
 {
 public:
 
+	static const uint32_t VTABLE = 0x89A2F8;
+
+
 	int unknown0;
 	int unknown1;
 

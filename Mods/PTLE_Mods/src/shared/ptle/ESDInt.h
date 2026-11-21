@@ -1,19 +1,14 @@
 #pragma once
 
-#include "EStorable.h"
+#include "EScriptData.h"
 
 
-class ESDInt : public EStorable
+class ESDInt : public EScriptData
 {
 public:
 
-	unsigned int m_refCount;
+	static const uint32_t VTABLE = 0x8A8DB0;
+
+
 	int m_value;
-
-
-	virtual const char* GetSaveVarTypeString();
-	virtual void func_unknown1();
-	virtual void func_unknown2();
-	virtual bool IsValueNotZero();
-	virtual void CopyValue(ESDInt* other);
 };

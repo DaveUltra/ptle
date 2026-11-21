@@ -2,6 +2,8 @@
 
 #include "EIBeast.h"
 
+#include "EIProjectile.h"
+
 #include "math/Matrix4f.h"
 
 class EIProjectile;
@@ -11,6 +13,9 @@ class EIStaticModel;
 class EIStClair : public EIBeast
 {
 public:
+
+	static const uint32_t VTABLE = 0x899130;
+
 
 		/// Hand bones and matrices, used to correctly position the spawned TNTs.
 	uint32_t m_boneTNT_R;
@@ -50,6 +55,4 @@ public:
 		/// - in MoI, he'll throw one then two at phase 3 and 4
 		/// - in Crystal Cavern, he always throws two.
 	bool m_throwingTwoTNT;
-
-	char padding12[0xB];
 };

@@ -11,6 +11,24 @@
 
 
 
+// Requirements, used in level exits, items and shamans.
+struct Requirement
+{
+	enum Enum
+	{
+		ITEM_SLIDE,   // Requires at least an item that allows item slide (implies dash).
+		SHIELD,       // Requires shield (spiky columns, breakables...)
+		GAS_MASK,     // Requires gas mask (ladder of miles, ...)
+		RAFT,         // Requires raft (spinja lair, underground dam, ...)
+		PICKAXES,     // Requires pickaxes (tazing included).
+		TNT,
+		HEROIC_DASH,
+		SMASH_STRIKE,
+
+		PENGUIN_TEMPLE,  // Requires completing penguin temple (door to Valley of spirits).
+	};
+};
+
 // Level exit, used to build transitions.
 struct Exit
 {
@@ -90,6 +108,7 @@ struct Idol
 	uint32_t m_levelCRC;
 	uint32_t m_uniqueID;
 	bool m_duplicate;
+	std::vector<std::vector<std::string>> requires;
 
 	inline void initAsExplorer()
 	{
@@ -131,6 +150,7 @@ private:
 
 	void generateLegacy();
 	void generateLinkedTransitions();
+	void generateLinkedTransitions2();
 
 	std::set<uint32_t> m_accessibleAreas;
 	std::map<Transition, Transition> m_transitionsMap;   // Exit (currentLevel, normalDest) -> Entrance (whereFrom, redirectedDest).
