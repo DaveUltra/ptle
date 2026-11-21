@@ -34,7 +34,11 @@ struct AnimLayer
 	float m_speed;
 	float m_weight;
 
-	char padding1[0x28];
+	char padding1[0x10];
+
+	float m_targetWeight;
+
+	char padding3[0x14];
 
 	ERAnim* m_anim;
 
