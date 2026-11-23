@@ -15,6 +15,8 @@
 // ---
 // The "this" parameter is passed in ECX, which we forward to the custom function as
 // a regular stack parameter.
+// TODO : This trick requires a register to be clobbered. Make it work with direct ESP manip or
+// find a different way.
 #define MAKE_THISCALL_WRAPPER( funcName, funcPtr ) \
 	static __declspec(naked) void funcName() { \
 		__asm pop edi \

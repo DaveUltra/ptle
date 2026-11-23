@@ -118,7 +118,7 @@ HRESULT CALLBACK TaskDialogCallbackProc(HWND hwnd, UINT uNotification, WPARAM wP
 	return S_OK;
 }
 
-HMODULE hm;
+HMODULE g_thisModule;
 std::wstring moduleFileName;
 
 
@@ -214,9 +214,13 @@ std::wstring GetExeModulePath()
 }
 
 
-inline std::wstring GetSelfName()
+static inline std::wstring GetSelfName()
 {
 	return moduleFileName.substr(moduleFileName.find_last_of(L"/\\") + 1);
+}
+static inline std::wstring GetSelfPath()
+{
+	return moduleFileName.substr(0, moduleFileName.find_last_of(L"/\\") + 1);
 }
 
 
@@ -765,16 +769,128 @@ static bool __stdcall _EIExplorer_ShouldTick_fix( EIBeast* self )
 	return EIExplorer_ShouldTick( self );
 }
 MAKE_THISCALL_WRAPPER( EIExplorer_ShouldTick_fix, _EIExplorer_ShouldTick_fix );
- 
+
+
+
+//
+// Discover & load mods.
+//
+
+static bool matchesTargetExtension( LPWSTR filename )
+{
+	auto length = wcslen( filename );
+	return filename[length - 4] == '.' &&
+		(filename[length - 3] == 'd' || filename[length - 3] == 'D') &&
+		(filename[length - 2] == 'l' || filename[length - 2] == 'L') &&
+		(filename[length - 1] == 'l' || filename[length - 1] == 'L');
+}
+
+static std::string getFileNameWithoutExt( const std::wstring& path )
+{
+	size_t dirsep = path.find_last_of( L'\\' );
+	size_t extdot = path.find_last_of( L'.' );
+	std::wstring name = path.substr( dirsep + 1, extdot - dirsep - 1 );
+
+	return std::string( name.begin(), name.end() );
+}
+
+#define MODS_DIR L".\\mods\\"
+#define MODS_LOOKUP MODS_DIR ## "*.dll"
+
+static const char plugin_interface_gizmodInstance[] = "gizmodInstance";
+static const char plugin_interface_thisInstance[] = "pluginInstance";
+
+static void LoadMods()
+{
+	std::wstring gameDir = GetSelfPath();
+	SetCurrentDirectoryW( gameDir.c_str() );
+
+	char dsqf[2048];
+	wcstombs(dsqf, gameDir.c_str(), 2048);
+
+	log_printf(dsqf);
+
+	WIN32_FIND_DATAW findData;
+	WIN32_FIND_DATAW* fd = &findData;
+
+	HANDLE hDir = FindFirstFileW( MODS_LOOKUP, fd );
+	if ( hDir == INVALID_HANDLE_VALUE ) return;
+
+	// List all DLLs present in the mods directory.
+	std::vector<std::wstring> modulesToLoad;
+	do {
+		if ((fd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) continue;
+
+		std::wstring path;
+		path += MODS_DIR; path += fd->cFileName;
+		modulesToLoad.push_back( path );
+	}
+	while ( FindNextFileW(hDir, fd) );
+
+	FindClose( hDir );
+
+	// Load all.
+	int success = 0;
+	log_printf( "Loading %d mods...\n\n", modulesToLoad.size() );
+	for ( const std::wstring& path : modulesToLoad ) {
+		HMODULE h = LoadLibraryW( path.c_str() );
+		SetCurrentDirectoryW( gameDir.c_str() );   // In case DLL changed it.
+
+		if ( !h ) {
+			log_printf( "ERROR : Opening mod file \"%s\" failed.\n", path.c_str() );
+			continue;
+		}
+
+		// Invoke plugin enable here.
+		Gizmod** modLoaderPtr = (Gizmod**) GetProcAddress( h, plugin_interface_gizmodInstance );
+		GizmodPlugin* plugin = (GizmodPlugin*) GetProcAddress( h, plugin_interface_thisInstance );
+		if ( !modLoaderPtr || !plugin ) {
+			log_printf( "ERROR : Mod file \"%s\" has an invalid signature.\n", path.c_str() );
+			continue;
+		}
+
+		int ver = Gizmod::checkVersion( plugin );
+		if ( ver == 2 ) {
+			log_printf( "ERROR : Mod \"%s\" was made for a later version of Gizmod. It will not be loaded.\n", plugin->getDisplayName() );
+			continue;
+		}
+		if ( ver == -2 ) {
+			log_printf( "ERROR : Mod \"%s\" was made for an earlier version of Gizmod. It will not be loaded.\n", plugin->getDisplayName() );
+			continue;
+		}
+		if ( ver == -1 ) {
+			log_printf( "WARN : Mod \"%s\" was made for an earlier patch of Gizmod. Some features might not work properly.\n", plugin->getDisplayName() );
+		}
+
+		// Warn if names don't match (might become a requirement).
+		if ( getFileNameWithoutExt(path) != plugin->getSystemName() ) {
+			log_printf( "WARN : Mod \"%s\"'s system name and file name do not match. This might become a requirement in the future.\n", plugin->getDisplayName() );
+		}
+
+		log_printf( "[%s] Starting...\n", plugin->getDisplayName() );
+		*modLoaderPtr = &g_pitfall;
+		plugin->onEnable();
+		log_printf( "[%s] Mod started.\n", plugin->getDisplayName() );
+
+		success++;
+	}
+
+	log_printf( "\n%d mods loaded successfully.\n\n", success );
+}
+
+
+
 static void LateInit()
 {
+	//LoadMods();
+
 	if ( !g_speedrunFriendly ) {
 		// Beast state change.
 		const ETypeInfo* beast = get_type_by_vtable( EIBeast::VTABLE )->ptleType;
 		const ETypeInfo* flockBeast = get_type_by_vtable( EIFlockBeast::VTABLE )->ptleType;
 
 		for ( auto p : get_all_types() ) {
-		const ETypeInfo* baseType = p.second.ptleType->m_parent;
+			const ETypeInfo* baseType = p.second.ptleType->m_parent;
 			if ( baseType == beast || baseType == flockBeast ) {
 				void** vtable = (void**) p.first;
 				injector::WriteMemory( &vtable[0xB9], &MyBeast::PerformStateSwitch_custom );
@@ -783,7 +899,7 @@ static void LateInit()
 	}
 }
 
-void InjectCode()
+static void InjectCode()
 {
 	// Inconveniently spammed prints remaining in the game's code.
 	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
@@ -874,7 +990,7 @@ void InjectCode()
 
 
 
-void LoadOriginalLibrary()
+static void LoadOriginalLibrary()
 {
 	auto szSelfName = GetSelfName();
 	auto szSystemPath = SHGetKnownFolderPath(FOLDERID_System, 0, nullptr) + L'\\' + szSelfName;
@@ -894,110 +1010,6 @@ void LoadOriginalLibrary()
 }
 
 
-static bool matchesTargetExtension( LPWSTR filename )
-{
-	auto length = wcslen( filename );
-	return filename[length - 4] == '.' &&
-		(filename[length - 3] == 'a' || filename[length - 3] == 'A') &&
-		(filename[length - 2] == 's' || filename[length - 2] == 'S') &&
-		(filename[length - 1] == 'i' || filename[length - 1] == 'I');
-}
-
-static std::string getFileNameWithoutExt( const std::wstring& path )
-{
-	size_t dirsep = path.find_last_of( L'\\' );
-	size_t extdot = path.find_last_of( L'.' );
-	std::wstring name = path.substr( dirsep + 1, extdot - dirsep - 1 );
-
-	return std::string( name.begin(), name.end() );
-}
-
-void FindFiles()
-{
-	WIN32_FIND_DATAW findData;
-	WIN32_FIND_DATAW* fd = &findData;
-
-	std::wstring gameDir = GetCurrentDirectoryW();
-	std::wstring modsDir = gameDir + L"\\mods";
-
-	HANDLE asiFile = FindFirstFileW(L".\\mods\\*.asi", fd);
-	if ( asiFile == INVALID_HANDLE_VALUE ) {
-		return;
-	}
-
-	// List all ASIs present in the mods directory.
-	std::vector<std::wstring> modulesToLoad;
-	do {
-		if ((fd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) != 0) continue;
-
-		if ( matchesTargetExtension(fd->cFileName) ) {
-			std::wstring path = modsDir + L'\\' + fd->cFileName;
-
-			if (GetModuleHandleW(path.c_str()) != NULL) continue;
-
-			modulesToLoad.push_back( path );
-		}
-	}
-	while (FindNextFileW(asiFile, fd));
-
-	FindClose(asiFile);
-
-	// Load all.
-	int success = 0;
-	log_printf( "Loading %d mods...\n\n", modulesToLoad.size() );
-	for ( const std::wstring& path : modulesToLoad ) {
-		HMODULE h = LoadLibraryW( path.c_str() );
-		SetCurrentDirectoryW( gameDir.c_str() );   // In case asi changed it.
-
-		// Invoke plugin enable here.
-		Gizmod** modLoaderPtr = (Gizmod**) GetProcAddress( h, "gizmodInstance" );
-		GizmodPlugin* plugin = (GizmodPlugin*) GetProcAddress( h, "pluginInstance" );
-		if ( !modLoaderPtr || !plugin ) {
-			log_printf( "ERROR : Mod file \"%s\" has an invalid signature.\n", path.c_str() );
-			continue;
-		}
-
-		int ver = Gizmod::checkVersion( plugin );
-		if ( ver == 2 ) {
-			log_printf( "ERROR : Mod \"%s\" was made for a later version of Gizmod. It will not be loaded.\n", plugin->getDisplayName() );
-			continue;
-		}
-		if ( ver == -2 ) {
-			log_printf( "ERROR : Mod \"%s\" was made for an earlier version of Gizmod. It will not be loaded.\n", plugin->getDisplayName() );
-			continue;
-		}
-		if ( ver == -1 ) {
-			log_printf( "WARN : Mod \"%s\" was made for an earlier patch of Gizmod. Some features might not work properly.\n", plugin->getDisplayName() );
-		}
-
-		// Warn if names don't match (might become a requirement).
-		if ( getFileNameWithoutExt(path) != plugin->getSystemName() ) {
-			log_printf( "WARN : Mod \"%s\"'s system name and file name do not match. This might become a requirement in the future.\n", plugin->getDisplayName() );
-		}
-
-		log_printf( "[%s] Starting...\n", plugin->getDisplayName() );
-		*modLoaderPtr = &g_pitfall;
-		plugin->onEnable();
-		log_printf( "[%s] Mod started.\n", plugin->getDisplayName() );
-
-		success++;
-	}
-
-	log_printf( "\n%d mods loaded successfully.\n\n", success );
-}
-
-void LoadPlugins()
-{
-	auto oldDir = GetCurrentDirectoryW();
-
-	auto szSelfPath = moduleFileName.substr(0, moduleFileName.find_last_of(L"/\\") + 1);
-	SetCurrentDirectoryW(szSelfPath.c_str());
-
-	FindFiles();
-
-	SetCurrentDirectoryW(oldDir.c_str());
-}
-
 
 #define value_orA(path1, path2) (path1.empty() ? path2 : path1.string().c_str())
 #define value_orW(path1, path2) (path1.empty() ? path2 : path1.wstring().c_str())
@@ -1016,14 +1028,12 @@ LONG WINAPI CustomUnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 	HWND        hWnd;
 
 	wchar_t* modulenameptr = nullptr;
-	if (GetModuleFileNameW(GetModuleHandle(NULL), modulename, _countof(modulename)) != 0)
-	{
+	if (GetModuleFileNameW(GetModuleHandle(NULL), modulename, _countof(modulename)) != 0) {
 		modulenameptr = wcsrchr(modulename, '\\');
 		*modulenameptr = L'\0';
 		modulenameptr += 1;
 	}
-	else
-	{
+	else {
 		wcscpy_s(modulename, L"err.err");
 	}
 
@@ -1095,11 +1105,9 @@ LONG WINAPI CustomUnhandledExceptionFilter(LPEXCEPTION_POINTERS ExceptionInfo)
 
 #include "modloader/modloader.h"
 
-BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
+BOOL APIENTRY DllMain( HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/ )
 {
 	if (reason == DLL_PROCESS_ATTACH) {
-		wchar_t filename[8192];
-
 		gizmodInstance = &g_pitfall;
 
 		register_types();
@@ -1112,18 +1120,17 @@ BOOL APIENTRY DllMain(HMODULE hModule, DWORD reason, LPVOID /*lpReserved*/)
 		}
 		log_printf( "\n" );
 
-		hm = hModule;
-		GetModuleFileNameW( hm, filename, sizeof(filename) );
+		g_thisModule = hModule;
+		wchar_t filename[2048];
+		GetModuleFileNameW( g_thisModule, filename, _countof(filename) );
 		moduleFileName = filename;
 
 		// Load binkw32.
 		LoadOriginalLibrary();
 
-		// Load mods.
 		if ( g_enabled ) {
 			InjectCode();
-
-			LoadPlugins();
+			LoadMods();
 		}
 	}
 	else if (reason == DLL_PROCESS_DETACH) {
