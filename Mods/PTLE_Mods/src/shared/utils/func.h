@@ -3,7 +3,7 @@
 
 // Create a function pointer to a known non-member function.
 #define GET_FUNC( addr, rettype, name, ... ) \
-	static rettype (*name)(__VA_ARGS__) = reinterpret_cast<rettype(*)(__VA_ARGS__)>(addr)
+	static rettype (*const name)(__VA_ARGS__) = reinterpret_cast<rettype(*)(__VA_ARGS__)>(addr)
 
 
 // Create a function pointer to a known method (member function).

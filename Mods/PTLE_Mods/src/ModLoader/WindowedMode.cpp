@@ -1,6 +1,7 @@
 #include <Windows.h>
 
 #include "injector/injector.hpp"
+#include "utils/func.h"
 
 
 static void check_for_exit()
@@ -24,6 +25,8 @@ static void adjust_window_size()
 }
 
 
+GET_FUNC( 0x6E83B0, void, PeekWindowMessages );
+
 void PatchWindowedModeAndAnnoyances()
 {
 	// System inconveniences.
@@ -39,15 +42,13 @@ void PatchWindowedModeAndAnnoyances()
 	// Functional window.
 	{
 		// Process window messages (game executes its main loop in a new thread which didn't create the window...)
-		injector::MakeCALL( 0x68F231, 0x6E83B0 );
+		injector::MakeCALL( 0x68F231, PeekWindowMessages );
+
+		// Skip forcing focus & activation.
 		injector::MakeJMP( 0x68F236, 0x68EC2A );
 
 		// Game messes with usual window messages here. Redirect to DefWindowProc().
 		injector::MakeJMP( 0x60CFFA, 0x60D1C5 );
-
-		// Check whether window was closed (for some reason WM_CLOSE is never received).
-		injector::MakeRangedNOP( 0x68EC39, 0x68ECDA );
-		injector::MakeCALL( 0x68EC39, check_for_exit );
 	}
 
 	// Renderer-related corrections.

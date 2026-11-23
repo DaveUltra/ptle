@@ -393,6 +393,30 @@ static const char* source( uint32_t s )
 
 
 // -----------------------------------------------------------
+// Window subclassing.
+// -----------------------------------------------------------
+
+static const WNDPROC g_originalWndProc = (WNDPROC) 0x60CF30;
+static bool* const g_pWantsToClose = (bool*) 0x93ED64;
+static LRESULT CustomWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
+{
+	switch ( msg )
+	{
+	case WM_CLOSE:
+		*g_pWantsToClose = true;
+		return 0;
+
+	case WM_KEYDOWN:
+		break;
+	default:
+		break;
+	}
+
+	return CallWindowProcA( g_originalWndProc, hwnd, msg, wparam, lparam );
+}
+
+
+// -----------------------------------------------------------
 // Breakable break.
 // -----------------------------------------------------------
 
@@ -869,6 +893,10 @@ static void LoadMods()
 static void LateInit()
 {
 	//LoadMods();
+
+	// Subclass the game window.
+	HWND hwnd = *((HWND*) 0x93ED60);
+	SetWindowLongPtrA( hwnd, GWLP_WNDPROC, (LONG) CustomWndProc );
 
 	if ( !g_speedrunFriendly ) {
 		// Beast state change.
