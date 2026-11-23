@@ -776,15 +776,6 @@ MAKE_THISCALL_WRAPPER( EIExplorer_ShouldTick_fix, _EIExplorer_ShouldTick_fix );
 // Discover & load mods.
 //
 
-static bool matchesTargetExtension( LPWSTR filename )
-{
-	auto length = wcslen( filename );
-	return filename[length - 4] == '.' &&
-		(filename[length - 3] == 'd' || filename[length - 3] == 'D') &&
-		(filename[length - 2] == 'l' || filename[length - 2] == 'L') &&
-		(filename[length - 1] == 'l' || filename[length - 1] == 'L');
-}
-
 static std::string getFileNameWithoutExt( const std::wstring& path )
 {
 	size_t dirsep = path.find_last_of( L'\\' );
@@ -804,11 +795,6 @@ static void LoadMods()
 {
 	std::wstring gameDir = GetSelfPath();
 	SetCurrentDirectoryW( gameDir.c_str() );
-
-	char dsqf[2048];
-	wcstombs(dsqf, gameDir.c_str(), 2048);
-
-	log_printf(dsqf);
 
 	WIN32_FIND_DATAW findData;
 	WIN32_FIND_DATAW* fd = &findData;
@@ -899,8 +885,13 @@ static void LateInit()
 	}
 }
 
+// in WindowedMode.cpp.
+void PatchWindowedModeAndAnnoyances();
+
 static void InjectCode()
 {
+	PatchWindowedModeAndAnnoyances();
+
 	// Inconveniently spammed prints remaining in the game's code.
 	injector::MakeRangedNOP( 0x6824CF, 0x6824DC );    // Remove "Its in the Box!!" message.
 	injector::MakeRangedNOP( 0x60D1B6, 0x60D1C3 );    // "ACTIVATE!!!!"

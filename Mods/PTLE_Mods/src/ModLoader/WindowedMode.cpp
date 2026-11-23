@@ -1,15 +1,12 @@
-#include "gizmod/GizmodPlugin.h"
-
 #include <Windows.h>
 
 #include "injector/injector.hpp"
-#include "utils/log.h"
 
 
 static void check_for_exit()
 {
 	HWND hwnd = *((HWND*) 0x93ED60);
-	if ( !IsWindowVisible( hwnd ) ) {
+	if ( !IsWindowVisible(hwnd) ) {
 		ExitProcess( 0 );
 	}
 }
@@ -26,16 +23,14 @@ static void adjust_window_size()
 	*height = rect.bottom - rect.top;
 }
 
-void InitMod()
+
+void PatchWindowedModeAndAnnoyances()
 {
 	// System inconveniences.
 	{
 		// Remove explorer.exe locking.
 		injector::MakeRangedNOP( 0x60DFCB, 0x60DFDA );
 		injector::MakeRangedNOP( 0x60E022, 0x60E03A );
-
-		// Remove ShowCursor(0).
-		injector::MakeRangedNOP( 0x60D6BA, 0x60D6BA+6 );
 
 		// Window styles.
 		injector::WriteMemory<uint32_t>( 0x6E860A, WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX) );
@@ -93,19 +88,3 @@ void InitMod()
 	injector::MakeRangedNOP( 0x620C6F, 0x620C72 );
 	injector::MakeRangedNOP( 0x620C51, 0x620C54 );*/
 }
-
-
-class WindowedModePlugin : public GizmodPlugin
-{
-public:
-
-	virtual const char* getDisplayName() const { return "PTLE Windowed Mode"; }
-	virtual const char* getSystemName() const { return "WindowedMode"; }
-
-	virtual void onEnable()
-	{
-		InitMod();
-	}
-};
-
-DECLARE_PLUGIN( WindowedModePlugin );
