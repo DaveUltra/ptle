@@ -18,7 +18,7 @@ static void adjust_window_size()
 	int* height = (int*) 0x940D9C;
 
 	RECT rect = { 0, 0, *width, *height };
-	AdjustWindowRect( &rect, WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX), false );
+	AdjustWindowRect( &rect, WS_OVERLAPPEDWINDOW, false );
 
 	*width = rect.right - rect.left;
 	*height = rect.bottom - rect.top;
@@ -36,7 +36,7 @@ void PatchWindowedModeAndAnnoyances()
 		injector::MakeRangedNOP( 0x60E022, 0x60E03A );
 
 		// Window styles.
-		injector::WriteMemory<uint32_t>( 0x6E860A, WS_OVERLAPPEDWINDOW & ~(WS_THICKFRAME | WS_MAXIMIZEBOX) );
+		injector::WriteMemory<uint32_t>( 0x6E860A, WS_OVERLAPPEDWINDOW );
 	}
 
 	// Functional window.
