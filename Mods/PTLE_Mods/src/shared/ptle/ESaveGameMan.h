@@ -11,8 +11,8 @@ class ESaveGameMan
 {
 public:
 
-	TreeMap m_saveLocation1;
-	TreeMap m_saveLocation2;
+	TTreeMap<uint32_t, ESaveGameVar*> m_saveLocation1;
+	TTreeMap<uint32_t, ESaveGameVar*> m_saveLocation2;
 
 
 	virtual ~ESaveGameMan();

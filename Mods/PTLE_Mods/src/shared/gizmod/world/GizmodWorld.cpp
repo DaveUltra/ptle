@@ -22,15 +22,13 @@ void GizmodWorld::getAllEntities( std::vector<EInstance*>& out ) const
 		return;
 	}
 
-	HashMap& entitiesByID = level->m_entitiesByID;
+	THashMap<uint32_t, EInstance*>& entitiesByID = level->m_entitiesByID;
 
 	out.reserve( entitiesByID.m_size );
-	for ( HashMapEntry* e = entitiesByID.m_iterateFirst; e != 0; e = e->m_iterateNext ) {
-		if ( !e->m_ptr ) {
-			continue;
-		}
+	for ( THashMap<uint32_t, EInstance*>::Entry* e = entitiesByID.m_iterateFirst; e != 0; e = e->m_iterateNext ) {
+		EInstance* inst = e->m_value;
+		if ( !inst ) continue;
 
-		EInstance* inst = reinterpret_cast<EInstance*>(e->m_ptr);
 		out.push_back( inst );
 	}
 }
@@ -42,15 +40,13 @@ void GizmodWorld::getEntitiesOfType( std::vector<EInstance*>& out, const ETypeIn
 		return;
 	}
 
-	HashMap& entitiesByID = level->m_entitiesByID;
+	THashMap<uint32_t, EInstance*>& entitiesByID = level->m_entitiesByID;
 
 	int i = entitiesByID.m_size;
-	for ( HashMapEntry* e = entitiesByID.m_iterateFirst; i != 0; e = e->m_iterateNext, i-- ) {
-		if ( !e->m_ptr ) {
-			continue;
-		}
+	for ( THashMap<uint32_t, EInstance*>::Entry* e = entitiesByID.m_iterateFirst; i != 0; e = e->m_iterateNext, i-- ) {
+		EInstance* inst = e->m_value;
+		if ( !inst ) continue;
 
-		EInstance* inst = reinterpret_cast<EInstance*>(e->m_ptr);
 		if ( is_type_derived_from(inst->GetType(), type) ) {
 			out.push_back( inst );
 		}

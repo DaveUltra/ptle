@@ -2,8 +2,6 @@
 
 #include "EStorable.h"
 
-#include "ptle/math/Matrix4f.h"
-
 class EInstance;
 class ERScript;
 class EScriptData;

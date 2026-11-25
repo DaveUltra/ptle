@@ -74,7 +74,7 @@ public:
 
 	char padding4[0x4];
 
-	TreeMap m_animMap;     // Map of anim asset CRC -> AnimLayer
+	TTreeMap<int, AnimLayer*> m_animMap;
 	TreeMap m_treeMap2;
 	LinkedList m_list;
 

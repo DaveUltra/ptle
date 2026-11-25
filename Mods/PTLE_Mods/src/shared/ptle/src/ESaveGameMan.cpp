@@ -10,8 +10,8 @@ GET_FUNC( 0x660B40, void, ESaveGameMan_SetVar, const ETypeInfo*, ESaveGameMan*, 
 GET_FUNC( 0x6F8EC0, uint32_t, HashStr_CRC32, const char* );
 GET_FUNC( 0x65F9A0, uint32_t, CombineHashes, uint32_t, uint32_t, uint32_t );
 
-GET_METHOD( 0x6C6D60, bool, FindSaveGameVar, TreeMap*, uint32_t, ESaveGameVar** );
-GET_METHOD( 0x6C6F10, void*, AddSaveGameVar, TreeMap*, uint32_t, ESaveGameVar*, bool );
+GET_METHOD( 0x6C6D60, bool, FindSaveGameVar, TTreeMap<uint32_t, ESaveGameVar*>*, uint32_t, ESaveGameVar** );
+GET_METHOD( 0x6C6F10, void*, AddSaveGameVar, TTreeMap<uint32_t, ESaveGameVar*>*, uint32_t, ESaveGameVar*, bool );
 
 GET_METHOD( 0x6F3A50, TreeMapNode*, TreeMap_Find, TreeMap*, uint32_t, void** );
 
@@ -71,7 +71,7 @@ bool ESaveGameMan::GetVar( uint32_t levelCRC, uint32_t instanceID, const char* v
 }
 bool ESaveGameMan::GetVar( uint32_t levelCRC, uint32_t instanceID, uint32_t varNameHash, int* outValue, bool imm )
 {
-	TreeMap* saveLocation = imm ? &m_saveLocation2 : &m_saveLocation1;
+	TTreeMap<uint32_t, ESaveGameVar*>* saveLocation = imm ? &m_saveLocation2 : &m_saveLocation1;
 	uint32_t hash = CombineHashes( levelCRC, instanceID, varNameHash );
 
 	ESaveGameVar* sgv;
@@ -83,7 +83,7 @@ bool ESaveGameMan::GetVar( uint32_t levelCRC, uint32_t instanceID, uint32_t varN
 }
 bool ESaveGameMan::GetVar( uint32_t levelCRC, uint32_t instanceID, uint32_t varNameHash, float* outValue, bool imm )
 {
-	TreeMap* saveLocation = imm ? &m_saveLocation2 : &m_saveLocation1;
+	TTreeMap<uint32_t, ESaveGameVar*>* saveLocation = imm ? &m_saveLocation2 : &m_saveLocation1;
 	uint32_t hash = CombineHashes( levelCRC, instanceID, varNameHash );
 
 	ESaveGameVar* sgv;
@@ -107,7 +107,7 @@ void ESaveGameMan::SetVar( uint32_t levelCRC, uint32_t instanceID, const char* v
 }
 void ESaveGameMan::SetVar( uint32_t levelCRC, uint32_t instanceID, uint32_t varNameHash, int value, bool imm )
 {
-	TreeMap* saveLocation = imm ? &m_saveLocation2 : &m_saveLocation1;
+	TTreeMap<uint32_t, ESaveGameVar*>* saveLocation = imm ? &m_saveLocation2 : &m_saveLocation1;
 	uint32_t hash = CombineHashes( levelCRC, instanceID, varNameHash );
 
 	ESaveGameVar* sgv;
@@ -120,7 +120,7 @@ void ESaveGameMan::SetVar( uint32_t levelCRC, uint32_t instanceID, uint32_t varN
 }
 void ESaveGameMan::SetVar( uint32_t levelCRC, uint32_t instanceID, uint32_t varNameHash, float value, bool imm )
 {
-	TreeMap* saveLocation = imm ? &m_saveLocation2 : &m_saveLocation1;
+	TTreeMap<uint32_t, ESaveGameVar*>* saveLocation = imm ? &m_saveLocation2 : &m_saveLocation1;
 	uint32_t hash = CombineHashes( levelCRC, instanceID, varNameHash );
 
 	ESaveGameVar* sgv;

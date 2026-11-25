@@ -24,3 +24,30 @@ public:
 	TreeMapNode* nodeUnknown;
 	TreeMapNode* m_rootNode;
 };
+
+
+template<typename K, typename V>
+class TTreeMapNode
+{
+public:
+
+	TTreeMapNode<K, V>* m_left;
+	TTreeMapNode<K, V>* m_right;
+	char padding0[8];
+	TTreeMapNode<K, V>* m_iterateNext;
+	char padding1[4];
+	K m_key;
+	V m_value;
+};
+
+template<typename K, typename V>
+class TTreeMap
+{
+public:
+
+	typedef TTreeMapNode<K, V> Node;
+
+	Node* m_iterateFirst;
+	Node* nodeUnknown;
+	Node* m_rootNode;
+};

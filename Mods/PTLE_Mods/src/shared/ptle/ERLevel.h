@@ -21,7 +21,7 @@ public:
 
 	char padding2[0x7C];
 
-	HashMap m_entitiesByID;
+	THashMap<uint32_t, EInstance*> m_entitiesByID;
 
 	char padding3[0x94];
 };

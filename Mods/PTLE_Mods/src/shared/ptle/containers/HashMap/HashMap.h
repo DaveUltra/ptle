@@ -24,3 +24,32 @@ public:
 	uint32_t m_capacity;
 	uint32_t m_size;
 };
+
+
+template<typename K, typename V>
+class THashMapEntry
+{
+public:
+
+	typedef THashMapEntry<K, V> Entry;
+
+	Entry* m_iterateNext;
+	Entry* m_right;
+	Entry* m_bucketNext;
+	K m_key;
+	V m_value;
+};
+
+template<typename K, typename V>
+class THashMap
+{
+public:
+
+	typedef THashMapEntry<K, V> Entry;
+
+	Entry* unknown0;
+	Entry* m_iterateFirst;
+	Entry** m_hashTable;
+	uint32_t m_capacity;
+	uint32_t m_size;
+};

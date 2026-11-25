@@ -760,22 +760,19 @@ static void _list_model_assets()
 static void _list_entities()
 {
 	ERLevel* level = Gizmod::getLevel();
-	HashMap* entitiesByID = &level->m_entitiesByID;
+	auto* entitiesByID = &level->m_entitiesByID;
 
-	int i = 0;
-	for ( HashMapEntry* e = entitiesByID->m_iterateFirst; e != 0; e = e->m_iterateNext ) {
-		if ( !e->m_ptr ) {
-			Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : (unknown)\n", e->m_key );
-			continue;
+	for ( THashMapEntry<uint32_t, EInstance*>* e = entitiesByID->m_iterateFirst; e != 0; e = e->m_iterateNext ) {
+		EInstance* inst = e->m_value;
+		if ( inst ) {
+			Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : %s\n", e->m_key, inst->GetTypeName() );
 		}
-
-		EInstance* inst = (EInstance*) e->m_ptr;
-		Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : %s\n", e->m_key, inst->GetTypeName() );
-
-		i++;
+		else {
+			Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : (unknown)\n", e->m_key );
+		}
 	}
 
-	Gizmod::getInstance()->getLogger()->log_printf( "Total : %d entities.\n", i );
+	Gizmod::getInstance()->getLogger()->log_printf( "Total : %d entities.\n", entitiesByID->m_size );
 }
 
 
@@ -913,7 +910,7 @@ static void _displayBone(ERCharacter* ch, CharacterBoneInfo* bone, int myIndex =
 
 	for ( int i = 0; i < bone->m_childBoneIndices.m_size; i++ ) {
 		int index = ((int*) bone->m_childBoneIndices.m_data)[i];
-		_displayBone( ch, &ch->m_boneList[index], index, r + 1 );
+		_displayBone( ch, &ch->m_bones.m_data[index], index, r + 1 );
 	}
 }
 static void _displaySkeleton()
@@ -930,7 +927,7 @@ static void _displaySkeleton()
 	Logger* logger = Gizmod::getInstance()->getLogger();
 	for ( ERCharacter* ch : charTypes ) {
 		logger->log_printf( "\nFound %s!\n", ch->m_name );
-		_displayBone( ch, &ch->m_boneList[0] );
+		_displayBone( ch, &ch->m_bones.m_data[0] );
 	}
 }
 

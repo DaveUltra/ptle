@@ -37,7 +37,6 @@ MAKE_THISCALL_WRAPPER( EIPlayerTick_custom, _EIPlayerTick_custom );
 #include "ptle/ESDResource.h"
 struct ScriptManager
 {
-	void** vtable;
 	ETypeInfo* m_scriptDataTypes[256];
 	ScriptFunction* m_funcLibsPointers[32];
 	int m_funcLibsNumFuncs[32];
@@ -47,6 +46,8 @@ struct ScriptManager
 	TreeMap idk2;
 	TreeMap idk3;
 	// ...
+
+	virtual ~ScriptManager();
 };
 static_assert( (uint32_t) &reinterpret_cast<ScriptManager*>(0)->m_globalScriptDatas == 0x514, "Field offset mismatch" );
 GET_METHOD( 0x6C3020, bool, EScriptContext_ExecuteScript, EScriptContext* );
@@ -95,8 +96,8 @@ void LogScript( EScriptContext* ctx )
 	ScriptManager* global = (ScriptManager*) 0x91F918;
 
 	log_printf("- Data :\n");
-	for ( LinkedListElem* e = ctx->m_script->m_scriptData.m_iterateFirst; e != 0; e = e->m_next ) {
-		EScriptData* data = (EScriptData*) e->m_data;
+	for ( TLinkedListElem<EScriptData*>* e = ctx->m_script->m_scriptData.m_iterateFirst; e != 0; e = e->m_next ) {
+		EScriptData* data = e->m_data;
 		log_printf("  - ");
 		displayScriptData( data );
 		log_printf("\n");

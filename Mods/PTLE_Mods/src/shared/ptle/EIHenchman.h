@@ -21,7 +21,7 @@ public:
 
 	char padding7[0x1C];
 
-	Array m_coverObjectHashes;  // List of object IDs this henchman can hide behind.
+	TArray<uint32_t> m_coverObjectHashes;  // List of object IDs this henchman can hide behind.
 
 	char padding8[0x48];
 
@@ -48,7 +48,7 @@ public:
 
 	char padding11[0xF];
 
-	Array m_coverObjectInstances;
+	TArray<EInstance*> m_coverObjectInstances;
 
 	EIDynamicModel* m_spotlightModel;
 

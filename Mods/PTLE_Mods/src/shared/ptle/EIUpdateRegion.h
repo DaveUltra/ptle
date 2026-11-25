@@ -20,7 +20,7 @@ public:
 	static const uint32_t VTABLE = 0x8ADEB8;
 
 
-	TreeMap m_treeMap;
+	TTreeMap<void*, EInstance*> m_treeMap;
 
 	UpdateEntry* m_first;
 	UpdateEntry* m_last;
