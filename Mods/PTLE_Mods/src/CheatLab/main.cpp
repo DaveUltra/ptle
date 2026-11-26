@@ -33,14 +33,8 @@ MAKE_THISCALL_WRAPPER( EIPlayerTick_custom, _EIPlayerTick_custom );
 #include "ptle/ESDFloat.h"
 #include "ptle/ESDVector.h"
 #include "ptle/ESDMatrix.h"
+#include "ptle/ESDString.h"
 #include "ptle/ESDResource.h"
-struct ScriptFunction
-{
-	char* m_functionName;
-	char* m_functionArgs;
-	int unknown;
-	void* m_funcPtr;
-};
 struct ScriptManager
 {
 	void** vtable;
@@ -63,7 +57,7 @@ void displayScriptData(EScriptData* s)
 	std::string typeName = s->GetTypeName();
 	log_printf("%s, ", typeName.c_str());
 	if (typeName == "ESDInt") {
-		log_printf("%d | %x", ((ESDInt*) s)->m_value, ((ESDInt*) s)->m_value);
+		log_printf("%d (0x%X)", ((ESDInt*) s)->m_value, ((ESDInt*) s)->m_value);
 	}
 	else if (typeName == "ESDFloat") {
 		log_printf("%f", ((ESDFloat*) s)->m_value);
@@ -75,6 +69,9 @@ void displayScriptData(EScriptData* s)
 	else if (typeName == "ESDMatrix") {
 
 	}
+	else if (typeName == "ESDString") {
+		log_printf( ((ESDString*) s)->m_value );
+	}
 	else if (is_type_derived_from(s->GetType(), (ETypeInfo*) 0x91FF2C)) {
 		/*if (((ESDResource*)s)->m_name) {
 			log_printf("%s", ((ESDResource*) s)->m_name);
@@ -85,15 +82,15 @@ void displayScriptData(EScriptData* s)
 	}
 }
 
+bool g_logScripts = false;
 static std::unordered_set<std::string> m;
-bool _EScriptContext_ExecuteScript_custom( EScriptContext* ctx )
+void LogScript( EScriptContext* ctx )
 {
 	// Gate to execute once.
-	if (m.find(ctx->m_script->m_name) != m.end())
-		goto _orig;
+	if ( m.find(ctx->m_script->m_name) != m.end() ) return;
 	m.insert(ctx->m_script->m_name);
 
-	log_printf("Executing \"%s\"...\n", ctx->m_script->m_name);
+	log_printf( "Executing \"%s\"...\n", ctx->m_script->m_name );
 
 	ScriptManager* global = (ScriptManager*) 0x91F918;
 
@@ -108,7 +105,7 @@ bool _EScriptContext_ExecuteScript_custom( EScriptContext* ctx )
 	log_printf("- Bytecode :\n");
 	uint32_t* bytecode = (uint32_t*) ctx->m_script->m_bytecode.m_data;
 	for ( int i = 0; i < ctx->m_script->m_bytecode.m_size; i++ ) {
-		log_printf("  - (%.3d) ", i);
+		log_printf("  - ");
 
 		uint32_t code = bytecode[i];
 		switch (code & 0xF)
@@ -148,7 +145,7 @@ bool _EScriptContext_ExecuteScript_custom( EScriptContext* ctx )
 		case 8: {
 				ScriptFunction* func = GetFunctionFromBytecode( global, code >> 4 );
 				if ( func ) {
-					log_printf("%s(%s) (0x%X)\n", func->m_functionName, func->m_functionArgs, func->m_funcPtr);
+					log_printf("%s(%s) (0x%X)\n", func->m_functionName, func->m_paramTypes, func->m_functionPtr);
 				}
 				else {
 					log_printf("function not found (0x%X)\n", code);
@@ -158,11 +155,7 @@ bool _EScriptContext_ExecuteScript_custom( EScriptContext* ctx )
 		}
 	}
 	log_printf("\n");
-
-_orig:
-	return EScriptContext_ExecuteScript( ctx );
 }
-MAKE_THISCALL_WRAPPER( EScriptContext_ExecuteScript_custom, _EScriptContext_ExecuteScript_custom );
 
 GET_FUNC( 0x65CC10, char**, PopGetString, EScriptContext* );
 void Script_Print( EScriptContext* ctx )
@@ -182,9 +175,12 @@ unsigned long __stdcall Thread( void* )
 }
 
 
+#include "gizmod/Gizmod.h"
 #include "gizmod/GizmodPlugin.h"
 
-class CheatLabPlugin : public GizmodPlugin
+#include "gizmod/event/ExecuteScriptEvent.h"
+
+class CheatLabPlugin : public GizmodPlugin, public IExecuteScriptListener
 {
 public:
 
@@ -195,13 +191,19 @@ public:
 	{
 		injector::MakeCALL( 0x4B2DE1, EIPlayerTick_custom );
 
-		//injector::MakeCALL( 0x65A1A0, EScriptContext_ExecuteScript_custom );
+		Gizmod::getInstance()->getEventListener()->registerEvent<ExecuteScriptEvent>( this );
 
 		//injector::WriteMemory( 0x8FBB1C, &Script_Print );
 
 		register_types();
 
 		CreateThread( 0, 0, Thread, 0, 0, 0 );
+	}
+
+	virtual void onExecuteScript( ExecuteScriptEvent& event )
+	{
+		if ( !g_logScripts ) return;
+		LogScript( event.getScriptContext() );
 	}
 };
 

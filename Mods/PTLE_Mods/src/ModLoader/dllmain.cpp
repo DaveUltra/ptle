@@ -497,6 +497,24 @@ MAKE_THISCALL_WRAPPER( CinematicCannotPlay, _CinematicCannotPlay );
 
 
 // -----------------------------------------------------------
+// Execute script.
+// -----------------------------------------------------------
+GET_METHOD( 0x6C3020, bool, EScriptContext_ExecuteScript, EScriptContext* );
+static bool _ExecuteScript_Custom( EScriptContext* self )
+{
+	ExecuteScriptEvent event( self );
+	g_pitfall.getEventListener()->invokeEvent( event );
+
+	if ( event.isCancelled() ) {
+		return false;
+	}
+
+	return EScriptContext_ExecuteScript( self );
+}
+MAKE_THISCALL_WRAPPER( ExecuteScript_Custom, _ExecuteScript_Custom );
+
+
+// -----------------------------------------------------------
 // Heroic skill unlock.
 // -----------------------------------------------------------
 GET_FUNC( 0x4EA0D0, void, Script_HarryAddHeroic, EScriptContext* );
@@ -961,6 +979,9 @@ static void InjectCode()
 
 		// Cinematic playing.
 		injector::MakeCALL( 0x430A20, CinematicCannotPlay );
+
+		// Executed scripts.
+		injector::MakeCALL( 0x65A1A0, ExecuteScript_Custom );
 
 		// Heroic skill unlock.
 		injector::WriteMemory( 0x8EFF1C, HarryAddHeroic_Custom );  // "HarryAddHeroic" script function.

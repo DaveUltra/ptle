@@ -9,6 +9,20 @@ class ERScript;
 class EScriptData;
 
 
+struct ScriptAdditionalStruct
+{
+	void* unknown0;
+	Matrix4f unknown1;
+};
+
+struct ScriptFunction
+{
+	const char* m_functionName;
+	const char* m_paramTypes;
+	int unknown;
+	void (*m_functionPtr)(class EScriptContext*);
+};
+
 class EScriptContext : public EStorable
 {
 public:
@@ -19,7 +33,6 @@ public:
 	int m_bytecodePointer;
 	int m_stackPointer;
 	ERScript* m_script;
-
 	EInstance* m_owningInstance;
 
 	bool unknown0;
@@ -31,9 +44,9 @@ public:
 	void* unknown1;
 	EScriptData* m_scriptStack[512];
 
-	char padding1[0x60];
+	ScriptAdditionalStruct unknown2;
 
-	void* m_currentFunction;
+	bool unknown3;
 
-	char padding2[0x8];
+	ScriptFunction* m_currentFunction;
 };

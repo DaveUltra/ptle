@@ -348,6 +348,13 @@ static void _ender_pearl( bool enable )
 }
 
 
+extern bool g_logScripts;
+static void _log_scripts( bool enable )
+{
+	g_logScripts = enable;
+}
+
+
 // --------------------------------------------------------------------------------
 // The HUD's life meter (EUIHudLifeMeter, at HUD+0xF8) lays its icons out for the
 // max health only when it enters the screen : changing the max while it is up
@@ -932,6 +939,7 @@ const cheat_t cheats[] =
 	{ "Free Camera",          _free_camera },
 	{ "Deactivate Effectors", _deactivate_effectors },
 	{ "Ender Pearl",          _ender_pearl },
+	{ "Log Executed Scripts", _log_scripts },
 };
 
 const command_t commands[] =

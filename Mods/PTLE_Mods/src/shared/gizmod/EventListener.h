@@ -7,6 +7,7 @@
 #include "event/CollectIdolEvent.h"
 #include "event/CollectItemEvent.h"
 #include "event/EntitySpawnEvent.h"
+#include "event/ExecuteScriptEvent.h"
 #include "event/HarryDamageEvent.h"
 #include "event/HarryDeathEvent.h"
 #include "event/HeroicUnlockEvent.h"
