@@ -11,11 +11,23 @@ struct MemberFuncCallback
 };
 
 
+struct BeastStateDataUnknown
+{
+	uint32_t m_animCRC;
+	uint32_t m_soundCRC;
+	float unknown0;
+	float unknown1;
+	uint32_t m_scriptEnterCRC;
+	uint32_t m_scriptUpdateCRC;
+	uint32_t m_scriptLeaveCRC;
+	uint32_t unknown2;
+};
+
 class EBeastState
 {
 public:
 
-	void* unknown0;
+	BeastStateDataUnknown* m_stateData;
 
 	char* m_name;
 
@@ -29,9 +41,9 @@ public:
 
 	int m_index;
 
-	ERScript* m_script0;
-	ERScript* m_script1;
-	ERScript* m_script2;
+	ERScript* m_scriptEnter;
+	ERScript* m_scriptUpdate;
+	ERScript* m_scriptLeave;
 
 	uint32_t unknown1;
 };

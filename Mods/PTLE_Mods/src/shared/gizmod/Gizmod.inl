@@ -1,20 +1,21 @@
 /*static*/ inline EIHarry* Gizmod::getHarry()
 {
-	return *((EIHarry**) 0x917034);
+	// TODO: ASSUMES EIHarry!!! This is not the case in spirit temples!!
+	return (EIHarry*) GLOBAL_STRUCT_PRIVATE::getInstance()->m_playerCharacter;
 }
 
 /*static*/ inline ERLevel* Gizmod::getLevel()
 {
-	ERLevel** levelPtr = *((ERLevel***) 0x91702C);
-	return levelPtr ? (*levelPtr) : 0;
+	ELevelController* ctrl = GLOBAL_STRUCT_PRIVATE::getInstance()->m_levelController;
+	return ctrl ? ctrl->m_world : 0;
 }
 
 /*static*/ inline EUIHud* Gizmod::getHUD()
 {
-	return *((EUIHud**) (0x917028 + 0x8C));
+	return GLOBAL_STRUCT_PRIVATE::getInstance()->m_hud;
 }
 
 /*static*/ inline uint32_t Gizmod::getCurrentLevelCRC()
 {
-	return *((uint32_t*) 0x917088);
+	return GLOBAL_STRUCT_PRIVATE::getInstance()->m_currentLevelCRC;
 }

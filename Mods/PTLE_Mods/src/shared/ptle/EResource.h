@@ -2,6 +2,8 @@
 
 #include "EStorable.h"
 
+class ResourceArchive;
+
 
 class EResource : public EStorable
 {
@@ -11,7 +13,7 @@ public:
 
 
 	char* m_name;
-	void* m_archive;
+	ResourceArchive* m_archive;
 	uint32_t m_crc;
 	int m_refCount;
 };

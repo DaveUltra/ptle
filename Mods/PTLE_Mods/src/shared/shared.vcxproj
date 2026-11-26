@@ -108,6 +108,8 @@
     <ClInclude Include="gizmod\save\SaveManager.h" />
     <ClInclude Include="gizmod\shaman\ShamanShop.h" />
     <ClInclude Include="gizmod\types\Projectile.h" />
+    <ClInclude Include="ptle\WIP\EGraphics.h" />
+    <ClInclude Include="ptle\WIP\GlobalStruct.h" />
     <ClInclude Include="gizmod\world\GizmodWorld.h" />
     <ClInclude Include="gizmod\event\EntitySpawnEvent.h" />
     <ClInclude Include="gizmod\Logger.h" />
@@ -120,6 +122,7 @@
     <ClInclude Include="gizmod\event\LoadLevelEvent.h" />
     <ClInclude Include="gizmod\GizmodPlugin.h" />
     <ClInclude Include="ptle\containers\LinkedList\LinkedList.h" />
+    <ClInclude Include="ptle\ECameraManager.h" />
     <ClInclude Include="ptle\EGamesUI3dScore.h" />
     <ClInclude Include="ptle\EHarryActions.h" />
     <ClInclude Include="ptle\EHeroicSkill.h" />
@@ -229,6 +232,8 @@
     <ClInclude Include="ptle\math\AABB.h" />
     <ClInclude Include="ptle\stream\EStream.h" />
     <ClInclude Include="ptle\types\defs.h" />
+    <ClInclude Include="ptle\WIP\ThreadBase.h" />
+    <ClInclude Include="ptle\WIP\ThreadRenderer.h" />
     <ClInclude Include="utils\func.h" />
     <ClInclude Include="ptle\containers\TreeMap\TreeMap.h" />
     <ClInclude Include="ptle\EILight.h" />

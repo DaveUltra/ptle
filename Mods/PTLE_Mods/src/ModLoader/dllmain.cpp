@@ -684,10 +684,8 @@ static __declspec(naked) void _EntitySpawn()
 GET_METHOD( 0x5229B0, void, EMusicManager_PlayMusic, void*, uint32_t, bool );
 static void LevelLoaded()
 {
-	uint32_t globalStruct = 0x917028;
-	uint32_t obj1 =     *(uint32_t*)(globalStruct + 0x4);
-	uint32_t obj2 =     *(uint32_t*)(obj1         + 0x4);
-	uint32_t musicCRC = *(uint32_t*)(obj2         + 0x34);
+	GLOBAL_STRUCT_PRIVATE* globalStruct = GLOBAL_STRUCT_PRIVATE::getInstance();
+	const uint32_t musicCRC = globalStruct->m_levelController->m_levelDesc->m_musicCRC;
 
 	LevelLoadedEvent event;
 	event.setMusicOverride( musicCRC );

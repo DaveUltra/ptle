@@ -6,6 +6,8 @@
 #include "item/InventoryItem.h"
 #include "world/GizmodWorld.h"
 
+#include "ptle/WIP/GlobalStruct.h"
+
 #include <string>
 
 class GizmodPlugin;

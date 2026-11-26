@@ -198,6 +198,11 @@
     <ClInclude Include="ptle\EIGassregion.h" />
     <ClInclude Include="ptle\EIHavokCloth.h" />
     <ClInclude Include="ptle\EIMarker.h" />
+    <ClInclude Include="ptle\ECameraManager.h" />
+    <ClInclude Include="ptle\WIP\GlobalStruct.h" />
+    <ClInclude Include="ptle\WIP\ThreadBase.h" />
+    <ClInclude Include="ptle\WIP\ThreadRenderer.h" />
+    <ClInclude Include="ptle\WIP\EGraphics.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

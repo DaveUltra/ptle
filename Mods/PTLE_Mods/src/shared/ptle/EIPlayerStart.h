@@ -14,11 +14,10 @@ public:
 	static const uint32_t VTABLE = 0x8732C8;
 
 
-	Vector3f unknown0;
-	int unknown1;
-	Matrix4f unknown2;
-	int unknown7;
-	int unknown8;
-	int unknown9;
-	int unknown10;
+	Vector3f m_position;
+	Matrix4f m_worldMatrix;
+	float m_camDistance;
+	float m_camPitch;
+	float unknown9;
+	float unknown10;
 };
