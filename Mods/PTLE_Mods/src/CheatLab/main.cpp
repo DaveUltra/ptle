@@ -96,8 +96,7 @@ void LogScript( EScriptContext* ctx )
 	ScriptManager* global = (ScriptManager*) 0x91F918;
 
 	log_printf("- Data :\n");
-	for ( TLinkedListElem<EScriptData*>* e = ctx->m_script->m_scriptData.m_iterateFirst; e != 0; e = e->m_next ) {
-		EScriptData* data = e->m_data;
+	for ( EScriptData* data : ctx->m_script->m_scriptData ) {
 		log_printf("  - ");
 		displayScriptData( data );
 		log_printf("\n");

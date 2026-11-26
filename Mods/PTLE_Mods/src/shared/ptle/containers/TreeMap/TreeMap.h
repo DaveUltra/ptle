@@ -31,13 +31,18 @@ class TTreeMapNode
 {
 public:
 
-	TTreeMapNode<K, V>* m_left;
-	TTreeMapNode<K, V>* m_right;
+	typedef TTreeMapNode<K, V> Node;
+	typedef struct { K m_key; V m_value; } Pair;
+
+	Node* m_left;
+	Node* m_right;
 	char padding0[8];
-	TTreeMapNode<K, V>* m_iterateNext;
+	Node* m_iterateNext;
 	char padding1[4];
-	K m_key;
-	V m_value;
+	union {
+		Pair m_pair;
+		struct { K m_key; V m_value; };
+	};
 };
 
 template<typename K, typename V>
@@ -47,7 +52,24 @@ public:
 
 	typedef TTreeMapNode<K, V> Node;
 
+	struct ConstIterator
+	{
+		__forceinline bool operator!=(const ConstIterator& o) const { return m_cur != o.m_cur; }
+		__forceinline void operator++() { m_cur = m_cur->m_iterateNext; }
+
+		__forceinline const typename Node::Pair* operator->() const { return &m_cur->m_pair; }
+		__forceinline const typename Node::Pair& operator*() const { return m_cur->m_pair; }
+
+		mutable const Node* m_cur;
+	};
+
+public:
+
 	Node* m_iterateFirst;
 	Node* nodeUnknown;
 	Node* m_rootNode;
+
+
+	__forceinline ConstIterator begin() const { return ConstIterator{m_iterateFirst}; }
+	__forceinline ConstIterator end() const { return ConstIterator{(const Node*) 0}; }
 };

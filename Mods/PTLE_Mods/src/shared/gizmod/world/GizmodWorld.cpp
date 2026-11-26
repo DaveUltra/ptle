@@ -22,11 +22,9 @@ void GizmodWorld::getAllEntities( std::vector<EInstance*>& out ) const
 		return;
 	}
 
-	THashMap<uint32_t, EInstance*>& entitiesByID = level->m_entitiesByID;
-
-	out.reserve( entitiesByID.m_size );
-	for ( THashMap<uint32_t, EInstance*>::Entry* e = entitiesByID.m_iterateFirst; e != 0; e = e->m_iterateNext ) {
-		EInstance* inst = e->m_value;
+	out.reserve( level->m_entitiesByID.m_size );
+	for ( const auto& pair : level->m_entitiesByID ) {
+		EInstance* inst = pair.m_value;
 		if ( !inst ) continue;
 
 		out.push_back( inst );
@@ -40,11 +38,8 @@ void GizmodWorld::getEntitiesOfType( std::vector<EInstance*>& out, const ETypeIn
 		return;
 	}
 
-	THashMap<uint32_t, EInstance*>& entitiesByID = level->m_entitiesByID;
-
-	int i = entitiesByID.m_size;
-	for ( THashMap<uint32_t, EInstance*>::Entry* e = entitiesByID.m_iterateFirst; i != 0; e = e->m_iterateNext, i-- ) {
-		EInstance* inst = e->m_value;
+	for ( const auto& pair : level->m_entitiesByID ) {
+		EInstance* inst = pair.m_value;
 		if ( !inst ) continue;
 
 		if ( is_type_derived_from(inst->GetType(), type) ) {

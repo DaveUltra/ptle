@@ -43,10 +43,8 @@ static void log_ui_recursive(EUIObjectNode* node, int level)
 
 	Gizmod::getInstance()->getLogger()->log_printf( buf, node->GetTypeName() );
 
-	for ( LinkedListElem* e = node->m_children.m_iterateFirst; e != 0; e = e->m_next ) {
-		EUIObjectNode* c = (EUIObjectNode*) e->m_data;
-
-		log_ui_recursive(c, level + 1);
+	for ( EUIObjectNode* c : node->m_children ) {
+		log_ui_recursive( c, level + 1 );
 	}
 }
 
@@ -59,8 +57,7 @@ bool _EUIDDMenu_Build_Custom( EUIObjectNode* self, char* uiType, int b )
 
 	// Patch "NEW GAME" with a custom display.
 	if ( strcmp(uiType, "FrontEndMain") == 0 ) {
-		for ( LinkedListElem* e = self->m_children.m_iterateFirst; e != 0; e = e->m_next ) {
-			EUIObjectNode* c = (EUIObjectNode*) e->m_data;
+		for ( EUIObjectNode* c : self->m_children ) {
 			EUITextIcon* text = type_cast<EUITextIcon>( c );
 
 			// Lmao no string compare for you.

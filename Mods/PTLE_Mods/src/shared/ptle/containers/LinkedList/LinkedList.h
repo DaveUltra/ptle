@@ -33,7 +33,24 @@ public:
 
 	typedef TLinkedListElem<T> Elem;
 
+	struct ConstIterator
+	{
+		__forceinline bool operator!=(const ConstIterator& o) const { return m_cur != o.m_cur; }
+		__forceinline void operator++() { m_cur = m_cur->m_next; }
+
+		__forceinline const T* operator->() const { return &m_cur->m_data; }
+		__forceinline const T& operator*() const { return m_cur->m_data; }
+
+		mutable const Elem* m_cur;
+	};
+
+public:
+
 	// Don't really know which is who yet, code is very confusing...
 	Elem* m_iterateFirst;
 	Elem* m_first;
+
+
+	__forceinline ConstIterator begin() const { return ConstIterator{m_iterateFirst}; }
+	__forceinline ConstIterator end() const { return ConstIterator{(const Elem*) 0}; }
 };

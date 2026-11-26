@@ -760,19 +760,18 @@ static void _list_model_assets()
 static void _list_entities()
 {
 	ERLevel* level = Gizmod::getLevel();
-	auto* entitiesByID = &level->m_entitiesByID;
 
-	for ( THashMapEntry<uint32_t, EInstance*>* e = entitiesByID->m_iterateFirst; e != 0; e = e->m_iterateNext ) {
-		EInstance* inst = e->m_value;
+	for ( const auto& pair : level->m_entitiesByID ) {
+		EInstance* inst = pair.m_value;
 		if ( inst ) {
-			Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : %s\n", e->m_key, inst->GetTypeName() );
+			Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : %s\n", pair.m_key, inst->GetTypeName() );
 		}
 		else {
-			Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : (unknown)\n", e->m_key );
+			Gizmod::getInstance()->getLogger()->log_printf( "- 0x%.8X : (unknown)\n", pair.m_key );
 		}
 	}
 
-	Gizmod::getInstance()->getLogger()->log_printf( "Total : %d entities.\n", entitiesByID->m_size );
+	Gizmod::getInstance()->getLogger()->log_printf( "Total : %d entities.\n", level->m_entitiesByID.m_size );
 }
 
 
@@ -789,8 +788,7 @@ static void _log_children( EUIObjectNode* obj, int depth )
 	}
 	buf[i] = 0;
 
-	for ( LinkedListElem* e = obj->m_children.m_iterateFirst; e != 0; e = e->m_next ) {
-		EUIObjectNode* c = (EUIObjectNode*) e->m_data;
+	for ( EUIObjectNode* c : obj->m_children ) {
 		EUITextIcon* t = type_cast<EUITextIcon>( c );
 		if ( t ) {
 			sprintf_s( buf + i, sizeof(buf) - i, "- %s (0x%.8X) \"%ls\"\n", c->GetTypeName(), c, *t->m_text );

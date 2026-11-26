@@ -742,25 +742,12 @@ static void LevelLoaded()
 // Load level event.
 // -----------------------------------------------------------
 
+#include "ptle/levels/level_info.h"
+
 GET_METHOD( 0x5EBA90, void, LoadLevel, void*, uint32_t, bool );
-static uint32_t* get_prev_level_address()
-{
-	TreeMap* map = ((TreeMap*) 0x91FE2C);      // This tree map contains a node which points to the previous area value...
-	const uint32_t targetNodeID = 0x174CD628;  // ... and this is the ID of said node.
-
-	// Look for it.
-	// TODO : Binary search might be a good idea for performance.
-	TreeMapNode* node = map->m_iterateFirst;
-	while ( node && node->m_hash != targetNodeID ) {
-		node = node->m_iterateNext;
-	}
-
-	ESDInt* scriptInt = reinterpret_cast<ESDInt*>(node->m_ptr);
-	return reinterpret_cast<uint32_t*>(&scriptInt->m_value);
-}
 static void _LoadLevel_custom( void* self, uint32_t levelCRC, bool param )
 {
-	uint32_t* prevPtr = get_prev_level_address();
+	uint32_t* prevPtr = find_previous_area_memory();
 	LoadLevelEvent event( levelCRC, *prevPtr );
 	Gizmod::getInstance()->getEventListener()->invokeEvent( event );
 
