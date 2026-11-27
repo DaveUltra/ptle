@@ -334,6 +334,28 @@ void Script_SetBeastTarget_Safe( EScriptContext* context )
 	Script_SetBeastTarget_Original( context );
 }
 
+// Cutscene crash fix.
+#include <dsound.h>
+struct SoundStruct
+{
+	IDirectSoundBuffer8* m_dsoundBuffer;
+	char padding[0x14];
+};
+static SoundStruct* a = (SoundStruct*) 0x93BD70;
+static const auto DestroySoundOrig = (void (*__cdecl)(int)) 0x6D0350;
+static void __cdecl SoundFix(int id)
+{
+	if (a[id].m_dsoundBuffer != 0) {
+		a[id].m_dsoundBuffer->Stop();   // Apparently this can spontaneously set the DirectSoundBuffer pointer to 0??
+		if (a[id].m_dsoundBuffer != 0) {
+			a[id].m_dsoundBuffer->Release();
+			a[id].m_dsoundBuffer = 0;
+		}
+	}
+
+	DestroySoundOrig( id );
+}
+
 
 GET_METHOD( 0x4159B0, void, EIBeast_PerformStateSwitch, EIBeast*, uint32_t, bool, bool );
 GET_METHOD( 0x428A80, void, EIBushNinja_PerformStateSwitch, EIBeast*, uint32_t, bool, bool );
@@ -947,6 +969,10 @@ static void InjectCode()
 
 	// Protection against explorer softlock.
 	injector::WriteMemory( 0x87659C, EIExplorer_ShouldTick_fix );
+
+	// Cutscene crash fix.
+	injector::MakeCALL( 0x67924D, SoundFix );
+	injector::MakeCALL( 0x679A5A, SoundFix );
 
 	// Mutex guarding game instance (we want multiple instances!)
 	injector::MakeRangedNOP( 0x60D44D, 0x60D45C );    // CreateMutexA()
