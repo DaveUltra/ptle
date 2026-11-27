@@ -58,6 +58,8 @@ GET_METHOD( 0x559200, void, EIProjectile_HitInstance, EIProjectile*, void* );
 
 
 
+static char* const GAME_EMPTY_STRING = (char*) 0x9410B0;   // global empty string.
+
 static inline ItemStruct* get_global_items()
 {
 	return (ItemStruct*) 0x8EEB90;
@@ -520,7 +522,7 @@ static void _spawn_evilharry()
 		// Disable dancing on victory.
 		EBeastState* stateChase = evilHarryP->m_states + 3;
 		EBeastCondition* condNo = evilHarryP->m_conditions + 10;
-		condNo->m_func.m_func = (void(*)())no;
+		condNo->m_func.m_func = (bool(*)())no;
 		evilHarryP->m_transitions[1].m_condition = condNo;
 		evilHarryP->m_transitions[5].m_condition = condNo;
 		evilHarryP->m_transitions[56].m_condition = condNo;
@@ -533,6 +535,7 @@ static void _spawn_evilharry()
 	// WARN : The free at 0x412A32 crashes, since it tries to free static memory.
 	ERLevel_SetupEntity( harry->m_world, evilHarry, 0 );
 	evilHarry->Init();
+	evilHarry->m_beastTypeName = GAME_EMPTY_STRING;
 
 	// Force Evil Harry to chase us by default.
 	evilHarry->m_forceNextState = true;
@@ -613,11 +616,65 @@ static void _netiv_spawn()
 	}
 
 	AddToWorld( harry->m_world, native );
-
-	// WARN : The free at 0x412A32 crashes, since it tries to free static memory.
 	ERLevel_SetupEntity( harry->m_world, native, 0 );
+
 	native->Init();
+	native->m_beastTypeName = GAME_EMPTY_STRING;
 }
+
+
+// --------------------------------------------------------------------------------
+// Spawn an eye from Eyes of Doom.
+// --------------------------------------------------------------------------------
+#include "ptle/EIEyeballs.h"
+GET_METHOD( 0x418650, void, EIBeast_SetState, EIBeast*, char* );
+static void _eye_spawn_at( const Vector3f& pos, float angle )
+{
+	EIHarry* harry = Gizmod::getHarry();
+
+	EIEyeballs* eye = instantiate_object<EIEyeballs>();
+
+	eye->m_position = pos;
+
+	eye->m_rotation.x = 0.0F;
+	eye->m_rotation.y = 0.0F;
+	eye->m_rotation.z = sin(angle * 0.5F);
+	eye->m_rotation.w = cos(angle * 0.5F);
+
+	eye->m_scale.x = 0.1F; eye->m_scale.y = 0.1F; eye->m_scale.z = 0.1F;
+	eye->m_uniformScale = 0.1F;
+
+	uint32_t hash = HashPath("BEyeball");
+	eye->m_beastTypeCRC = hash;
+	eye->m_beastTypeName = "eyeball";
+	EIBeast_LoadBeastAsset( eye );
+
+	eye->DeserializePart2();
+
+	if ( !eye->m_beastType ) {
+		log_printf( "Beast type asset load failed.\n" );
+	}
+
+	AddToWorld( harry->m_world, eye );
+	ERLevel_SetupEntity( harry->m_world, eye, 0 );
+
+	eye->Init();
+	eye->m_beastTypeName = GAME_EMPTY_STRING;
+
+	EIBeast_SetState( eye, "eyeball.init" );
+	eye->m_targetInstance = harry;
+	eye->m_targetInstancePosition = harry->m_position;
+}
+
+static void _eye_spawn()
+{
+	EIHarry* harry = Gizmod::getHarry();
+
+	Vector3f p = harry->m_position;
+	p.z += 8.0F;
+	_eye_spawn_at( p, harry->m_orientationAngle + 3.14F );
+}
+
 
 
 // --------------------------------------------------------------------------------
@@ -952,6 +1009,7 @@ const command_t commands[] =
 	{ "Spawn Evil Harry",     _spawn_evilharry },
 	{ "Spawn Micay",          _micay_spawn },
 	{ "Spawn Native",         _netiv_spawn },
+	{ "Spawn Eye",            _eye_spawn },
 	{ "Spawn Idol",           _idol_spawn_regular },
 	{ "List models",          _list_model_assets },
 	{ "List entities w/ IDs", _list_entities },

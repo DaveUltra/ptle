@@ -6,7 +6,7 @@ class ERScript;
 
 struct MemberFuncCallback
 {
-	void (*m_func)();
+	bool (*m_func)();
 	char zero[0x0C];
 };
 
