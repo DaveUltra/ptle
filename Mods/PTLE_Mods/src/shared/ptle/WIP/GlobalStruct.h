@@ -12,8 +12,7 @@ class EUIHud;
 
 struct LevelDescription
 {
-	int unknown0;
-
+	char* m_name;
 	uint32_t m_levelCRC;
 	uint32_t unknown1;
 	uint32_t m_scriptCRC;
@@ -23,7 +22,7 @@ struct LevelDescription
 	uint32_t unknown3;
 	uint32_t unknown4;
 
-	Array m_scriptCRCArray;   // array of uint32_t.
+	TArray<uint32_t> m_scriptCRCArray;
 
 	uint32_t m_modelCRC0;
 	uint32_t m_modelCRC1;
@@ -49,13 +48,15 @@ public:
 
 	char padding[0x4];
 
-	TreeMap m_levelDescList;  // map of level crc (uint32_t) -> LevelDescription*
-	Array m_scriptsArray;
+	TTreeMap<uint32_t, LevelDescription*> m_levelDescList;
+	TArray<ERScript*> m_scriptsArray;
 	ERScript* unknown3;
 
 	/* ... */
 };
 
+
+// TODO: This struct's official name might be "EWorld".
 class GLOBAL_STRUCT_PRIVATE
 {
 public:

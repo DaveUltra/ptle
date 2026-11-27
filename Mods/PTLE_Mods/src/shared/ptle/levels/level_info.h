@@ -154,8 +154,8 @@ struct level_collection_t
 };
 
 
-extern level_collection_t levels_game;
-extern level_collection_t levels_beta;
+extern const level_collection_t levels_game;
+extern const level_collection_t levels_beta;
 
 
 uint32_t level_get_crc( uint32_t id );

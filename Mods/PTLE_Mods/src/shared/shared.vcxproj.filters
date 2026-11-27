@@ -204,6 +204,7 @@
     <ClInclude Include="ptle\WIP\ThreadRenderer.h" />
     <ClInclude Include="ptle\WIP\EGraphics.h" />
     <ClInclude Include="gizmod\event\ExecuteScriptEvent.h" />
+    <ClInclude Include="ptle\WIP\ScriptManager.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="gizmod\GizmodEvents.inl" />

@@ -2,11 +2,13 @@
 #include "ptle/containers/TreeMap/TreeMap.h"
 #include "ptle/ESDInt.h"
 
+#include "ptle/WIP/ScriptManager.h"
+
 
 #define count( arr ) (sizeof(arr) / sizeof(arr[0]))
 
 
-static level_info_t level_info[] =
+static const level_info_t level_info[] =
 {
 	{ 0xEA667977, "c07",     "Abandoned Cavern" },
 	{ 0xABD7CCD8, "m01a",    "Altar of Ages" },
@@ -72,7 +74,7 @@ static level_info_t level_info[] =
 	{ 0x62548B77, "s51",     "White Valley" },
 };
 
-static level_info_t level_info_beta[] =
+static const level_info_t level_info_beta[] =
 {
 	{ 0xE9809967, "gym",          "gym" },
 	{ 0xD4E640B8, "0-alan",       "0-alan (Beta Characters)" },
@@ -98,8 +100,8 @@ static level_info_t level_info_beta[] =
 };
 
 
-level_collection_t levels_game = { level_info, count(level_info) };
-level_collection_t levels_beta = { level_info_beta, count(level_info_beta) };
+const level_collection_t levels_game = { level_info, count(level_info) };
+const level_collection_t levels_beta = { level_info_beta, count(level_info_beta) };
 
 
 uint32_t level_get_crc( uint32_t id )
@@ -140,11 +142,11 @@ const level_info_t* level_get_info( uint32_t id )
 uint32_t* find_previous_area_memory()
 {
 	// Global script datas map.
-	TTreeMap<uint32_t, EScriptData*>* map = (TTreeMap<uint32_t, EScriptData*>*) 0x91FE2C;
+	const TTreeMap<uint32_t, EScriptData*>& map = ScriptManager::getInstance()->m_globalScriptDatas;
 	const uint32_t targetNodeID = 0x174CD628;
 
 	// Look for it.
-	const auto* node = map->m_rootNode;
+	const auto* node = map.m_rootNode;
 	while ( node != 0 ) {
 		if      ( targetNodeID < node->m_key ) node = node->m_left;
 		else if ( targetNodeID > node->m_key ) node = node->m_right;

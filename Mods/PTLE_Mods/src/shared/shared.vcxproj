@@ -233,6 +233,7 @@
     <ClInclude Include="ptle\math\AABB.h" />
     <ClInclude Include="ptle\stream\EStream.h" />
     <ClInclude Include="ptle\types\defs.h" />
+    <ClInclude Include="ptle\WIP\ScriptManager.h" />
     <ClInclude Include="ptle\WIP\ThreadBase.h" />
     <ClInclude Include="ptle\WIP\ThreadRenderer.h" />
     <ClInclude Include="utils\func.h" />

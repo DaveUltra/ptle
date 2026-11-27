@@ -27,6 +27,7 @@ void _EIPlayerTick_custom( EIHarry* harry )
 MAKE_THISCALL_WRAPPER( EIPlayerTick_custom, _EIPlayerTick_custom );
 
 #include <unordered_set>
+#include "ptle/WIP/ScriptManager.h"
 #include "ptle/EScriptContext.h"
 #include "ptle/ERScript.h"
 #include "ptle/ESDInt.h"
@@ -35,24 +36,11 @@ MAKE_THISCALL_WRAPPER( EIPlayerTick_custom, _EIPlayerTick_custom );
 #include "ptle/ESDMatrix.h"
 #include "ptle/ESDString.h"
 #include "ptle/ESDResource.h"
-struct ScriptManager
-{
-	ETypeInfo* m_scriptDataTypes[256];
-	ScriptFunction* m_funcLibsPointers[32];
-	int m_funcLibsNumFuncs[32];
-	int m_funcLibsNum;
-	TreeMap idk0;
-	TreeMap m_globalScriptDatas;
-	TreeMap idk2;
-	TreeMap idk3;
-	// ...
 
-	virtual ~ScriptManager();
-};
 static_assert( (uint32_t) &reinterpret_cast<ScriptManager*>(0)->m_globalScriptDatas == 0x514, "Field offset mismatch" );
 GET_METHOD( 0x6C3020, bool, EScriptContext_ExecuteScript, EScriptContext* );
 GET_METHOD( 0x659EA0, ScriptFunction*, GetFunctionFromBytecode, ScriptManager*, uint32_t );
-GET_METHOD( 0x6F3A50, TreeMapNode*, TreeMap_Find, TreeMap*, uint32_t, void** );
+GET_METHOD( 0x6F3A50, TreeMapNode*, TreeMap_Find, TTreeMap<uint32_t, EScriptData*>*, uint32_t, void** );
 void displayScriptData(EScriptData* s)
 {
 	std::string typeName = s->GetTypeName();
@@ -93,7 +81,7 @@ void LogScript( EScriptContext* ctx )
 
 	log_printf( "Executing \"%s\"...\n", ctx->m_script->m_name );
 
-	ScriptManager* global = (ScriptManager*) 0x91F918;
+	ScriptManager* global = ScriptManager::getInstance();
 
 	log_printf("- Data :\n");
 	for ( EScriptData* data : ctx->m_script->m_scriptData ) {
