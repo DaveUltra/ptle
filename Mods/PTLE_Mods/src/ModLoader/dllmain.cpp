@@ -319,8 +319,6 @@ enum vccorlibExportsNames
 #include "gizmod/event/ProjectileShootEvent.h"
 #include "gizmod/event/ShamanPurchaseEvent.h"
 
-#include <d3d9.h>
-
 
 // Monkey Temple crash fix.
 GET_FUNC( 0x422C30, void, Script_SetBeastTarget_Original, EScriptContext* );
@@ -423,66 +421,8 @@ static const char* source( uint32_t s )
 static const WNDPROC g_originalWndProc = (WNDPROC) 0x60CF30;
 static bool* const g_pWantsToClose = (bool*) 0x93ED64;
 
-static IDirect3DDevice9**     g_d3dDevice        = (IDirect3DDevice9**)     (0x926790 + 0x74);
-static D3DPRESENT_PARAMETERS* g_d3dPresentParams = (D3DPRESENT_PARAMETERS*) (0x926790 + 0xED4);
-
-static int g_myWindowWidth = 0, g_myWindowHeight = 0;
-
-static void SetVP()
-{
-	const float desiredAspectRatio = 4.0F / 3.0F;
-
-	// Construct the viewport rectangle.
-	// We force the aspect ratio to 4:3 and center the rectangle on the window's client rectangle.
-	// This WILL leave borders, which will be filled by whatever color the game clears its back buffer with.
-	D3DVIEWPORT9 vp = { 0, 0, g_myWindowWidth, g_myWindowHeight, 0.0F, 1.0F };
-	if ( g_myWindowWidth / (float) g_myWindowHeight >= desiredAspectRatio ) {
-		const int viewWidth = g_myWindowHeight * desiredAspectRatio;
-		const int x = (int) (g_myWindowWidth - viewWidth) / 2;
-		vp.X = x;
-		vp.Width = viewWidth;
-	}
-	else {
-		const int viewHeight = g_myWindowWidth / desiredAspectRatio;
-		const int y = (int) (g_myWindowHeight - viewHeight) / 2;
-		vp.Y = y;
-		vp.Height = viewHeight;
-	}
-
-	int id = *((int*) 0x920EDC);
-	int** adapters = (int**) 0x920ED4;
-	int* adapter = adapters[id];
-	adapter[0] = vp.Width;
-	adapter[1] = vp.Height;
-
-	(*g_d3dDevice)->SetViewport( &vp );
-}
-
-static void resize( int w, int h )
-{
-	if ( w == g_myWindowWidth && h == g_myWindowHeight )
-		return;
-
-	g_myWindowWidth = w;
-	g_myWindowHeight = h;
-
-	g_d3dPresentParams->BackBufferWidth = w;
-	g_d3dPresentParams->BackBufferHeight = h;
-
-	//injector::MakeRangedNOP( 0x68EF4D, 0x68EF9A );
-
-	// Sleeps.
-	injector::MakeRangedNOP( 0x68EF35, 0x68EF3D );
-	injector::MakeRangedNOP( 0x68EFB2, 0x68EFBA );
-
-	injector::MakeRangedNOP(0x699E25, 0x699E3E);
-	injector::MakeCALL( 0x699E25, SetVP );
-	injector::MakeRangedNOP( 0x69B224, 0x69B23D );
-	injector::MakeCALL( 0x69B224, SetVP );
-
-	// Force game to trigger its D3D9 reset mechanism.
-	*((bool*) 0x91768C) = true;
-}
+// in WindowedMode.cpp.
+void PaintWindowBorders( HDC dc );
 
 static LRESULT CustomWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam )
 {
@@ -493,8 +433,12 @@ static LRESULT CustomWndProc( HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam 
 		break;
 
 	case WM_SIZE:
-		resize( LOWORD(lparam), HIWORD(lparam) );
+		InvalidateRect( hwnd, NULL, TRUE );   // The picture's borders moved (see WM_ERASEBKGND).
 		break;
+
+	case WM_ERASEBKGND:
+		PaintWindowBorders( (HDC) wparam );
+		return 1;
 
 	case WM_KEYDOWN:
 		break;
