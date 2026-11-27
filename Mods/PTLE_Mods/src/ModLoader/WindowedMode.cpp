@@ -1,4 +1,5 @@
 #include <Windows.h>
+#include <d3d9.h>
 
 #include "injector/injector.hpp"
 #include "utils/func.h"
@@ -22,6 +23,67 @@ static void adjust_window_size()
 
 	*width = rect.right - rect.left;
 	*height = rect.bottom - rect.top;
+}
+
+
+// Resizing : the game keeps drawing at its own resolution, and Present() scales that picture to the
+// window, keeping its shape (centered, black borders). Resetting the device to the window's size isn't
+// safe while the game runs (its threads crash in d3d9 or deadlock).
+static IDirect3DDevice9** const     g_d3dDevice        = (IDirect3DDevice9**)     0x941080;
+static D3DPRESENT_PARAMETERS* const g_d3dPresentParams = (D3DPRESENT_PARAMETERS*) (0x926790 + 0xED4);
+
+static RECT get_picture_rect()
+{
+	RECT client;
+	GetClientRect( *((HWND*) 0x93ED60), &client );
+	const int w = client.right, h = client.bottom;
+	const int bw = g_d3dPresentParams->BackBufferWidth, bh = g_d3dPresentParams->BackBufferHeight;
+
+	int pw = w, ph = h;
+	if ( bw > 0 && bh > 0 ) {
+		if ( w * bh > h * bw ) pw = h * bw / bh;
+		else                   ph = w * bh / bw;
+	}
+	if ( pw < 1 ) pw = 1;
+	if ( ph < 1 ) ph = 1;
+
+	RECT r;
+	r.left = (w - pw) / 2;
+	r.top = (h - ph) / 2;
+	r.right = r.left + pw;
+	r.bottom = r.top + ph;
+	return r;
+}
+
+// Present() only takes a destination rectangle with the "copy" swap effect. With "discard", it fails,
+// and the game takes that as a lost device and stops drawing.
+static HRESULT present_picture()
+{
+	RECT client, picture = get_picture_rect();
+	GetClientRect( *((HWND*) 0x93ED60), &client );
+	const bool centered = g_d3dPresentParams->SwapEffect == D3DSWAPEFFECT_COPY && !EqualRect( &client, &picture );
+	return (*g_d3dDevice)->Present( NULL, centered ? &picture : NULL, NULL, NULL );
+}
+
+// Multisampling (byte 0x940D90) needs "discard" : the picture then fills the window.
+static void __declspec(naked) set_multisampling()
+{
+	__asm mov dword ptr [edx + 0xEE4], D3DMULTISAMPLE_2_SAMPLES     // Replaced instruction.
+	__asm mov dword ptr [edx + 0xEEC], D3DSWAPEFFECT_DISCARD
+	__asm ret
+}
+
+void PaintWindowBorders( HDC dc )
+{
+	RECT client, picture = get_picture_rect();
+	GetClientRect( *((HWND*) 0x93ED60), &client );
+	HBRUSH black = (HBRUSH) GetStockObject( BLACK_BRUSH );
+
+	RECT r;
+	SetRect( &r, 0, 0, client.right, picture.top );                          FillRect( dc, &r, black );
+	SetRect( &r, 0, picture.bottom, client.right, client.bottom );           FillRect( dc, &r, black );
+	SetRect( &r, 0, picture.top, picture.left, picture.bottom );             FillRect( dc, &r, black );
+	SetRect( &r, picture.right, picture.top, client.right, picture.bottom ); FillRect( dc, &r, black );
 }
 
 
@@ -65,6 +127,20 @@ void PatchWindowedModeAndAnnoyances()
 		injector::MakeRangedNOP( 0x6E859C, 0x6E85E6 );
 		char bytes[] = { 0xA1, 0x98, 0x0D, 0x94, 0x00, 0x8B, 0x3D, 0x9C, 0x0D, 0x94, 0x00 };  // mov eax, [940D98]; mov edi, [940D9C]
 		injector::WriteMemoryRaw( 0x6E859C, bytes, sizeof(bytes), true );
+
+		// "Copy" swap effect, with a single back buffer (for resizing, see present_picture()).
+		injector::WriteMemory<uint32_t>( 0x697E74, 1 );
+		injector::WriteMemory<uint32_t>( 0x697EAE, D3DSWAPEFFECT_COPY );
+		injector::MakeNOP( 0x697F6E, 10 );
+		injector::MakeCALL( 0x697F6E, set_multisampling );
+
+		// The picture in the middle of the window (the game's three Present() calls, from the pushes to the call).
+		injector::MakeRangedNOP( 0x6A2427, 0x6A2441 );
+		injector::MakeCALL( 0x6A2427, present_picture );
+		injector::MakeRangedNOP( 0x69A002, 0x69A01B );   // These two store the result in [ebp-4] next, as before.
+		injector::MakeCALL( 0x69A002, present_picture );
+		injector::MakeRangedNOP( 0x69A05C, 0x69A076 );
+		injector::MakeCALL( 0x69A05C, present_picture );
 	}
 
 	/*injector::MakeRangedNOP( 0x669C87, 0x669CA9 );
